@@ -33,7 +33,6 @@ public class Main {
                         if(DB.containsKey(newPage)){
                              DB.put(newPage, DB.get(newPage) + 1);
                         }
-
                         else {
                             DB.put(newPage, 1);
                             queue.add(newPage);
