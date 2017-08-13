@@ -134,11 +134,17 @@ public class HBase   {
         Connection connection = ConnectionFactory.createConnection(configuration);
         Admin admin  = connection.getAdmin();
         System.out.println( "Connecting..." );
-        HTableDescriptor hTableDescriptor = new HTableDescriptor(TableName.valueOf("KireAsb"));
+        TableName tableName = TableName.valueOf("myTable");
+        HTableDescriptor hTableDescriptor = new HTableDescriptor(tableName);
+        HTable hTable = new HTable(configuration, tableName);
         hTableDescriptor.addFamily(new HColumnDescriptor("Id"));
         hTableDescriptor.addFamily(new HColumnDescriptor("Name"));
+        Put put = new Put(Bytes.toBytes("myRow"));
+        put.addColumn(Bytes.toBytes("Id"), Bytes.toBytes("q1"), Bytes.toBytes(102900));
         System.out.println( "Creating Table..." );
         admin.createTable(hTableDescriptor);
+
+        hTable.put(put);
         System.out.println("Done!");
     }
 }
