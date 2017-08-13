@@ -3,20 +3,12 @@ package kon.shol;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
 
 import java.io.IOException;
 
@@ -138,14 +130,15 @@ public class HBase   {
 //    }
     public static void main(String[] args) throws IOException
     {
-        HBaseConfiguration hconfig = new HBaseConfiguration(new Configuration());
-        HTableDescriptor htable = new HTableDescriptor("User");
-        htable.addFamily( new HColumnDescriptor("Id"));
-        htable.addFamily( new HColumnDescriptor("Name"));
+        Configuration configuration = HBaseConfiguration.create();
+        Connection connection = ConnectionFactory.createConnection(configuration);
+        Admin admin  = connection.getAdmin();
         System.out.println( "Connecting..." );
-        HBaseAdmin hbase_admin = new HBaseAdmin( hconfig );
+        HTableDescriptor hTableDescriptor = new HTableDescriptor(TableName.valueOf("KireAsb"));
+        hTableDescriptor.addFamily(new HColumnDescriptor("Id"));
+        hTableDescriptor.addFamily(new HColumnDescriptor("Name"));
         System.out.println( "Creating Table..." );
-        hbase_admin.createTable( htable );
+        admin.createTable(hTableDescriptor);
         System.out.println("Done!");
     }
 }
