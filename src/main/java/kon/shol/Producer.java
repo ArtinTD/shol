@@ -15,24 +15,21 @@ import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CL
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 
 public class Producer {
-    public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
-        String link = scanner.nextLine();
+    public void sendLink (String topicName, String link){
         Properties configProperties = new Properties();
         configProperties.put(BOOTSTRAP_SERVERS_CONFIG, "188.165.235.136:9092");
         configProperties.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
         configProperties.put(VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         org.apache.kafka.clients.producer.Producer producer = new KafkaProducer<String, String>(configProperties);
-        ProducerRecord<String, String> rec = new ProducerRecord<>("arash", link);
+        ProducerRecord<String, String> rec = new ProducerRecord<>(topicName, link);
         producer.send(rec);
         producer.close();
-//    }
     }
 
     public void creatTopic(String topicName, int partitions){
 
-        String zookeeperConnect = "zkserver1:2181,zkserver2:2181";
+        String zookeeperConnect = "188.165.230.122:2181";
         int sessionTimeoutMs = 10 * 1000;
         int connectionTimeoutMs = 8 * 1000;
 
