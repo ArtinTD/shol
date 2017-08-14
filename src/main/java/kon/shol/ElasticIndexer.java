@@ -11,11 +11,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ElasticIndexer implements HBaseToElasticIndex {
     private Sender sender;
-    private LinkedBlockingQueue<String> indexQueue = new LinkedBlockingQueue<String>();
+    private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<kon.shol.WebPage>();
     private String index, type;
     private String host;
     private int port;
@@ -34,10 +35,19 @@ public class ElasticIndexer implements HBaseToElasticIndex {
         sender.start();
     }
 
+    //for test
+    public static void main(String[] args) {
+        ElasticIndexer ei = new ElasticIndexer("188.165.230.122", "test", "testt");
+        Scanner s = new Scanner(System.in);
+        for (int i = 0; i < 5; i++)
+            ei.add(s.nextLine(), s.nextLine());
+        s.close();
+    }
+
     @Override
-    public void add(String newIndex) {
+    public void add(String url, String webPage) {
         try {
-            indexQueue.put(newIndex);
+            indexQueue.put(new WebPage(url, webPage));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -54,9 +64,10 @@ public class ElasticIndexer implements HBaseToElasticIndex {
             try {
                 while (run) { // TODO: add some kind of safe stopping mechanism.
                     try {
+                        WebPage newWP = indexQueue.take();
                         HttpEntity en;
                         try {
-                            en = new StringEntity("{ " + indexQueue.take() + " }");
+                            en = new StringEntity("{ \"url\": \"" + newWP.url + "\", \"text\": \"" + newWP.text + "\" }");
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                             continue;
@@ -93,6 +104,16 @@ public class ElasticIndexer implements HBaseToElasticIndex {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private class WebPage {
+        String url;
+        String text;
+
+        public WebPage(String url, String text) {
+            this.url = url;
+            this.text = text;
         }
     }
 }
