@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class Fetcher {
-    WebPage page;
-    boolean getHtml() {
+    WebPage page = new WebPage();
+    boolean setHtml() {
         try {
             this.page.html=Jsoup.connect(page.link).get();
             return true;
