@@ -3,7 +3,11 @@ package kon.shol;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public abstract class Crawler implements Runnable, Kafka {
+import static kon.shol.Main.queue;
+import static kon.shol.Parser.extractLinks;
+import static kon.shol.Parser.trimLink;
+
+public class Crawler implements Runnable, Kafka {
 
     public void run() {
         while (true) {
@@ -11,12 +15,41 @@ public abstract class Crawler implements Runnable, Kafka {
             do {
                 fetcher.page.link = getLink();
             }
-            while (!fetcher.getHtml());
-            Elements links = Parser.extractLinks(fetcher.page.html);
+            while (!fetcher.setHtml());
+            System.out.println(fetcher.page.link  );
+            Elements links = extractLinks(fetcher.page.html);
             for (Element link: links) {
-                sendLink(Parser.trimLink(link));
-            }
+                try{
+                    sendLink(trimLink(link));
+                }
+                catch(NullPointerException ignore){
 
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getLink() {
+        try {
+            return queue.take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void sendLink(String link) {
+        try {
+            try {
+                queue.put(link);
+            }
+            catch (NullPointerException ignore){
+
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
