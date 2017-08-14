@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class ElasticIndexer implements HBaseToElasticIndex {
     private Sender sender;
-    private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<kon.shol.WebPage>();
+    private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<WebPage>();
     private String index, type;
     private String host;
     private int port;
