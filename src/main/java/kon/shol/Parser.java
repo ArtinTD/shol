@@ -8,10 +8,14 @@ import org.jsoup.select.Elements;
 
 public class Parser {
 
-    static Elements extractLinks( Document doc){
+    static Elements extractLinks(Document doc){
         Elements links;
-        links =doc.select("a");
+        links = doc.select("a");
         return links;
+    }
+    static String extractText(Document doc){
+
+        return doc.body().text();
     }
     static String trimLink(Element link){
         return link.attr("abs:href");

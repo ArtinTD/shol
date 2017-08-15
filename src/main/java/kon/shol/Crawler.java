@@ -11,7 +11,7 @@ public abstract class Crawler implements Runnable, Kafka {
             do {
                 fetcher.page.link = getLink();
             }
-            while (!fetcher.getHtml());
+            while (!fetcher.setHTML());
             Elements links = Parser.extractLinks(fetcher.page.html);
             for (Element link: links) {
                 sendLink(Parser.trimLink(link));
@@ -20,3 +20,4 @@ public abstract class Crawler implements Runnable, Kafka {
         }
     }
 }
+
