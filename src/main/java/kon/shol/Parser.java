@@ -1,15 +1,6 @@
 package kon.shol;
 ;
 import com.google.common.base.Optional;
-import com.optimaize.langdetect.LanguageDetector;
-import com.optimaize.langdetect.LanguageDetectorBuilder;
-import com.optimaize.langdetect.i18n.LdLocale;
-import com.optimaize.langdetect.ngram.NgramExtractors;
-import com.optimaize.langdetect.profiles.LanguageProfile;
-import com.optimaize.langdetect.profiles.LanguageProfileReader;
-import com.optimaize.langdetect.text.CommonTextObjectFactories;
-import com.optimaize.langdetect.text.TextObject;
-import com.optimaize.langdetect.text.TextObjectFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -60,8 +51,13 @@ public class Parser {
         }
     }
 
-    static String getLanguage(String link) {
+    static boolean isEnglish(Document document) {
 
-        return null;
+        if (!document.select("html").attr("lang").contains("en") && !document.select("html").attr("lang").isEmpty()) {
+            System.out.println("Not English");
+            return false;
+        }
+        System.out.println("don't know");
+        return false;
     }
 }

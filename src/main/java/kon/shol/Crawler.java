@@ -20,6 +20,7 @@ public class Crawler implements Runnable, Kafka {
             while (!fetcher.setHTML());
             System.out.println(fetcher.page.link);
 //            System.out.println(Parser.getDomain(fetcher.page.link));
+            Parser.isEnglish(fetcher.page.html);
             ArrayList<String> links = extractLinks(fetcher.page.html);
             for (String link: links) {
                 sendLink(link);
