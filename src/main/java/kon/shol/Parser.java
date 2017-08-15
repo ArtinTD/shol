@@ -18,14 +18,19 @@ import com.google.common.base.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
 
-    static Elements extractLinks(Document doc) {
+    static ArrayList<String> extractLinks(Document doc) {
         Elements links;
+        ArrayList<String> result = new ArrayList<>();
         links = doc.select("a");
-        return links;
+        for (Element link : links) {
+            result.add(trimLink(link));
+        }
+        return result;
     }
 
     static String trimLink(Element link) {
@@ -35,10 +40,9 @@ public class Parser {
                 StringBuilder sb = new StringBuilder(temp);
                 sb.deleteCharAt(temp.length() - 1);
                 temp = sb.toString();
-
-                if (!temp.contains("http")) {
-                    return null;
-                }
+            }
+            if (!temp.contains("http") || temp.contains("#")) {
+                return null;
             }
             return temp;
         } catch (StringIndexOutOfBoundsException ignore) {
@@ -54,5 +58,10 @@ public class Parser {
             e.printStackTrace();
             return null;
         }
+    }
+
+    static String getLanguage(String link) {
+
+        return null;
     }
 }
