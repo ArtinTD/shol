@@ -6,7 +6,7 @@ public class Main {
     static LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>();
     public static void main(String[] args) {
         try {
-            queue.put("https://www.google.com/");
+            queue.put("https://www.moz.com");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

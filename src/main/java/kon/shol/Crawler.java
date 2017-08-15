@@ -3,6 +3,8 @@ package kon.shol;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+
 import static kon.shol.Main.queue;
 import static kon.shol.Parser.extractLinks;
 import static kon.shol.Parser.trimLink;
@@ -15,16 +17,12 @@ public class Crawler implements Runnable, Kafka {
             do {
                 fetcher.page.link = getLink();
             }
-            while (!fetcher.setHtml());
-            System.out.println(fetcher.page.link  );
-            Elements links = extractLinks(fetcher.page.html);
-            for (Element link: links) {
-                try{
-                    sendLink(trimLink(link));
-                }
-                catch(NullPointerException ignore){
-
-                }
+            while (!fetcher.setHTML());
+            System.out.println(fetcher.page.link);
+//            System.out.println(Parser.getDomain(fetcher.page.link));
+            ArrayList<String> links = extractLinks(fetcher.page.html);
+            for (String link: links) {
+                sendLink(link);
             }
         }
     }
@@ -35,7 +33,7 @@ public class Crawler implements Runnable, Kafka {
             return queue.take();
         } catch (InterruptedException e) {
             e.printStackTrace();
-            return null;
+            return " ";
         }
     }
 
