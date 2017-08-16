@@ -1,0 +1,6 @@
+add these lines to /etc/security/limits.conf :
+elasticsearch - nofile 65536
+elasticsearch - memlock unlimited
+
+add this line to /etc/sysctl.conf :
+vm.max_map_count = 262144
