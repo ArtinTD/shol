@@ -19,7 +19,9 @@ public class Parser {
         ArrayList<String> result = new ArrayList<>();
         links = doc.select("a");
         for (Element link : links) {
-            result.add(trimLink(link));
+            String temp = trimLink(link);
+            if(temp != null)
+                result.add(trimLink(link));
         }
         return result;
     }
