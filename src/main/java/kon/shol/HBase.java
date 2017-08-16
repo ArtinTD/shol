@@ -20,16 +20,74 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.NavigableMap;
 
 public class HBase {
+    private static Connection connection;
+    private List<Put> putList;
+    private Table table;
 
-//    COMMANDS FOR CREATING TABLE
+    // Connect to DB
+    private Connection connect(String zooKeeperIp) throws IOException {
+        Configuration configuration = HBaseConfiguration.create();
+        configuration.set("hbase.zookeeper.quorum", zooKeeperIp);
+        connection = ConnectionFactory.createConnection(configuration);
+        return connection;
+    }
 
-//        HTableDescriptor hTableDescriptor = new HTableDescriptor(tableName);
- /*       hTableDescriptor.addFamily(new HColumnDescriptor("Id"));
-        hTableDescriptor.addFamily(new HColumnDescriptor("Name"));*/
-//        admin.createTable(hTableDescriptor);
+    // Constructor
+    public HBase(String zooKeeperIp) throws IOException {
+        putList = new ArrayList<>();
+        if (connection.isClosed()) {
+            connection = connect(zooKeeperIp);
+        }
+    }
+
+    // Getter And Setter
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(String zooKeeperIp) throws IOException {
+        if (connection.isClosed())
+            connection = connect(zooKeeperIp);
+        else {
+            System.out.println("There is an open connection now!");
+        }
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(String tableNameStr) throws IOException {
+        TableName tableName = TableName.valueOf(tableNameStr);
+        table = connection.getTable(tableName);
+    }
+
+    // Put Methods
+    public void put(String rowKey, String cf, String iden, String val) throws IOException {
+        Put put = new Put(Bytes.toBytes(rowKey));
+        put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), Bytes.toBytes(val));
+        table.put(put);
+    }
+
+    public void put(String rowKey, String cf, String iden, ArrayList<String> stringArrayList) throws IOException {
+        Put put = new Put(Bytes.toBytes(rowKey));
+        put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), WritableUtils.toByteArray(toWritable(stringArrayList)));
+        table.put(put);
+    }
+
+    public void batchPut(String rowKey, String cf, String iden, String val) throws IOException {
+        Put put = new Put(Bytes.toBytes(rowKey));
+        put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), Bytes.toBytes(val));
+        putList.add(put);
+        if (putList.size() > 50) {
+            table.put(putList);
+            putList.clear();
+        }
+    }
 
     private static String[] getColumnsInColumnFamily(Result r, String ColumnFamily) {
         NavigableMap<byte[], byte[]> familyMap = r.getFamilyMap(Bytes.toBytes(ColumnFamily));
@@ -44,24 +102,26 @@ public class HBase {
         return Quantifers;
     }
 
-//    THE COMMON WAY TO SERIALIZE LIST AND STORE TO HBASE
-//    TODO: LEARN WRITABLE INTERFACE
-    public static Writable toWritable(ArrayList<String> list) {
+    //    THE COMMON WAY TO SERIALIZE LIST AND STORE TO HBASE
+    //    TODO: LEARN WRITABLE INTERFACE
+    private Writable toWritable(ArrayList<String> list) {
         Writable[] content = new Writable[list.size()];
         for (int i = 0; i < content.length; i++) {
             content[i] = new Text(list.get(i));
         }
         return new ArrayWritable(Text.class, content);
     }
-    public static ArrayList<String> fromWritable(ArrayWritable writable) {
+
+    private ArrayList<String> fromWritable(ArrayWritable writable) {
         Writable[] writables = ((ArrayWritable) writable).get();
         ArrayList<String> list = new ArrayList<String>(writables.length);
         for (Writable wrt : writables) {
-            list.add(((Text)wrt).toString());
+            list.add(((Text) wrt).toString());
         }
         return list;
     }
-    public static ArrayList<String> castResultToStringArrayList (Result r, String columnFamily, String cell) throws IOException {
+
+    private ArrayList<String> castResultToStringArrayList(Result r, String columnFamily, String cell) throws IOException {
         ArrayWritable arrayWritable = new ArrayWritable(Text.class);
         arrayWritable.readFields(
                 new DataInputStream(
@@ -73,42 +133,12 @@ public class HBase {
         return fromWritable(arrayWritable);
     }
 
-//    A ZAKHAR ALTERNATIVE FOR STORING STRING ARRAY
-    private static String[] castResultToStringArray(Result r, String columnFamily, String cell){
+
+    //    A ZAKHAR ALTERNATIVE FOR STORING STRING ARRAY
+    private static String[] castResultToStringArray(Result r, String columnFamily, String cell) {
         String DBOutput = Bytes.toString(r.getValue(Bytes.toBytes(columnFamily), Bytes.toBytes(cell)));
         Object[] DBOutputArrays = Arrays.stream(DBOutput.substring(1, DBOutput.length() - 1).split(","))
                 .map(String::trim).toArray();
         return Arrays.copyOf(DBOutputArrays, DBOutputArrays.length, String[].class);
-    }
-
-
-
-
-    public static void main(String[] args) throws IOException {
-        TableName tableName = TableName.valueOf("myTable");
-        String[] arr = {"sajjad", "asghar", "ahmad", "kazem"};
-        Configuration configuration = HBaseConfiguration.create();
-        configuration.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
-        Connection connection = ConnectionFactory.createConnection(configuration);
-        System.out.println("Connecting...");
-
-        Table table = connection.getTable(tableName);
-        Put put = new Put(Bytes.toBytes("myRow9"));
-        put.addColumn(Bytes.toBytes("Name"), Bytes.toBytes("firstName"), Bytes.toBytes("Steve"));
-        put.addColumn(Bytes.toBytes("Name"), Bytes.toBytes("lastName"), Bytes.toBytes("StevePoor"));
-        put.addColumn(Bytes.toBytes("Name"), Bytes.toBytes("friends"), WritableUtils.toByteArray(toWritable(new ArrayList<>(Arrays.asList(arr)))));
-//        table.put(put);
-        Get get = new Get(Bytes.toBytes("myRow9"));
-//        CHECK IF A ROW EXISTS
-        System.out.println(table.exists(get));
-//        Scan scan = new Scan();
-        get.setMaxVersions(1);
-        get.addFamily(Bytes.toBytes("Name"));
-        get.addColumn(Bytes.toBytes("Name"), Bytes.toBytes("friends"));
-        System.out.println("Done!");
-        Result result = table.get(get);
-        System.out.println(castResultToStringArrayList(result, "Name", "friends").get(0));
-        table.close();
-        connection.close();
     }
 }
