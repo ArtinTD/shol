@@ -17,12 +17,13 @@ import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_
 public class Producer {
 
     public void sendLink(String link){
+
         Properties configProperties = new Properties();
         configProperties.put(BOOTSTRAP_SERVERS_CONFIG, "188.165.235.136:9092");
         configProperties.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
         configProperties.put(VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         org.apache.kafka.clients.producer.Producer producer = new KafkaProducer<String, String>(configProperties);
-        ProducerRecord<String, String> rec = new ProducerRecord<>("arash", link);
+        ProducerRecord<String, String> rec = new ProducerRecord<String, String>("arash", link);
         producer.send(rec);
         producer.close();
     }
