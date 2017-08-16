@@ -12,9 +12,15 @@ admin.createTable(hTableDescriptor);
 
 ** GET ROW DETAILS
 Get get = new Get(Bytes.toBytes("myRow9"));
-get.addFamily(Bytes.toBytes("Name"));
+get.addFamily(Bytes.toBytes("Name")); => Multiple Methods Can Be Used!
 get.addColumn(Bytes.toBytes("Name"), Bytes.toBytes("friends"));
 Result result = table.get(get);
+
+** PUT ROW DETAILS
+Put put = new Put(Bytes.toBytes(rowKey));
+put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), WritableUtils.toByteArray(toWritable(stringArrayList)));
+table.put(put);
+
 
 ** CHECK IF A ROW EXISTS
 table.exists(get);

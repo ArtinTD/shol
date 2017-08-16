@@ -30,16 +30,25 @@ public class HBase {
 
     // Connect to DB
     private Connection connect(String zooKeeperIp) throws IOException {
+        System.out.println("Connecting to Hbase");
         Configuration configuration = HBaseConfiguration.create();
         configuration.set("hbase.zookeeper.quorum", zooKeeperIp);
         connection = ConnectionFactory.createConnection(configuration);
+        System.out.println("Connection to Hbase established");
         return connection;
     }
 
     // Constructor
     public HBase(String zooKeeperIp) throws IOException {
         putList = new ArrayList<>();
-        if (connection.isClosed()) {
+        try {
+            if (connection.isClosed()) {
+                connection = connect(zooKeeperIp);
+            }else{
+                System.out.println("There is a valid connection");
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Initiating Hbase Connection");
             connection = connect(zooKeeperIp);
         }
     }
@@ -71,12 +80,14 @@ public class HBase {
         Put put = new Put(Bytes.toBytes(rowKey));
         put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), Bytes.toBytes(val));
         table.put(put);
+        System.out.println("Put in row : " + rowKey );
     }
 
     public void put(String rowKey, String cf, String iden, ArrayList<String> stringArrayList) throws IOException {
         Put put = new Put(Bytes.toBytes(rowKey));
         put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), WritableUtils.toByteArray(toWritable(stringArrayList)));
         table.put(put);
+        System.out.println("Put in row : " + rowKey );
     }
 
     public void batchPut(String rowKey, String cf, String iden, String val) throws IOException {
@@ -121,7 +132,7 @@ public class HBase {
         return list;
     }
 
-    private ArrayList<String> castResultToStringArrayList(Result r, String columnFamily, String cell) throws IOException {
+    public ArrayList<String> castResultToStringArrayList(Result r, String columnFamily, String cell) throws IOException {
         ArrayWritable arrayWritable = new ArrayWritable(Text.class);
         arrayWritable.readFields(
                 new DataInputStream(
