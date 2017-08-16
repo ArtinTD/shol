@@ -24,58 +24,56 @@ public class Main {
             }
         }
 
-        // kafka ...
+        Producer producer = new Producer();
+        Consumer consumer = new Consumer();
 
-//        Producer producer = new Producer();
-//        Consumer consumer = new Consumer();
-//
-//        for (int i = 0; i <10 ; i++) {
-////            arrayList.add(Integer.toString(i));
-//            String today = new Date().toString();
-//            producer.sendLink(Integer.toString(i) + "  " +today);
-//            if (i%2 == 0){
-//                System.out.println("produce :" + i);
-//            }
-//        }
-//        Thread thread1 = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true){
-//                    try {
-//                        consumer.getLink();
-//                    } catch (InterruptedException e) {
-//                        System.out.println("InterruptedException Exeption");
-//                    }
-//
-//                    while (!Consumer.arrayBlockingQueue.isEmpty()){
-//                        String result = (String) consumer.arrayBlockingQueue.poll();
-//                        System.out.println(result);
-//                    }
-//                }
-//            }
-//        });
-//
-//        Thread thread2 = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (true){
-//                    while (!Consumer.arrayBlockingQueue.isEmpty()){
-//                        String result = (String) consumer.arrayBlockingQueue.poll();
-//                        System.out.println(result + "     result");
-//                    }
-//                }
-//            }
-//        });
-//
-//        thread1.start();
-//        thread2.start();
-//
-//        try {
-//            thread1.join();
-//            thread2.join();
-//        } catch (InterruptedException e) {
-//            System.out.println("join exception");
-//        }
+        for (int i = 0; i <10 ; i++) {
+//            arrayList.add(Integer.toString(i));
+            String today = new Date().toString();
+            producer.sendLink(Integer.toString(i) + "  " +today);
+            if (i%2 == 0){
+                System.out.println("produce :" + i);
+            }
+        }
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        consumer.getLink();
+                    } catch (InterruptedException e) {
+                        System.out.println("InterruptedException Exception");
+                    }
+
+                    while (!Consumer.arrayBlockingQueue.isEmpty()){
+                        String result = (String) consumer.arrayBlockingQueue.poll();
+                        System.out.println(result);
+                    }
+                }
+            }
+        });
+
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    while (!Consumer.arrayBlockingQueue.isEmpty()){
+                        String result = (String) consumer.arrayBlockingQueue.poll();
+                        System.out.println(result + "     result");
+                    }
+                }
+            }
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            System.out.println("join exception");
+        }
     }
 //       Here goes the Shol code.
 }
