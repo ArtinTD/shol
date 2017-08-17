@@ -12,9 +12,7 @@ public class HBaseTest {
     public static void main(String[] args) {
         HBase hBase = null;
         try {
-            hBase = new HBase("188.165.230.122:2181");
-            Connection connection = hBase.getConnection();
-            hBase.setTable("myTable");
+            hBase = new HBase("188.165.230.122:2181", "myTable");
             Table table = hBase.getTable();
         /*    hBase.put("myRow99","Name", "firstName","Peter");
             hBase.put("myRow99","Name", "lastName","PeterNezhad");
@@ -27,11 +25,10 @@ public class HBaseTest {
             Get get = new Get(Bytes.toBytes("myRow99"));
             get.addColumn(Bytes.toBytes("Name"), Bytes.toBytes("friends"));
             Result result = table.get(get);
-            System.out.println(hBase.castResultToStringArrayList(result,"Name", "friends").get(1));
-
+            System.out.println(hBase.getArrayList("myRow99", "Name", "friends"));
+            System.out.println(hBase.exists("myRow99"));
             System.out.println(hBase.getConnection().isClosed());
-            table.close();
-            connection.close();
+            hBase.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

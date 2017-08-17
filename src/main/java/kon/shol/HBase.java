@@ -44,12 +44,28 @@ public class HBase {
         try {
             if (connection.isClosed()) {
                 connection = connect(zooKeeperIp);
-            }else{
+            } else {
                 System.out.println("There is a valid connection");
             }
         } catch (NullPointerException e) {
             System.out.println("Initiating Hbase Connection");
             connection = connect(zooKeeperIp);
+        }
+    }
+
+    public HBase(String zooKeeperIp, String tableName) throws IOException {
+        putList = new ArrayList<>();
+        try {
+            if (connection.isClosed()) {
+                connection = connect(zooKeeperIp);
+            } else {
+                System.out.println("There is a valid connection");
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Initiating Hbase Connection");
+            connection = connect(zooKeeperIp);
+        } finally {
+            setTable(tableName);
         }
     }
 
@@ -76,18 +92,19 @@ public class HBase {
     }
 
     // Put Methods
+    // TODO: Specialize APIs as Mentioned in Structure
     public void put(String rowKey, String cf, String iden, String val) throws IOException {
         Put put = new Put(Bytes.toBytes(rowKey));
         put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), Bytes.toBytes(val));
         table.put(put);
-        System.out.println("Put in row : " + rowKey );
+        System.out.println("Put in row : " + rowKey);
     }
 
     public void put(String rowKey, String cf, String iden, ArrayList<String> stringArrayList) throws IOException {
         Put put = new Put(Bytes.toBytes(rowKey));
         put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), WritableUtils.toByteArray(toWritable(stringArrayList)));
         table.put(put);
-        System.out.println("Put in row : " + rowKey );
+        System.out.println("Put in row : " + rowKey);
     }
 
     public void batchPut(String rowKey, String cf, String iden, String val) throws IOException {
@@ -100,18 +117,24 @@ public class HBase {
         }
     }
 
-    private static String[] getColumnsInColumnFamily(Result r, String ColumnFamily) {
-        NavigableMap<byte[], byte[]> familyMap = r.getFamilyMap(Bytes.toBytes(ColumnFamily));
-        String[] Quantifers = new String[familyMap.size()];
-
-        int counter = 0;
-        for (byte[] bQunitifer : familyMap.keySet()) {
-            Quantifers[counter++] = Bytes.toString(bQunitifer);
-
-        }
-
-        return Quantifers;
+    // Get Methods
+    // Just Implemented Get for ArrayList
+    // TODO: Implement All get functions
+    public ArrayList<String> getArrayList(String rowKey, String cf, String iden) throws IOException {
+        return castResultToStringArrayList(table.get(new Get(Bytes.toBytes(rowKey))), cf, iden);
     }
+
+    // Check if a row Exists
+    public boolean exists(String rowKey) throws IOException {
+        return table.exists(new Get(Bytes.toBytes(rowKey)));
+    }
+
+    // Close Hbase Session
+    public void close() throws IOException {
+        connection.close();
+        table.close();
+    }
+
 
     //    THE COMMON WAY TO SERIALIZE LIST AND STORE TO HBASE
     //    TODO: LEARN WRITABLE INTERFACE
@@ -132,7 +155,7 @@ public class HBase {
         return list;
     }
 
-    public ArrayList<String> castResultToStringArrayList(Result r, String columnFamily, String cell) throws IOException {
+    private ArrayList<String> castResultToStringArrayList(Result r, String columnFamily, String cell) throws IOException {
         ArrayWritable arrayWritable = new ArrayWritable(Text.class);
         arrayWritable.readFields(
                 new DataInputStream(
@@ -151,5 +174,19 @@ public class HBase {
         Object[] DBOutputArrays = Arrays.stream(DBOutput.substring(1, DBOutput.length() - 1).split(","))
                 .map(String::trim).toArray();
         return Arrays.copyOf(DBOutputArrays, DBOutputArrays.length, String[].class);
+    }
+
+    //    ITS NOT GOING TO BE USEFUL
+    private static String[] getColumnsInColumnFamily(Result r, String ColumnFamily) {
+        NavigableMap<byte[], byte[]> familyMap = r.getFamilyMap(Bytes.toBytes(ColumnFamily));
+        String[] Quantifers = new String[familyMap.size()];
+
+        int counter = 0;
+        for (byte[] bQunitifer : familyMap.keySet()) {
+            Quantifers[counter++] = Bytes.toString(bQunitifer);
+
+        }
+
+        return Quantifers;
     }
 }
