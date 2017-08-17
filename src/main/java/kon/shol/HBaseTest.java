@@ -1,3 +1,5 @@
+package kon.shol;
+
 import kon.shol.HBase;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Get;
