@@ -29,7 +29,7 @@ public class Producer {
 
     public void sendLink(String link){
 
-        ProducerRecord<String, String> rec = new ProducerRecord<String, String>("arash", link);
+        ProducerRecord<String, String> rec = new ProducerRecord<String, String>("urls", link);
         producer.send(rec);
         producer.flush();
     }
