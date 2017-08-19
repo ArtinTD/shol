@@ -43,8 +43,8 @@ public class Main {
             }
         }*/
 
-        Consumer consumer1 = new Consumer(0, "hossein");
-        Consumer consumer2 = new Consumer(0, "hossein");
+        Consumer consumer1 = new Consumer("asghar", "hossein");
+        Consumer consumer2 = new Consumer("asghar", "hossein");
         Producer producer = new Producer();
 
         int i = 0;

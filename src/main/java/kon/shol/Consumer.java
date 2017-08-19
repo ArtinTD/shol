@@ -14,11 +14,11 @@ public class Consumer {
 
     KafkaConsumer<String, String> consumer;
 
-    public Consumer(int groupID, String topic) {
+    public Consumer(String groupID, String topic) {
 
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "188.165.235.136:9092,188.165.230.122:9092");
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, String.valueOf(groupID));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupID);
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
