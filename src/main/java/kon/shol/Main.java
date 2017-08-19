@@ -7,8 +7,8 @@ public class Main {
     static LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>();
 
     public static void main(String[] args) {
-        try {
-           queue.put("https://en.wikipedia.org/wiki/Main_Page");
+        /*try {
+            queue.put("https://en.wikipedia.org/wiki/Main_Page");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -41,9 +41,15 @@ public class Main {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }*/
+        Consumer consumer1 = new Consumer(1, "arash");
+        Consumer consumer2 = new Consumer(0, "arash");
+        while (true) {
+            System.out.println("consumer1");
+            consumer1.getLink();
+            System.out.println("consumer2");
+            consumer2.getLink();
         }
-//        producer1.sendLink("doroste");
-//        producer2.sendLink("aaaaaaaaasb");
     }
 }
 

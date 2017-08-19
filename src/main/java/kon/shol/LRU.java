@@ -36,7 +36,7 @@ public class LRU  extends Zookeeper{
         }
     }
 
-    boolean produce(int i) throws KeeperException, InterruptedException{
+    /*boolean produce(int i) throws KeeperException, InterruptedException{
         ByteBuffer b = ByteBuffer.allocate(4);
         byte[] value;
 
@@ -47,5 +47,5 @@ public class LRU  extends Zookeeper{
                 CreateFlags.SEQUENCE);
 
         return true;
-    }
+    }*/
 }
