@@ -5,6 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
     static LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>();
+
     public static void main(String[] args) {
 //        try {
 //            queue.put("https://en.wikipedia.org/wiki/Main_Page");
@@ -60,6 +61,6 @@ public class Main {
 //        producer1.sendLink("doroste");
 //        producer2.sendLink("aaaaaaaaasb");
     }
-    }
+}
 
 
