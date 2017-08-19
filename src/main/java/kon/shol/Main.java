@@ -42,12 +42,18 @@ public class Main {
                 e.printStackTrace();
             }
         }*/
-        Consumer consumer1 = new Consumer(1, "arash");
-        Consumer consumer2 = new Consumer(0, "arash");
+
+        Consumer consumer1 = new Consumer(0, "hossein");
+        Consumer consumer2 = new Consumer(0, "hossein");
+        Producer producer = new Producer();
+
+        int i = 0;
         while (true) {
-            System.out.println("consumer1");
+            i++;
+            producer.sendLink("Hossein " + String.valueOf(i), "hossein");
+            System.out.print("consumer1 : ");
             consumer1.getLink();
-            System.out.println("consumer2");
+            System.out.print("consumer2 : ");
             consumer2.getLink();
         }
     }

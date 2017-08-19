@@ -27,9 +27,9 @@ public class Producer {
         producer = new KafkaProducer<String, String>(properties);
     }
 
-    public void sendLink(String link){
+    public void sendLink(String link, String topic){
 
-        ProducerRecord<String, String> rec = new ProducerRecord<String, String>("urls", link);
+        ProducerRecord<String, String> rec = new ProducerRecord<String, String>(topic, link);
         producer.send(rec);
         producer.flush();
     }
@@ -51,6 +51,7 @@ public class Producer {
 
         ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zookeeperConnect), isSecureKafkaCluster);
         Properties topicConfig = new Properties();
+        System.out.println("Topic Created");
         AdminUtils.createTopic(zkUtils, topicName, partitions, 1, topicConfig, RackAwareMode.Enforced$.MODULE$);
         zkClient.close();
     }

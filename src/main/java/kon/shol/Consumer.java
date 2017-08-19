@@ -31,15 +31,15 @@ public class Consumer {
 
     public void getLink() {
 
-        System.out.println("ab");
+//        System.out.println("ab");
         ConsumerRecords<String, String> records = consumer.poll(1000);
-        System.out.println("khiar");
+//        System.out.println("khiar");
         if (records.isEmpty()) {
             System.out.println("empty");
         }
         for (ConsumerRecord<String, String> record : records)
         {
-            System.out.println("xx");
+//            System.out.println("xx");
             System.out.println(record.value());
         }
     }
