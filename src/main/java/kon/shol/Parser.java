@@ -42,6 +42,9 @@ public class Parser {
             System.out.println("No Description");
         }
         pageData.h1h3 = (ArrayList<String>) doc.select("h1,h2,h3").eachText();
+
+        System.out.println(doc.select("h1,h2,h3").text());
+
         pageData.h4h6 = (ArrayList<String>) doc.select("h4,h5,h6").eachText();
         return pageData;
     }

@@ -119,8 +119,8 @@ public class HBase {
         put.addColumn(cfb, Bytes.toBytes("title"), Bytes.toBytes(pageData.title));
         put.addColumn(cfb, Bytes.toBytes("description"), Bytes.toBytes(pageData.description));
         put.addColumn(cfb, Bytes.toBytes("text"), Bytes.toBytes(pageData.text));
-        put.addColumn(cfb, Bytes.toBytes("h1h3"), arrayListToByte(pageData.h1h3));
-        put.addColumn(cfb, Bytes.toBytes("h4h6"), arrayListToByte(pageData.h4h6));
+        put.addColumn(cfb, Bytes.toBytes("h1h3"), Bytes.toBytes(pageData.h1h3));
+        put.addColumn(cfb, Bytes.toBytes("h4h6"), Bytes.toBytes(pageData.h4h6));
         put.addColumn(cfb, Bytes.toBytes("links"), arrayListToByte(pageData.links));
         table.put(put);
     }
@@ -154,9 +154,9 @@ public class HBase {
             pageData.title = Bytes.toString(r.getValue(cfb, Bytes.toBytes("title")));
             pageData.text = Bytes.toString(r.getValue(cfb, Bytes.toBytes("text")));
             pageData.description = Bytes.toString(r.getValue(cfb, Bytes.toBytes("description")));
+            pageData.h1h3 = Bytes.toString(r.getValue(cfb, Bytes.toBytes("h1h3")));
+            pageData.h4h6 = Bytes.toString(r.getValue(cfb, Bytes.toBytes("h4h6")));
             pageData.links = castResultToStringArrayList(r,"data","links");
-            pageData.h1h3 = castResultToStringArrayList(r,"data","h1h3");
-            pageData.h4h6 = castResultToStringArrayList(r,"data","h4h6");
         }
         return pageDataArrayList;
     }

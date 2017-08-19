@@ -7,6 +7,6 @@ public class PageData {
     String title;
     String description;
     ArrayList<String> links;
-    ArrayList<String> h1h3;
-    ArrayList<String> h4h6;
+    String h1h3;
+    String h4h6;
 }
