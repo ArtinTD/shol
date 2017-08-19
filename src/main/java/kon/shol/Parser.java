@@ -1,6 +1,7 @@
 package kon.shol;
 ;
 import com.google.common.base.Optional;
+import com.google.common.net.InternetDomainName;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -46,7 +47,7 @@ public class Parser {
     static String getDomain(String link){
         try {
             URL url = new URL(link);
-            return url.getHost();
+            return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
@@ -62,4 +63,6 @@ public class Parser {
         System.out.println("don't know");
         return false;
     }
+
+
 }
