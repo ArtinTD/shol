@@ -1,5 +1,6 @@
 package kon.shol;
 
+import com.google.common.net.InternetDomainName;
 import com.oracle.jrockit.jfr.Producer;
 import kon.shol.WebPage;
 import org.jsoup.Jsoup;
@@ -20,4 +21,8 @@ public class Fetcher {
             return false;
         }
     }
+    public static void main(String args[]){
+        System.out.println(InternetDomainName.from("fa.google.com").topPrivateDomain().toString());
+    }
 }
+
