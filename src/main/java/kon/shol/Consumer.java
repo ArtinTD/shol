@@ -1,23 +1,19 @@
 package kon.shol;
 
-import kafka.api.FetchResponse;
 import org.apache.kafka.clients.consumer.*;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig.*;
-
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 
-import org.apache.kafka.common.TopicPartition;
+import static kon.shol.Main.consumerQueue;
 
-public class Consumer {
+public class Consumer implements Runnable{
 
     KafkaConsumer<String, String> consumer;
 
     public Consumer(int groupID, String topic) {
 
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "188.165.235.136:9092,188.165.230.122:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "188.165.230.122:9092,188.165.235.136:9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, String.valueOf(groupID));
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -29,18 +25,24 @@ public class Consumer {
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    public void getLink() {
+    public void getLink() throws InterruptedException {
 
-//        System.out.println("ab");
-        ConsumerRecords<String, String> records = consumer.poll(1000);
-//        System.out.println("khiar");
+        ConsumerRecords<String, String> records = consumer.poll(100);
         if (records.isEmpty()) {
             System.out.println("empty");
-        }
-        for (ConsumerRecord<String, String> record : records)
-        {
-//            System.out.println("xx");
-            System.out.println(record.value());
+        } else
+            for (ConsumerRecord<String, String> record : records) {
+                consumerQueue.put(record.value());
+            }
+    }
+
+    public void run(){
+        while (true){
+            try {
+                getLink();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

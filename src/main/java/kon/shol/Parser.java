@@ -1,17 +1,14 @@
 package kon.shol;
 ;
-import com.google.common.base.Optional;
 import com.google.common.net.InternetDomainName;
-import org.jsoup.Jsoup;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.google.common.base.*;
-import java.io.IOException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Parser {
 

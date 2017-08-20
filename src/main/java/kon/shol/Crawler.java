@@ -16,13 +16,14 @@ public abstract class Crawler implements Runnable, Kafka {
             Fetcher fetcher = new Fetcher();
             do {
                 fetcher.page.link = getLink();
+                System.err.println("back" + fetcher.page.link);
                 String link = fetcher.page.link;
-                while (lruCache.getIfPresent(getDomain(link)) != null){
+                while (lruCache.getIfPresent(getDomain(link)) != null) {
                     sendLink(link);
-                    //System.err.println("Back" + ":" + link);
                     fetcher.page.link = getLink();
                     link = fetcher.page.link;
                 }
+
                 try {
                     lruCache.get(getDomain(link));
 
@@ -33,8 +34,8 @@ public abstract class Crawler implements Runnable, Kafka {
             while (!fetcher.setHTML());
             System.out.println(fetcher.page.link);
             ArrayList<String> links = extractLinks(fetcher.page.html);
-            for (String link: links) {
-                    sendLink(link);
+            for (String link : links) {
+                sendLink(link);
             }
         }
     }
