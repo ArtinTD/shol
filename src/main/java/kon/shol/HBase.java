@@ -1,15 +1,11 @@
 package kon.shol;
 
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
@@ -26,10 +22,11 @@ import java.util.NavigableMap;
 public class HBase {
     private static Connection connection;
     private List<Put> putList;
-    private Table table;
+    private static Table table;
 
     // Connect to DB
     private Connection connect(String zooKeeperIp) throws IOException {
+
         System.out.println("Connecting to Hbase");
         Configuration configuration = HBaseConfiguration.create();
         configuration.set("hbase.zookeeper.quorum", zooKeeperIp);
@@ -66,6 +63,7 @@ public class HBase {
             connection = connect(zooKeeperIp);
         } finally {
             setTable(tableName);
+            System.out.println("Selected " + tableName);
         }
     }
 
@@ -102,7 +100,7 @@ public class HBase {
 
     public void put(String rowKey, String cf, String iden, ArrayList<String> stringArrayList) throws IOException {
         Put put = new Put(Bytes.toBytes(rowKey));
-        put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), WritableUtils.toByteArray(toWritable(stringArrayList)));
+        put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), arrayListToByte(stringArrayList));
         table.put(put);
         System.out.println("Put in row : " + rowKey);
     }
@@ -114,6 +112,23 @@ public class HBase {
         if (putList.size() > 50) {
             table.put(putList);
             putList.clear();
+        }
+    }
+
+    public void putPageData(String url, PageData pageData){
+        Put put = new Put(Bytes.toBytes(url));
+        byte[] cfb = Bytes.toBytes("data");
+        System.out.println("WRITING PAGEDATA");
+        put.addColumn(cfb, Bytes.toBytes("title"), Bytes.toBytes(pageData.title));
+        put.addColumn(cfb, Bytes.toBytes("description"), Bytes.toBytes(pageData.description));
+        put.addColumn(cfb, Bytes.toBytes("text"), Bytes.toBytes(pageData.text));
+        put.addColumn(cfb, Bytes.toBytes("h1h3"), Bytes.toBytes(pageData.h1h3));
+        put.addColumn(cfb, Bytes.toBytes("h4h6"), Bytes.toBytes(pageData.h4h6));
+        put.addColumn(cfb, Bytes.toBytes("links"), arrayListToByte(pageData.links));
+        try {
+            table.put(put);
+        } catch (IOException e) {
+            System.out.println("IOException");
         }
     }
 
@@ -135,6 +150,23 @@ public class HBase {
         table.close();
     }
 
+    // Scan Table For PageData
+    public ArrayList<PageData> scanPageData() throws IOException {
+        ArrayList<PageData> pageDataArrayList = new ArrayList<>();
+        Scan scan = new Scan();
+        byte[] cfb = Bytes.toBytes("data");
+        ResultScanner resultScanner = table.getScanner(scan);
+        for (Result r : resultScanner) {
+            PageData pageData = new PageData();
+            pageData.title = Bytes.toString(r.getValue(cfb, Bytes.toBytes("title")));
+            pageData.text = Bytes.toString(r.getValue(cfb, Bytes.toBytes("text")));
+            pageData.description = Bytes.toString(r.getValue(cfb, Bytes.toBytes("description")));
+            pageData.h1h3 = Bytes.toString(r.getValue(cfb, Bytes.toBytes("h1h3")));
+            pageData.h4h6 = Bytes.toString(r.getValue(cfb, Bytes.toBytes("h4h6")));
+            pageData.links = castResultToStringArrayList(r,"data","links");
+        }
+        return pageDataArrayList;
+    }
 
     //    THE COMMON WAY TO SERIALIZE LIST AND STORE TO HBASE
     //    TODO: LEARN WRITABLE INTERFACE
@@ -144,6 +176,10 @@ public class HBase {
             content[i] = new Text(list.get(i));
         }
         return new ArrayWritable(Text.class, content);
+    }
+
+    private byte[] arrayListToByte(ArrayList<String> stringArrayList) {
+        return WritableUtils.toByteArray(toWritable(stringArrayList));
     }
 
     private ArrayList<String> fromWritable(ArrayWritable writable) {

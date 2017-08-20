@@ -1,16 +1,15 @@
 package kon.shol;
+
 ;
-import com.google.common.base.Optional;
-import org.jsoup.Jsoup;
+import com.google.common.net.InternetDomainName;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.google.common.base.*;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class Parser {
 
@@ -20,10 +19,22 @@ public class Parser {
         links = doc.select("a");
         for (Element link : links) {
             String temp = trimLink(link);
-            if(temp != null)
+            if (temp != null)
                 result.add(trimLink(link));
         }
         return result;
+    }
+
+    static PageData parse(Document doc) {
+        PageData pageData = new PageData();
+        pageData.links = extractLinks(doc);
+        pageData.text = doc.text();
+        pageData.title = doc.title();
+        pageData.description = doc.select("meta[name=description]").attr("content");
+        pageData.h1h3 = doc.select("h1,h2,h3").text();
+        pageData.h4h6 = doc.select("h4,h5,h6").text();
+        System.out.println("Parsed : " + pageData.title);
+        return pageData;
     }
 
     static String trimLink(Element link) {
@@ -43,10 +54,10 @@ public class Parser {
         }
     }
 
-    static String getDomain(String link){
+    static String getDomain(String link) {
         try {
             URL url = new URL(link);
-            return url.getHost();
+            return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
