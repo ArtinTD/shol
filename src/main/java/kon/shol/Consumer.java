@@ -6,7 +6,7 @@ import java.util.*;
 
 import static kon.shol.Main.consumerQueue;
 
-public class Consumer implements Runnable{
+public class Consumer implements Runnable {
 
     KafkaConsumer<String, String> consumer;
 
@@ -26,18 +26,14 @@ public class Consumer implements Runnable{
     }
 
     public void getLink() throws InterruptedException {
-
         ConsumerRecords<String, String> records = consumer.poll(100);
-        if (records.isEmpty()) {
-            System.out.println("empty");
-        } else
-            for (ConsumerRecord<String, String> record : records) {
-                consumerQueue.put(record.value());
-            }
+        for (ConsumerRecord<String, String> record : records) {
+            consumerQueue.put(record.value());
+        }
     }
 
-    public void run(){
-        while (true){
+    public void run() {
+        while (true) {
             try {
                 getLink();
             } catch (InterruptedException e) {

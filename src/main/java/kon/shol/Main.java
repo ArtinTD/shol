@@ -1,12 +1,20 @@
 package kon.shol;
 
 
+import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
+    static HBase hBase;
     static LinkedBlockingQueue<String> consumerQueue = new LinkedBlockingQueue<String>();
     static LinkedBlockingQueue<String> producerQueue = new LinkedBlockingQueue<String>();
+
     public static void main(String[] args) throws InterruptedException {
+        try {
+            hBase = new HBase("188.165.230.122:2181", "sites");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Thread[] threads = new Thread[60];
         Thread consumer = new Thread(new Consumer("0", "Crawler"));
         Thread producer = new Thread(new Producer());
@@ -22,6 +30,7 @@ public class Main {
                         return null;
                     }
                 }
+
                 @Override
                 public void sendLink(String link) {
                     try {

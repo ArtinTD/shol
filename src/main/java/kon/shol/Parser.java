@@ -31,14 +31,9 @@ public class Parser {
         pageData.text = doc.text();
         pageData.title = doc.title();
         pageData.description = doc.select("meta[name=description]").attr("content");
-        if (pageData.description == null) {
-            System.out.println("No Description");
-        }
         pageData.h1h3 = doc.select("h1,h2,h3").text();
-
-        System.out.println(doc.select("h1,h2,h3").text());
-
         pageData.h4h6 = doc.select("h4,h5,h6").text();
+        System.out.println("Parsed : " + pageData.title);
         return pageData;
     }
 

@@ -9,4 +9,9 @@ public class PageData {
     ArrayList<String> links;
     String h1h3;
     String h4h6;
+
+    @Override
+    public String toString() {
+        return title + " : " + text;
+    }
 }

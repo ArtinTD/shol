@@ -13,11 +13,20 @@ import java.util.*;
 
 public class Fetcher {
     WebPage page = new WebPage();
+    HBase hbase = Main.hBase;
+
     boolean setHTML() {
         try {
-            this.page.html=Jsoup.connect(page.link).get();
+            this.page.html = Jsoup.connect(page.link).get();
+            System.out.println("SetHTML");
+            System.out.println("INJA" + this.page.link);
+            PageData pageData = Parser.parse(this.page.html);
+            System.out.println(pageData.toString());
+            hbase.putPageData(this.page.link, pageData);
+            System.out.println("Added " + this.page.link + " Data To Hbase");
             return true;
         } catch (Exception ignore) {
+            ignore.printStackTrace();
             return false;
         }
     }
