@@ -25,27 +25,18 @@ class Consumer {
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    void getLink() throws InterruptedException {
+    String getLink() throws InterruptedException {
 
-        ConsumerRecords<String, String> records = consumer.poll(10000);
-        if (records.isEmpty()) {
-            System.out.println("empty");
-        } else {
-            for (ConsumerRecord<String, String> record : records) {
-                System.out.println("Received message: " + record.value() + ", Partition: "
-                        + record.partition() + ", Offset: " + record.offset() + ", by ThreadID: "
-                        + Thread.currentThread().getId());
-            }
+        ConsumerRecords<String, String> records;
+        do {
+            records = consumer.poll(100);
+        } while (records.isEmpty());
+        for (ConsumerRecord<String, String> record : records) {
+//            System.out.println("Received message: " + record.value() + ", Partition: "
+//                    + record.partition() + ", Offset: " + record.offset() + ", by ThreadID: "
+//                    + Thread.currentThread().getId());
+            return record.value();
         }
+        return null;
     }
-
-//    public void run(){
-//        while (true){
-//            try {
-//                getLink();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 }

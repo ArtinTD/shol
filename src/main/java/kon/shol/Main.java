@@ -2,48 +2,34 @@ package kon.shol;
 
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import kon.shol.Producer;
+import kon.shol.Consumer;
+
 
 public class Main {
     static HBase hBase;
-
+    static Producer producer = new Producer("urls");
+    static LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
     public static void main(String[] args) throws InterruptedException {
-        try {
+
+        /*try {
             hBase = new HBase("188.165.230.122:2181", "sites");
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+        //producer.sendLink("http://www.moz.com/top500");
+        producer.sendLink("http://www.moz.com/top500");
         Thread[] threads = new Thread[60];
-        consumerQueue.put("http://www.moz.com/top500");
-        for (Thread thread : threads) {
-            thread = new Thread(new Crawler() {
-                @Override
-                public String getLink() {
-                    try {
-                        return consumerQueue.take();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-
-                @Override
-                public void sendLink(String link) {
-                    try {
-                        producerQueue.put(link);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            thread.start();
+        for (int i = 0; i < 60; i++) {
+            threads[i] = new Thread(new Asghar("urls", "0"));
+            threads[i].start();
         }
-        for (Thread thread : threads) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        for (Thread thread: threads) {
+            thread.join();
 
         }
     }

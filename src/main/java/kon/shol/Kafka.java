@@ -1,6 +1,6 @@
 package kon.shol;
 
 public interface Kafka {
-    String getLink();
-    void sendLink(String link);
+     void sendLink(String link);
+        String getLink();
 }

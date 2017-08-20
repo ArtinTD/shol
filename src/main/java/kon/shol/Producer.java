@@ -35,12 +35,11 @@ public class Producer {
             if (e != null) {
                 e.printStackTrace();
             }
-            System.out.println("Sent:" + link + ", Partition: " + metadata.partition() + ", Offset: "
-                    + metadata.offset());
+//            System.out.println("Sent:" + link + ", Partition: " + metadata.partition() + ", Offset: "
+//                    + metadata.offset());
         });
         producer.flush();
     }
-
 
 //    public void createTopic(String topicName, int partitions) {
 //

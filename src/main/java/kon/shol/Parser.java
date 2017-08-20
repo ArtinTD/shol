@@ -58,8 +58,7 @@ public class Parser {
         try {
             URL url = new URL(link);
             return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        } catch (Exception ignore) {
             return null;
         }
     }
