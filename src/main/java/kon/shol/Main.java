@@ -6,8 +6,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
     static HBase hBase;
-    static LinkedBlockingQueue<String> consumerQueue = new LinkedBlockingQueue<String>();
-    static LinkedBlockingQueue<String> producerQueue = new LinkedBlockingQueue<String>();
 
     public static void main(String[] args) throws InterruptedException {
         try {
@@ -16,8 +14,6 @@ public class Main {
             e.printStackTrace();
         }
         Thread[] threads = new Thread[60];
-        Thread consumer = new Thread(new Consumer("0", "Crawler"));
-        Thread producer = new Thread(new Producer());
         consumerQueue.put("http://www.moz.com/top500");
         for (Thread thread : threads) {
             thread = new Thread(new Crawler() {
@@ -42,8 +38,6 @@ public class Main {
             });
             thread.start();
         }
-        consumer.start();
-        producer.start();
         for (Thread thread : threads) {
             try {
                 thread.join();
@@ -52,8 +46,6 @@ public class Main {
             }
 
         }
-        consumer.join();
-        producer.join();
     }
 }
 
