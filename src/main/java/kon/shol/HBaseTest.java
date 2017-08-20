@@ -1,10 +1,7 @@
 package kon.shol;
 
 import kon.shol.HBase;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
@@ -27,9 +24,16 @@ public class HBaseTest {
             Get get = new Get(Bytes.toBytes("myRow99"));
             get.addColumn(Bytes.toBytes("Name"), Bytes.toBytes("friends"));
             Result result = table.get(get);
-            System.out.println(hBase.getArrayList("myRow99", "Name", "friends"));
+            Scan scan = new Scan();
+            ResultScanner scanner = table.getScanner(scan);
+            for (Result r: scanner){
+                System.out.println(Bytes.toString(r.getRow()));
+                System.out.println(Bytes.toString(r.getValue(Bytes.toBytes("Name"), Bytes.toBytes("firstName"))));
+                System.out.println(Bytes.toString(r.getValue(Bytes.toBytes("Name"), Bytes.toBytes("lastName"))));
+            }
+       /*     System.out.println(hBase.getArrayList("myRow99", "Name", "friends"));
             System.out.println(hBase.exists("myRow99"));
-            System.out.println(hBase.getConnection().isClosed());
+            System.out.println(hBase.getConnection().isClosed());*/
             hBase.close();
         } catch (IOException e) {
             e.printStackTrace();

@@ -8,7 +8,7 @@ public class Main {
     static LinkedBlockingQueue<String> producerQueue = new LinkedBlockingQueue<String>();
     public static void main(String[] args) throws InterruptedException {
         Thread[] threads = new Thread[60];
-        Thread consumer = new Thread(new Consumer(0, "Crawler"));
+        Thread consumer = new Thread(new Consumer("0", "Crawler"));
         Thread producer = new Thread(new Producer());
         consumerQueue.put("http://www.moz.com/top500");
         for (Thread thread : threads) {
@@ -41,25 +41,10 @@ public class Main {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
         consumer.join();
         producer.join();
-       /* int i = 0;
-        while (i < 10) {
-            producer.sendLink(String.valueOf(i),"hossein");
-            System.out.print("consumer1 :");
-            try {
-                consumer1.getLink();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            i++;
-        }
-        try {
-            System.out.println(queue.take());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
     }
 }
 
