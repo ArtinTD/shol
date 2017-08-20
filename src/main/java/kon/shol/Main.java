@@ -25,7 +25,7 @@ public class Main {
         producer.sendLink("http://www.moz.com/top500");
         Thread[] threads = new Thread[60];
         for (int i = 0; i < 60; i++) {
-            threads[i] = new Thread(new Asghar("urls", "0"));
+            threads[i] = new Thread(new Asghar());
             threads[i].start();
         }
         for (Thread thread: threads) {
