@@ -1,14 +1,15 @@
 package kon.shol;
 
+import com.google.gson.Gson;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseListener;
 import org.elasticsearch.client.RestClient;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Scanner;
@@ -44,65 +45,53 @@ public class SimpleElasticIndexer implements ElasticIndexer {
         s.close();
     }
 
+    public void close() { sender.interrupt(); }
+
+    public boolean isWorking() { return !indexQueue.isEmpty(); }
+
     @Override
     public void add(String url, String webPage) {
-        try {
-            indexQueue.put(new WebPage(url, webPage));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        try { indexQueue.put(new WebPage(url, webPage)); }
+        catch (InterruptedException e) { e.printStackTrace(); }
     }
 
     class Sender extends Thread {
-        boolean run = true;
-
         @Override
         public void run() {
             RestClient restClient = RestClient.builder(
                     new HttpHost(host, port, "http")).build();
-
+            Gson gson = new Gson();
             try {
-                while (run) { // TODO: add some kind of safe stopping mechanism.
-                    try {
-                        WebPage newWP = indexQueue.take();
-                        HttpEntity en;
-                        try {
-                            en = new StringEntity("{ \"url\": \"" + newWP.url + "\", \"text\": \"" + newWP.text + "\" }");
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                            continue;
-                        }
-                        restClient.performRequestAsync(
-                                "POST",
-                                "/" + index + "/" + type + "/",
-                                Collections.<String, String>emptyMap(),
-                                en,
-                                new ResponseListener() {
-                                    @Override
-                                    public void onSuccess(Response response) {
-                                        System.out.println(new Date().toString()
-                                                + " : Index successful @/" + index + "/" + type);
-                                    }
-
-                                    @Override
-                                    public void onFailure(Exception exception) {
-                                        System.err.println(new Date().toString()
-                                                + " : Index failed @/" + index + "/" + type);
-                                    }
+                while (true) { // TODO: add some kind of safe stopping mechanism.
+                    WebPage newWP = indexQueue.take();
+                    HttpEntity en;
+                    en = new StringEntity(gson.toJson(newWP), ContentType.APPLICATION_JSON);
+                    restClient.performRequestAsync(
+                            "POST",
+                            "/" + index + "/" + type + "/",
+                            Collections.<String, String>emptyMap(),
+                            en,
+                            new ResponseListener() {
+                                @Override
+                                public void onSuccess(Response response) {
+                                    System.out.println(new Date().toString()
+                                            + " : Index successful @/" + index + "/" + type);
                                 }
-                        );
 
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                                @Override
+                                public void onFailure(Exception exception) {
+                                    System.err.println(new Date().toString()
+                                            + " : Index failed @/" + index + "/" + type);
+                                    exception.printStackTrace();
+                                }
+                            }
+                    );
                 }
-            } finally {
-                try {
-                    restClient.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            }
+            catch (InterruptedException e) { e.printStackTrace(); }
+            finally {
+                try { restClient.close(); }
+                catch (IOException e) { e.printStackTrace(); }
             }
         }
     }
