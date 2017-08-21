@@ -21,10 +21,11 @@ public class Fetcher {
             if (!LangDetector.checkMetaLangEn(this.page.html)) {
                 return false;
             } else if (!LangDetector.detectLang(this.page.html.text()).equals("en")) {
+                System.out.print(" آقا اینگیلیسی نیست! " + this.page.html.text() + " " + this.page.link);
                 return false;
             }
             PageData pageData = Parser.parse(this.page.html);
-            System.out.println(pageData.toString());
+//            System.out.println(pageData.toString());
             hbase.putPageData(this.page.link, pageData);
             System.out.println("Added " + this.page.link + " Data To Hbase");
             return true;
