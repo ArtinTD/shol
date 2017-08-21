@@ -118,7 +118,7 @@ public class HBase {
     public void putPageData(String url, PageData pageData){
         Put put = new Put(Bytes.toBytes(url));
         byte[] cfb = Bytes.toBytes("data");
-        System.out.println("WRITING PAGEDATA");
+//        System.out.println("WRITING PAGEDATA");
         put.addColumn(cfb, Bytes.toBytes("title"), Bytes.toBytes(pageData.title));
         put.addColumn(cfb, Bytes.toBytes("description"), Bytes.toBytes(pageData.description));
         put.addColumn(cfb, Bytes.toBytes("text"), Bytes.toBytes(pageData.text));
