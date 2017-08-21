@@ -1,10 +1,7 @@
 package rankpage;
 
 import kon.shol.HBase;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
@@ -21,6 +18,7 @@ public class RankPageAlgorithmTest {
 
         //Assume we get all pages!
         PageGraph pg = new PageGraph();
+        System.out.println(System.currentTimeMillis());
         HBase hBase = null;
         try {
             hBase = new HBase("188.165.230.122:2181", "sites");
@@ -42,9 +40,14 @@ public class RankPageAlgorithmTest {
             for (int i = 0; i < 100; i++) { //repeat to Approximate PR
                 pg.update();
             }
+            for (Page page : pg.pages.values()){
+                Put put = new Put(Bytes.toBytes(page.url));
+                put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("pagerank"), Bytes.toBytes(page.getPR()));
+                table.put(put);
+            }
 
-            for (Page page : pg.pages.values())
-                System.out.println(page.url + " " + page.getPR());
+            System.out.println(System.currentTimeMillis());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
