@@ -118,12 +118,12 @@ public class HBase {
     public void putPageData(String url, PageData pageData){
         Put put = new Put(Bytes.toBytes(url));
         byte[] cfb = Bytes.toBytes("data");
-//        System.out.println("WRITING PAGEDATA");
         put.addColumn(cfb, Bytes.toBytes("title"), Bytes.toBytes(pageData.title));
         put.addColumn(cfb, Bytes.toBytes("description"), Bytes.toBytes(pageData.description));
         put.addColumn(cfb, Bytes.toBytes("text"), Bytes.toBytes(pageData.text));
         put.addColumn(cfb, Bytes.toBytes("h1h3"), Bytes.toBytes(pageData.h1h3));
         put.addColumn(cfb, Bytes.toBytes("h4h6"), Bytes.toBytes(pageData.h4h6));
+        put.addColumn(cfb, Bytes.toBytes("alt"), Bytes.toBytes(pageData.imagesAlt));
         put.addColumn(cfb, Bytes.toBytes("links"), arrayListToByte(pageData.links));
         try {
             table.put(put);
