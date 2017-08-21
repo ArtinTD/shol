@@ -15,11 +15,16 @@ public class HBaseTest {
             hBase = new HBase("188.165.230.122:2181", "sites");
             Table table = hBase.getTable();
             Scan scan = new Scan();
+            Get get = new Get(Bytes.toBytes("http://instagram.com"));
+//            get.addColumn(Bytes.toBytes("data"),Bytes.toBytes("links"));
+/*
             ResultScanner resultScanner = table.getScanner(scan);
             for (Result r : resultScanner) {
                 System.out.println(Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("title"))));
             }
             System.out.println(hBase.scanPageData());
+*/
+            System.out.println(hBase.getArrayList("https://www.1and1.it", "data", "links"));
             /*Scan scan = new Scan();
             ResultScanner scanner = table.getScanner(scan);
             for (Result r: scanner){

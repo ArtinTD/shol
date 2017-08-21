@@ -3,13 +3,15 @@ package kon.shol;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 
 import static kon.shol.LRU.lruCache;
 import static kon.shol.Parser.extractLinks;
 import static kon.shol.Parser.getDomain;
 
-public abstract class Crawler implements Runnable, Kafka {
+
+public abstract class Crawler implements Runnable, kon.shol.Queue{
 
     public int numCycle = 0;
 

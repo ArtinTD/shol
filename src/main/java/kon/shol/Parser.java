@@ -63,13 +63,5 @@ public class Parser {
         }
     }
 
-    static boolean isEnglish(Document document) {
 
-        if (!document.select("html").attr("lang").contains("en") && !document.select("html").attr("lang").isEmpty()) {
-            System.out.println("Not English");
-            return false;
-        }
-        System.out.println("don't know");
-        return false;
-    }
 }
