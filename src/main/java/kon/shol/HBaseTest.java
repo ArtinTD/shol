@@ -17,7 +17,8 @@ public class HBaseTest {
             Scan scan = new Scan();
             ResultScanner resultScanner = table.getScanner(scan);
             for (Result r : resultScanner) {
-                System.out.println(Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("title"))));
+                System.out.print(Bytes.toString(r.getRow())+" : ");
+                System.out.println(hBase.getArrayList(Bytes.toString(r.getRow()), "data", "links"));
             }
             System.out.println(hBase.scanPageData());
             /*Scan scan = new Scan();

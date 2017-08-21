@@ -20,50 +20,34 @@ public class PageGraph {
      */
 
 
-    public PageGraph(String[] urls) { // this will change with hbase plugin
-        getPage("A");
-        getPage("B");
-        getPage("C");
+    public PageGraph() { // this will change with hbase plugin
     }
 
-    public List<Page> getRefrencedFrom(Page page){
-        List<Page> ret = new ArrayList<>();
-
-        switch (page.url){
-            case "A":
-                ret.add(getPage("C"));
-                break;
-            case "B":
-                ret.add(getPage("A"));
-                break;
-            case "C":
-                ret.add(getPage("A"));
-                ret.add(getPage("B"));
-                break;
-        }
-
-        return ret;
-
+    public void addPage(Page page){
+        pages.put(page.url, page);
     }
+
 
     public Page getPage(String url){
-        if ( pages.containsKey(url) )
+        if (pages.containsKey(url))
             return pages.get(url);
         else
-            return pages.put(url, new Page(url));
+            return new Page(url);
     }
 
     public void update() {
         for (Page page : pages.values()) {
 
-            page.PRcopy = 0.5;
-            for (Page referencedFrom : getRefrencedFrom(page)) {
-                page.PRcopy += 0.5 * referencedFrom.getPR() / referencedFrom.referenceTo;
+            for (String referencedToStr : page.referenceUrls) {
+                Page referencedTo = getPage(referencedToStr);
+                referencedTo.PRcopy += 0.85 * page.getPR() / (double) page.referenceUrls.size();
+//                page.PRcopy += 0.5 * referencedFrom.getPR() / referencedFrom.referenceTo;
             }
         }
 
         for (Page page : pages.values()) {
             page.updatePR();
+            page.PRcopy = 0.15;
         }
     }
 }
