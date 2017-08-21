@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import static kon.shol.LRU.lruCache;
 import static kon.shol.Parser.extractLinks;
 import static kon.shol.Parser.getDomain;
+import static kon.shol.Main.logger;
 
 public abstract class Crawler implements Runnable, Queue{
 
@@ -20,7 +21,8 @@ public abstract class Crawler implements Runnable, Queue{
 
                 try {
                     while (lruCache.getIfPresent(getDomain(link)) != null) {
-                        System.err.println("Already in cache: " + fetcher.page.link);
+
+                        logger.error("Already in cache: " + fetcher.page.link);
                         sendLink(link);
                         fetcher.page.link = getLink();
                         link = fetcher.page.link;
@@ -28,7 +30,6 @@ public abstract class Crawler implements Runnable, Queue{
                     lruCache.get(getDomain(link));
 
                 } catch (Exception ignore) { }
-
             }
 
             while (!fetcher.setHTML());

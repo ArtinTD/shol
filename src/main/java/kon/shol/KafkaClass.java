@@ -1,13 +1,14 @@
 package kon.shol;
 
 import java.util.HashMap;
+import static kon.shol.Main.logger;
 
-abstract class KafkaClass {
+public abstract class KafkaClass {
 
     private static HashMap<Long, Consumer> consumerHashMap = new HashMap<>();
     private static HashMap<Long, Producer> producerHashMap = new HashMap<>();
 
-    static void sendLink(String link) {
+    public static void sendLink(String link) {
 
         if (!producerHashMap.containsKey(Thread.currentThread().getId())) {
             producerHashMap.put(Thread.currentThread().getId(), new Producer("urls"));
@@ -23,7 +24,7 @@ abstract class KafkaClass {
         try {
             return consumerHashMap.get(Thread.currentThread().getId()).getLink();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return null;
     }

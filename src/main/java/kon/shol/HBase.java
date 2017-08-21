@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NavigableMap;
 
+import static kon.shol.Main.logger;
+
 public class HBase {
     private static Connection connection;
     private List<Put> putList;
@@ -27,11 +29,11 @@ public class HBase {
     // Connect to DB
     private Connection connect(String zooKeeperIp) throws IOException {
 
-        System.out.println("Connecting to Hbase");
+        logger.error("Connecting to Hbase");
         Configuration configuration = HBaseConfiguration.create();
         configuration.set("hbase.zookeeper.quorum", zooKeeperIp);
         connection = ConnectionFactory.createConnection(configuration);
-        System.out.println("Connection to Hbase established");
+        logger.error("Connection to Hbase established");
         return connection;
     }
 
@@ -56,14 +58,14 @@ public class HBase {
             if (connection.isClosed()) {
                 connection = connect(zooKeeperIp);
             } else {
-                System.out.println("There is a valid connection");
+                logger.error("There is a valid connection");
             }
         } catch (NullPointerException e) {
-            System.out.println("Initiating Hbase Connection");
+            logger.error("Initiating Hbase Connection");
             connection = connect(zooKeeperIp);
         } finally {
             setTable(tableName);
-            System.out.println("Selected " + tableName);
+            logger.error("Selected " + tableName);
         }
     }
 
@@ -76,7 +78,7 @@ public class HBase {
         if (connection.isClosed())
             connection = connect(zooKeeperIp);
         else {
-            System.out.println("There is an open connection now!");
+            logger.error("There is an open connection now!");
         }
     }
 
@@ -95,14 +97,14 @@ public class HBase {
         Put put = new Put(Bytes.toBytes(rowKey));
         put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), Bytes.toBytes(val));
         table.put(put);
-        System.out.println("Put in row : " + rowKey);
+        logger.error("Put in row : " + rowKey);
     }
 
     public void put(String rowKey, String cf, String iden, ArrayList<String> stringArrayList) throws IOException {
         Put put = new Put(Bytes.toBytes(rowKey));
         put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), arrayListToByte(stringArrayList));
         table.put(put);
-        System.out.println("Put in row : " + rowKey);
+        logger.error("Put in row : " + rowKey);
     }
 
     public void batchPut(String rowKey, String cf, String iden, String val) throws IOException {
@@ -128,7 +130,7 @@ public class HBase {
         try {
             table.put(put);
         } catch (IOException e) {
-            System.out.println("IOException");
+            logger.error("Can't put to HBase");
         }
     }
 

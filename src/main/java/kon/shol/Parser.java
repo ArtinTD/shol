@@ -6,7 +6,6 @@ import com.google.common.net.InternetDomainName;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -34,7 +33,6 @@ public class Parser {
         pageData.title = doc.title();
         pageData.description = doc.select("meta[name=description]").attr("content");
         pageData.imagesAlt = String.join(" ", doc.select("img").eachAttr("alt"));
-//        System.out.println(pageData.imagesAlt);
         pageData.h1h3 = doc.select("h1,h2,h3").text();
         pageData.h4h6 = doc.select("h4,h5,h6").text();
         return pageData;
