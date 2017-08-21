@@ -16,13 +16,14 @@ public class Main {
     static LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
     public static void main(String[] args) throws InterruptedException {
 
-        /*try {
+
+        try {
             hBase = new HBase("188.165.230.122:2181", "sites");
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
         //producer.sendLink("http://www.moz.com/top500");
-        producer.sendLink("http://www.moz.com/top500");
+        producer.sendLink("http://www.alexa.com");
         Thread[] threads = new Thread[60];
         for (int i = 0; i < 60; i++) {
             threads[i] = new Thread(new Asghar("urls", "0"));
@@ -30,7 +31,6 @@ public class Main {
         }
         for (Thread thread: threads) {
             thread.join();
-
         }
     }
 }

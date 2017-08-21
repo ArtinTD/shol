@@ -11,6 +11,7 @@ import static kon.shol.Parser.getDomain;
 
 public abstract class Crawler implements Runnable, Kafka {
 
+    public int numCycle = 0;
 
     public void run() {
         while (true) {
@@ -33,7 +34,6 @@ public abstract class Crawler implements Runnable, Kafka {
                         e.printStackTrace();
                     }
                 } catch (Exception ignore) {
-
                 }
             }
             while (!fetcher.setHTML());
@@ -42,6 +42,8 @@ public abstract class Crawler implements Runnable, Kafka {
             for (String link : links) {
                 sendLink(link);
             }
+            numCycle++;
+            System.out.println(numCycle);
         }
     }
 }
