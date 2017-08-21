@@ -3,3 +3,5 @@
 src/main/resources/
 src/test/
 target/
+.DS_STORE
+src/main/java/Test.java
