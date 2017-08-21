@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
-public class LRU  extends Zookeeper{
+public class LRU{
     static LoadingCache<String, Boolean> lruCache = CacheBuilder.newBuilder()
             .expireAfterWrite(20, TimeUnit.SECONDS)
             .build(
@@ -24,28 +24,4 @@ public class LRU  extends Zookeeper{
                     });
 
 
-    LRU(String address, String name) throws KeeperException, IOException, InterruptedException {
-        super(address);
-        this.root = name;
-        // Create ZK node name
-        if (zk != null) {
-            Stat s = zk.exists(root, false);
-            if (s == null) {
-                zk.create(root, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.fromFlag(0));
-            }
-        }
-    }
-
-    /*boolean produce(int i) throws KeeperException, InterruptedException{
-        ByteBuffer b = ByteBuffer.allocate(4);
-        byte[] value;
-
-        // Add child with value i
-        b.putInt(i);
-        value = b.array();
-        zk.create(root + "/element", value, ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                CreateFlags.SEQUENCE);
-
-        return true;
-    }*/
 }

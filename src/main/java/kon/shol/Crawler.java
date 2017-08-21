@@ -3,13 +3,15 @@ package kon.shol;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 
 import static kon.shol.LRU.lruCache;
 import static kon.shol.Parser.extractLinks;
 import static kon.shol.Parser.getDomain;
 
-public abstract class Crawler implements Runnable, Kafka {
+
+public abstract class Crawler implements Runnable, kon.shol.Queue{
 
 
     public void run() {
@@ -17,19 +19,23 @@ public abstract class Crawler implements Runnable, Kafka {
             Fetcher fetcher = new Fetcher();
             do {
                 fetcher.page.link = getLink();
-                System.err.println("back" + fetcher.page.link);
+                System.err.println("back: " + fetcher.page.link);
                 String link = fetcher.page.link;
-                while (lruCache.getIfPresent(getDomain(link)) != null) {
-                    sendLink(link);
-                    fetcher.page.link = getLink();
-                    link = fetcher.page.link;
-                }
-
                 try {
-                    lruCache.get(getDomain(link));
+                    while (lruCache.getIfPresent(getDomain(link)) != null) {
+                        sendLink(link);
+                        fetcher.page.link = getLink();
+                        link = fetcher.page.link;
+                    }
 
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    try {
+                        lruCache.get(getDomain(link));
+
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                } catch (Exception ignore) {
+
                 }
             }
             while (!fetcher.setHTML());
@@ -40,5 +46,4 @@ public abstract class Crawler implements Runnable, Kafka {
             }
         }
     }
-
 }

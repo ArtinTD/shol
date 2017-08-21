@@ -1,6 +1,8 @@
 package kon.shol;
 
-public interface Kafka {
-    String getLink();
+public interface Queue {
+
     void sendLink(String link);
+
+    String getLink();
 }
