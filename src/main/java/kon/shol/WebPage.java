@@ -7,4 +7,5 @@ import org.jsoup.nodes.Element;
 class WebPage {
     String link;
     Document html;
+    PageData pageData;
 }

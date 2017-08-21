@@ -4,13 +4,11 @@ import org.apache.kafka.clients.consumer.*;
 
 import java.util.*;
 
-import static kon.shol.Main.consumerQueue;
+class Consumer {
 
-public class Consumer implements Runnable {
+    private KafkaConsumer<String, String> consumer;
 
-    KafkaConsumer<String, String> consumer;
-
-    public Consumer(String groupID, String topic) {
+    Consumer(String groupID, String topic) {
 
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "188.165.235.136:9092,188.165.230.122:9092");
@@ -18,27 +16,24 @@ public class Consumer implements Runnable {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
-        props.put("zookeeper.connect", "188.165.230.122:2181");
-        props.put("zookeeper.connection.timeout.ms", "6000");
-        props.put("consumer.timeout.ms", "5000");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+        props.put("auto.commit.interval.ms", "1000");
+        props.put("session.timeout.ms", "30000");
+        props.put("acks", "all");
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    public void getLink() throws InterruptedException {
-        ConsumerRecords<String, String> records = consumer.poll(100);
-        for (ConsumerRecord<String, String> record : records) {
-            consumerQueue.put(record.value());
-        }
-    }
+    String getLink() throws InterruptedException {
 
-    public void run() {
-        while (true) {
-            try {
-                getLink();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        ConsumerRecords<String, String> records;
+        do {
+            records = consumer.poll(100);
+        } while (records.isEmpty());
+        for (ConsumerRecord<String, String> record : records) {
+            return record.value();
         }
+        return null;
     }
 }

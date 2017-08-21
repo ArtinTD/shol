@@ -1,22 +1,16 @@
 package kon.shol;
 
-import com.google.common.net.InternetDomainName;
-import com.oracle.jrockit.jfr.Producer;
-import kon.shol.WebPage;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-import java.util.*;
+import static kon.shol.Main.hBase;
 
 public class Fetcher {
+
     WebPage page = new WebPage();
-    HBase hbase = Main.hBase;
 
     boolean setHTML() {
+
         try {
+<<<<<<< HEAD
             this.page.html = Jsoup.connect(page.link).get();
             PageData pageData = Parser.parse(this.page.html);
             hbase.putPageData(this.page.link, pageData);
@@ -24,11 +18,26 @@ public class Fetcher {
             return true;
         } catch (Exception ignore) {
 //            ignore.printStackTrace();
+=======
+            this.page.html = Jsoup.connect(this.page.link).get();
+
+            if (!LangDetector.checkMetaLangEn(this.page.html)) {
+                throw new Exception("Meta not English: " + this.page.link);
+            } else if (!LangDetector.detectLang(this.page.html.text()).equals("en")) {
+                throw new Exception("Text not English: " + this.page.link);
+            }
+
+            page.pageData = Parser.parse(this.page.html);
+
+            hBase.putPageData(this.page.link, page.pageData);
+            System.out.println("Added " + this.page.link + " Data To HBase");
+            return true;
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+>>>>>>> c7ba38b9a621651580ecbd96c9c22dcc72af6ed5
             return false;
         }
-    }
-    public static void main(String args[]){
-        System.out.println(InternetDomainName.from("fa.google.com").topPrivateDomain().toString());
     }
 }
 
