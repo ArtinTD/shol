@@ -37,7 +37,4 @@ public class LangDetector {
         }
         return true;
     }
-    public static void main(String[] args) throws IOException {
-        System.out.println(detectLang("Apple Actualmente estás en el sitio de EE.UU. Elige otro país o región para ver contenido específico según tu ubicación. México México Estados Unidos Todos los países Continuar"));
-    }
 }
