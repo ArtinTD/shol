@@ -14,13 +14,14 @@ public class Main {
     static HBase hBase;
     static Producer producer = new Producer("urls");
     static LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
+
     public static void main(String[] args) throws InterruptedException {
 
-        /*try {
+        try {
             hBase = new HBase("188.165.230.122:2181", "sites");
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
         //producer.sendLink("http://www.moz.com/top500");
         producer.sendLink("http://www.moz.com/top500");
         Thread[] threads = new Thread[60];
@@ -28,7 +29,7 @@ public class Main {
             threads[i] = new Thread(new Asghar());
             threads[i].start();
         }
-        for (Thread thread: threads) {
+        for (Thread thread : threads) {
             thread.join();
 
         }

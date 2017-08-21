@@ -16,7 +16,7 @@ public abstract class KafkaClass {
 
     public static String getLink() {
         if (!consumerHashMap.containsKey(Thread.currentThread().getId())) {
-            consumerHashMap.put(Thread.currentThread().getId(), new Consumer("urls", "0"));
+            consumerHashMap.put(Thread.currentThread().getId(), new Consumer("0", "urls"));
         }
         try {
             return consumerHashMap.get(Thread.currentThread().getId()).getLink();

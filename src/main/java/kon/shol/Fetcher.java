@@ -17,13 +17,16 @@ public class Fetcher {
 
     boolean setHTML() {
         try {
-            this.page.html = Jsoup.connect(page.link).get();
-            /*System.out.println("SetHTML");
-            System.out.println("INJA" + this.page.link);
+            this.page.html = Jsoup.connect(this.page.link).get();
+            if (!LangDetector.checkMetaLangEn(this.page.html)) {
+                return false;
+            } else if (!LangDetector.detectLang(this.page.html.text()).equals("en")) {
+                return false;
+            }
             PageData pageData = Parser.parse(this.page.html);
             System.out.println(pageData.toString());
             hbase.putPageData(this.page.link, pageData);
-            System.out.println("Added " + this.page.link + " Data To Hbase");*/
+            System.out.println("Added " + this.page.link + " Data To Hbase");
             return true;
         } catch (Exception ignore) {
             return false;
