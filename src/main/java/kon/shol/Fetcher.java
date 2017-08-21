@@ -1,35 +1,31 @@
 package kon.shol;
 
-import com.google.common.net.InternetDomainName;
-import com.oracle.jrockit.jfr.Producer;
-import kon.shol.WebPage;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-import java.util.*;
+import static kon.shol.Main.hBase;
 
 public class Fetcher {
+
     WebPage page = new WebPage();
-    HBase hbase = Main.hBase;
 
     boolean setHTML() {
+
         try {
             this.page.html = Jsoup.connect(this.page.link).get();
+
             if (!LangDetector.checkMetaLangEn(this.page.html)) {
-                return false;
+                throw new Exception("Meta not English: " + this.page.link);
             } else if (!LangDetector.detectLang(this.page.html.text()).equals("en")) {
-                System.out.print(" آقا اینگیلیسی نیست! " + this.page.html.text() + " " + this.page.link);
-                return false;
+                throw new Exception("Text not English: " + this.page.link);
             }
-            PageData pageData = Parser.parse(this.page.html);
-//            System.out.println(pageData.toString());
-            hbase.putPageData(this.page.link, pageData);
-            System.out.println("Added " + this.page.link + " Data To Hbase");
+
+            page.pageData = Parser.parse(this.page.html);
+
+            hBase.putPageData(this.page.link, page.pageData);
+            System.out.println("Added " + this.page.link + " Data To HBase");
             return true;
-        } catch (Exception ignore) {
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
             return false;
         }
     }

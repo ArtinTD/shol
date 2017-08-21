@@ -2,19 +2,21 @@ package kon.shol;
 
 import java.util.HashMap;
 
-public abstract class KafkaClass {
+abstract class KafkaClass {
 
     private static HashMap<Long, Consumer> consumerHashMap = new HashMap<>();
     private static HashMap<Long, Producer> producerHashMap = new HashMap<>();
 
-    public static void sendLink(String link) {
+    static void sendLink(String link) {
+
         if (!producerHashMap.containsKey(Thread.currentThread().getId())) {
             producerHashMap.put(Thread.currentThread().getId(), new Producer("urls"));
         }
         producerHashMap.get(Thread.currentThread().getId()).sendLink(link);
     }
 
-    public static String getLink() {
+    static String getLink() {
+
         if (!consumerHashMap.containsKey(Thread.currentThread().getId())) {
             consumerHashMap.put(Thread.currentThread().getId(), new Consumer("0", "urls"));
         }

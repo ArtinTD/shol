@@ -1,29 +1,22 @@
 package kon.shol;
 
-
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import kon.shol.Producer;
-import kon.shol.Consumer;
-
 
 public class Main {
+
     static HBase hBase;
-    static Producer producer = new Producer("urls");
-    static LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
 
     public static void main(String[] args) throws InterruptedException {
 
+        Producer producer = new Producer("CrawlerQueue");
         try {
             hBase = new HBase("188.165.230.122:2181", "sites");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Couldn't connect to HBase!");
         }
-        //producer.sendLink("http://www.moz.com/top500");
+
         producer.sendLink("http://www.moz.com/top500");
+
         Thread[] threads = new Thread[60];
         for (int i = 0; i < 60; i++) {
             threads[i] = new Thread(new Asghar());
@@ -31,7 +24,6 @@ public class Main {
         }
         for (Thread thread : threads) {
             thread.join();
-
         }
     }
 }
