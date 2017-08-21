@@ -10,7 +10,7 @@ public class Main {
 
         Producer producer = new Producer("CrawlerQueue");
         try {
-            hBase = new HBase("188.165.230.122:2181", "sites");
+            hBase = new HBase("188.165.230.122:2181", "main");
         } catch (IOException e) {
             System.err.println("Couldn't connect to HBase!");
         }
