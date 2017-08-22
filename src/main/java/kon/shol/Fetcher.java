@@ -19,6 +19,7 @@ public class Fetcher {
                 throw new Exception("Text not English: " + this.page.link);
             }
 
+
             page.pageData = Parser.parse(this.page.html);
 
             hBase.putPageData(this.page.link, page.pageData);
