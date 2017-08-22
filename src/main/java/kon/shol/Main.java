@@ -22,7 +22,7 @@ public class Main {
             logger.error("Couldn't connect to HBase!");
         }
 
-        producer.sendLink("http://alexa.com/topsites");
+        producer.sendLink("http://moz.com/top500");
 
         Thread[] threads = new Thread[100];
         for (int i = 0; i < 100; i++) {

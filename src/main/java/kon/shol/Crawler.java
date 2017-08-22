@@ -22,7 +22,7 @@ public abstract class Crawler implements Runnable, Queue{
                 try {
                     while (lruCache.getIfPresent(getDomain(link)) != null) {
 
-                        logger.error("Already in cache: " + fetcher.page.link);
+//                        logger.error("Already in cache: " + fetcher.page.link);
                         sendLink(link);
                         fetcher.page.link = getLink();
                         link = fetcher.page.link;
