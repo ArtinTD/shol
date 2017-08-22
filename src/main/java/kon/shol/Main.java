@@ -15,14 +15,14 @@ public class Main {
 //        logger.error("seda miad?!?");
 //        logger.error("alo alo alo");
         logger.error("NEW SESSION");
-        Producer producer = new Producer("CrawlerQueue");
+        Producer producer = new Producer("sajjad");
         try {
             hBase = new HBase("188.165.230.122:2181", "db");
         } catch (IOException e) {
             logger.error("Couldn't connect to HBase!");
         }
 
-        producer.sendLink("http://www.moz.com/top500");
+        producer.sendLink("http://alexa.com/topsites");
 
         Thread[] threads = new Thread[100];
         for (int i = 0; i < 100; i++) {
