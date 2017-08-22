@@ -66,26 +66,31 @@ public class SimpleElasticIndexer implements ElasticIndexer {
                 while (true) { // TODO: add some kind of safe stopping mechanism.
                     WebPage newWP = indexQueue.take();
                     HttpEntity en = new StringEntity(gson.toJson(newWP), ContentType.APPLICATION_JSON);
-                    restClient.performRequestAsync(
-                            "POST",
-                            "/" + index + "/" + type + "/",
-                            Collections.<String, String>emptyMap(),
-                            en,
-                            new ResponseListener() {
-                                @Override
-                                public void onSuccess(Response response) {
-                                    System.out.println(new Date().toString()
-                                            + " : Index successful @/" + index + "/" + type);
-                                }
-
-                                @Override
-                                public void onFailure(Exception exception) {
-                                    System.err.println(new Date().toString()
-                                            + " : Index failed @/" + index + "/" + type);
-                                    exception.printStackTrace();
-                                }
-                            }
-                    );
+                    try {
+                        Response response = restClient.performRequest(//Async(
+                                "POST",
+                                "/" + index + "/" + type + "/",
+                                Collections.<String, String>emptyMap(),
+                                en//,
+    //                            new ResponseListener() {
+    //                                @Override
+    //                                public void onSuccess(Response response) {
+    //                                    System.out.println(new Date().toString()
+    //                                            + " : Index successful @/" + index + "/" + type);
+    //                                }
+    //
+    //                                @Override
+    //                                public void onFailure(Exception exception) {
+    //                                    System.err.println(new Date().toString()
+    //                                            + " : Index failed @/" + index + "/" + type);
+    //                                    exception.printStackTrace();
+    //                                }
+    //                            }
+                        );
+                        System.out.println(response.getStatusLine().getReasonPhrase());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             catch (InterruptedException e) { e.printStackTrace(); }
