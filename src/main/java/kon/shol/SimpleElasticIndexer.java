@@ -63,6 +63,7 @@ public class SimpleElasticIndexer implements ElasticIndexer {
                     new HttpHost(host, port, "http")).build();
             Gson gson = new Gson();
             try {
+                long l = 0;
                 while (true) { // TODO: add some kind of safe stopping mechanism.
                     WebPage newWP = indexQueue.take();
                     HttpEntity en = new StringEntity(gson.toJson(newWP), ContentType.APPLICATION_JSON);
@@ -87,7 +88,7 @@ public class SimpleElasticIndexer implements ElasticIndexer {
     //                                }
     //                            }
                         );
-                        System.out.println(response.getStatusLine().getReasonPhrase());
+                        System.out.println(response.getStatusLine().getReasonPhrase() + " : " + ++l);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
