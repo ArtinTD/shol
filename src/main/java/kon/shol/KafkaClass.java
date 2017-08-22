@@ -11,7 +11,7 @@ public abstract class KafkaClass {
     public static void sendLink(String link) {
 
         if (!producerHashMap.containsKey(Thread.currentThread().getId())) {
-            producerHashMap.put(Thread.currentThread().getId(), new Producer("urls"));
+            producerHashMap.put(Thread.currentThread().getId(), new Producer("CrawlerQueue"));
         }
         producerHashMap.get(Thread.currentThread().getId()).sendLink(link);
     }
@@ -19,7 +19,7 @@ public abstract class KafkaClass {
     static String getLink() {
 
         if (!consumerHashMap.containsKey(Thread.currentThread().getId())) {
-            consumerHashMap.put(Thread.currentThread().getId(), new Consumer("0", "urls"));
+            consumerHashMap.put(Thread.currentThread().getId(), new Consumer("0", "CrawlerQueue"));
         }
         try {
             return consumerHashMap.get(Thread.currentThread().getId()).getLink();
