@@ -17,7 +17,7 @@ public class Main {
         logger.error("NEW SESSION");
         Producer producer = new Producer("CrawlerQueue");
         try {
-            hBase = new HBase("188.165.230.122:2181", "main");
+            hBase = new HBase("188.165.230.122:2181", "db");
         } catch (IOException e) {
             logger.error("Couldn't connect to HBase!");
         }
