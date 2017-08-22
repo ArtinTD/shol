@@ -1,3 +1,4 @@
+/*
 package kon.shol;
 
 import java.util.ArrayList;
@@ -38,3 +39,4 @@ public class ThreadManager implements Runnable {
         this.crawlers.get(i).numCycle = 0;
     }
 }
+*/

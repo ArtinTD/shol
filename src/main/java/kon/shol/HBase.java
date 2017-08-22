@@ -107,6 +107,15 @@ public class HBase {
         logger.error("Put in row : " + rowKey);
     }
 
+    public void put(String rowKey, String cf, String iden, String[] strings) throws IOException {
+        Put put = new Put(Bytes.toBytes(rowKey));
+        List<String> stringList = Arrays.asList(strings);
+        ArrayList<String> stringArrayList = new ArrayList<>(stringList);
+        put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), arrayListToByte(stringArrayList));
+        table.put(put);
+        System.out.println(("Put in row : " + rowKey));
+    }
+
     public void batchPut(String rowKey, String cf, String iden, String val) throws IOException {
         Put put = new Put(Bytes.toBytes(rowKey));
         put.addColumn(Bytes.toBytes(cf), Bytes.toBytes(iden), Bytes.toBytes(val));
@@ -117,7 +126,7 @@ public class HBase {
         }
     }
 
-    public void putPageData(String url, PageData pageData){
+    public void putPageData(String url, PageData pageData) {
         Put put = new Put(Bytes.toBytes(url));
         byte[] cfb = Bytes.toBytes("data");
         put.addColumn(cfb, Bytes.toBytes("title"), Bytes.toBytes(pageData.title));
@@ -165,7 +174,7 @@ public class HBase {
             pageData.description = Bytes.toString(r.getValue(cfb, Bytes.toBytes("description")));
             pageData.h1h3 = Bytes.toString(r.getValue(cfb, Bytes.toBytes("h1h3")));
             pageData.h4h6 = Bytes.toString(r.getValue(cfb, Bytes.toBytes("h4h6")));
-            pageData.links = castResultToStringArrayList(r,"data","links");
+            pageData.links = castResultToStringArrayList(r, "data", "links");
         }
         return pageDataArrayList;
     }
