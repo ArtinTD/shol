@@ -29,14 +29,16 @@ public class SimpleElasticIndexFeederFromHbase {
                 );
 
             hBase.close();
+            System.out.println("HBase connection closed.");
 
             while (ei.isWorking()) {
-                try { Thread.sleep(300); }
+                try { Thread.sleep(3000); }
                 catch (InterruptedException e) { e.printStackTrace(); }
             }
-            try { Thread.sleep(300); }
+            try { Thread.sleep(3000); }
             catch (InterruptedException e) { e.printStackTrace(); }
             ei.close();
+            System.exit(0);
         }
         catch (IOException e) { e.printStackTrace(); }
     }
