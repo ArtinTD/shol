@@ -1,6 +1,7 @@
 package kon.shol;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.entity.ContentType;
@@ -37,21 +38,21 @@ public class SimpleElasticIndexer implements ElasticIndexer {
     }
 
     //for test
-    public static void main(String[] args) {
-        ElasticIndexer ei = new SimpleElasticIndexer("188.165.230.122", "test", "testt");
-        Scanner s = new Scanner(System.in);
-        for (int i = 0; i < 5; i++)
-            ei.add(s.nextLine(), s.nextLine());
-        s.close();
-    }
+//    public static void main(String[] args) {
+//        ElasticIndexer ei = new SimpleElasticIndexer("188.165.230.122", "test", "testt");
+//        Scanner s = new Scanner(System.in);
+//        for (int i = 0; i < 5; i++)
+//            ei.add(s.nextLine(), s.nextLine());
+//        s.close();
+//    }
 
     public void close() { sender.interrupt(); }
 
     public boolean isWorking() { return !indexQueue.isEmpty(); }
 
     @Override
-    public void add(String url, String webPage) {
-        try { indexQueue.put(new WebPage(url, webPage)); }
+    public void add(String url, String title, String text, String description, String h1h3, String h4h6, String imagesAlt, double pageRank) {
+        try { indexQueue.put(new WebPage(url, title, text, description, h1h3, h4h6, imagesAlt, pageRank)); }
         catch (InterruptedException e) { e.printStackTrace(); }
     }
 
@@ -64,8 +65,7 @@ public class SimpleElasticIndexer implements ElasticIndexer {
             try {
                 while (true) { // TODO: add some kind of safe stopping mechanism.
                     WebPage newWP = indexQueue.take();
-                    HttpEntity en;
-                    en = new StringEntity(gson.toJson(newWP), ContentType.APPLICATION_JSON);
+                    HttpEntity en = new StringEntity(gson.toJson(newWP), ContentType.APPLICATION_JSON);
                     restClient.performRequestAsync(
                             "POST",
                             "/" + index + "/" + type + "/",
@@ -97,12 +97,18 @@ public class SimpleElasticIndexer implements ElasticIndexer {
     }
 
     private class WebPage {
-        String url;
-        String text;
+        String url, title, text, description, h1h3, h4h6, imagesAlt;
+        double pageRank;
 
-        public WebPage(String url, String text) {
+        public WebPage(String url, String title, String text, String description, String h1h3, String h4h6, String imagesAlt, double pageRank) {
             this.url = url;
+            this.title = title;
             this.text = text;
+            this.description = description;
+            this.h1h3 = h1h3;
+            this.h4h6 = h4h6;
+            this.imagesAlt = imagesAlt;
+            this.pageRank = pageRank;
         }
     }
 }

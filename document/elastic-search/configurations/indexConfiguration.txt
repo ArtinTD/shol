@@ -1,0 +1,43 @@
+PUT shol/
+{
+  "settings": {
+    "number_of_shards": 8,
+    "number_of_replicas": 0
+  }
+}
+
+PUT shol/_mapping/webpagestest1
+{
+  "properties": {
+          "description": {
+            "type": "text",
+            "analyzer": "standard"
+          },
+          "h1h3": {
+            "type": "text",
+            "analyzer": "standard"
+          },
+          "h4h6": {
+            "type": "text",
+            "analyzer": "standard"
+          },
+          "imagesAlt": {
+            "type": "text",
+            "analyzer": "standard"
+          },
+          "text": {
+            "type": "text",
+            "analyzer": "standard"
+          },
+          "title": {
+            "type": "text",
+            "analyzer": "standard"
+          },
+          "url": {
+            "type": "keyword"
+          },
+          "pageRank": {
+            "type": "double"
+          }
+        }
+}

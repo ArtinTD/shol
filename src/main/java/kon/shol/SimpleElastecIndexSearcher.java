@@ -1,6 +1,7 @@
 package kon.shol;
 
 import org.apache.http.HttpHost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
@@ -47,7 +48,7 @@ public class SimpleElastecIndexSearcher implements ElasticIndexSearcher {
 
         try {
 
-            StringEntity en = new StringEntity("{ \"query\": { \"match\": { \"name\": \"" + query + "\" } } }");
+            StringEntity en = new StringEntity("{ \"query\": { \"match\": { \"text\": \"" + query + "\" } } }", ContentType.APPLICATION_JSON);
 
 
             restClient.performRequestAsync(
@@ -84,9 +85,6 @@ public class SimpleElastecIndexSearcher implements ElasticIndexSearcher {
             return result[0];
 
 
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return "Unsupported Encoding!";
         } catch (InterruptedException e) {
             e.printStackTrace();
             return "An error occurred... sorry:(";
