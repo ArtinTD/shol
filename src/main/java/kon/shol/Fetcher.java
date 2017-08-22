@@ -1,34 +1,32 @@
 package kon.shol;
 
-import com.google.common.net.InternetDomainName;
-import com.oracle.jrockit.jfr.Producer;
-import kon.shol.WebPage;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-import java.util.*;
+import static kon.shol.Main.hBase;
+import static kon.shol.Main.logger;
 
 public class Fetcher {
+
     WebPage page = new WebPage();
-    HBase hbase = Main.hBase;
 
     boolean setHTML() {
+
         try {
-            this.page.html = Jsoup.connect(page.link).get();
             this.page.html = Jsoup.connect(this.page.link).get();
+
             if (!LangDetector.checkMetaLangEn(this.page.html)) {
-                return false;
+                throw new Exception("Meta not English: " + this.page.link);
             } else if (!LangDetector.detectLang(this.page.html.text()).equals("en")) {
-                return false;
+                throw new Exception("Text not English: " + this.page.link);
             }
-            PageData pageData = Parser.parse(this.page.html);
-            //System.out.println(pageData.toString());
-            hbase.putPageData(this.page.link, pageData);
+
+            page.pageData = Parser.parse(this.page.html);
+
+            hBase.putPageData(this.page.link, page.pageData);
+            logger.error("Added " + this.page.link + " Data To HBase");
             return true;
-        } catch (Exception ignore) {
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
             return false;
         }
     }

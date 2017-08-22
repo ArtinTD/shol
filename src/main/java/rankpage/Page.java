@@ -9,24 +9,36 @@ import java.util.List;
 public class Page {
     String url;
     private double PR = 1;
-    public double PRcopy = 1;
+    public double PRcopy = 0.15;
     double referenceTo;
+    ArrayList<String> referenceUrls;
+
+    public Page(String url, ArrayList<String> arrayList) {
+        this.url = url;
+        this.PRcopy = 0.15;
+        referenceUrls = arrayList;
+
+//        switch (url){
+//            case "A":
+//                referenceUrls.add("B");
+//                referenceUrls.add("C");
+//                referenceTo = 2;
+//                break;
+//            case "B":
+//                referenceUrls.add("C");
+//                referenceTo = 1;
+//                break;
+//            case "C":
+//                referenceUrls.add("A");
+//                referenceTo = 1;
+//                break;
+//        }
+
+    }
 
     public Page(String url) {
         this.url = url;
-
-        switch (url){
-            case "A":
-                referenceTo = 2;
-                break;
-            case "B":
-                referenceTo = 1;
-                break;
-            case "C":
-                referenceTo = 1;
-                break;
-        }
-
+        referenceUrls = new ArrayList<>();
     }
 
     void updatePR(){
