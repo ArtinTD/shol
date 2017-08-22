@@ -2,6 +2,7 @@ package kon.shol;
 
 import org.jsoup.Jsoup;
 import static kon.shol.Main.hBase;
+import static kon.shol.Main.logger;
 
 public class Fetcher {
 
@@ -18,14 +19,15 @@ public class Fetcher {
                 throw new Exception("Text not English: " + this.page.link);
             }
 
+
             page.pageData = Parser.parse(this.page.html);
 
             hBase.putPageData(this.page.link, page.pageData);
-            System.out.println("Added " + this.page.link + " Data To HBase");
+            logger.error("Added " + this.page.link + " Data To HBase");
             return true;
 
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            logger.error(e.getMessage());
             return false;
         }
     }

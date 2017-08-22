@@ -12,18 +12,11 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>com.optimaize.languagedetector</groupId>-->
-            <!--<artifactId>language-detector</artifactId>-->
-            <!--<version>0.6</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>com.google.guava</groupId>-->
-            <!--<artifactId>guava</artifactId>-->
-            <!--<version>12.0.1</version>-->
-        <!--</dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
-        <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
