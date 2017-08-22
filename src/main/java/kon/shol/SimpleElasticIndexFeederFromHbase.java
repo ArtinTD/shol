@@ -17,19 +17,21 @@ public class SimpleElasticIndexFeederFromHbase {
             Scan scan = new Scan();
             ResultScanner resultScanner = table.getScanner(scan);
 
-            for (Result r : resultScanner)
-                ei.add( Bytes.toString(r.getRow()),//URL
-                        Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("title"))),
-                        Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("text"))),
-                        Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("description"))),
-                        Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("h1h3"))),
-                        Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("h4h6"))),
-                        Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("alt"))),
-                        Bytes.toDouble(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("pagerank")))
-                );
-
-            hBase.close();
+            for (Result r : resultScanner) {
+                try {
+                    ei.add(Bytes.toString(r.getRow()),//URL
+                            Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("title"))),
+                            Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("text"))),
+                            Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("description"))),
+                            Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("h1h3"))),
+                            Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("h4h6"))),
+                            Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("alt"))),
+                            Bytes.toDouble(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("pagerank")))
+                    );
+                } catch (Exception e) { e.printStackTrace(); }
+            }
             System.out.println("HBase connection closed.");
+            hBase.close();
 
             while (ei.isWorking()) {
                 try { Thread.sleep(3000); }
