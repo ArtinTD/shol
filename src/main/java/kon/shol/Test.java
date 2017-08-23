@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Scanner;
 
 public class Test {
     public static void main(String[] args) {
@@ -29,13 +30,16 @@ public class Test {
                 .setHttpClientConfigCallback(arg0 -> arg0.setDefaultCredentialsProvider(credentialsProvider))
                 .build();
 
+        Scanner scanner = new Scanner(System.in);
+        String searchRequest = scanner.nextLine();
+
         HttpEntity entity1 = new NStringEntity(
                 "{\n" +
                         "\"size\" : 10,"
                         +
                         "  \"query\": {\n" +
                         "    \"multi_match\" : {\n" +
-                        "      \"query\":    \"hello world\", \n" +
+                        "      \"query\":    \"" + searchRequest + "\", \n" +
                         "      \"fields\": [ \"text\", \"description\", \"url\" ] \n" +
                         "    }\n" +
                         "  }\n" +
