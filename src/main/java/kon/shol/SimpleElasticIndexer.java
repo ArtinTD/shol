@@ -88,13 +88,12 @@ public class SimpleElasticIndexer implements ElasticIndexer {
     //                                }
     //                            }
                         );
-                        System.out.println(response.getStatusLine().getReasonPhrase() + " : " + ++l);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println("[INFO] index result: " + response.getStatusLine().getReasonPhrase() + " : " + ++l + " @/" + index + "/" + type);
                     }
+                    catch (IOException e) { e.printStackTrace(); }
                 }
             }
-            catch (InterruptedException e) { e.printStackTrace(); }
+            catch (InterruptedException e) { System.out.println("[INFO]" + new Date().toString() + " : index operation completed @/" + index + "/" + type); }
             finally {
                 try { restClient.close(); }
                 catch (IOException e) { e.printStackTrace(); }
