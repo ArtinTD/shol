@@ -63,32 +63,37 @@ public class SimpleElasticIndexer implements ElasticIndexer {
                     new HttpHost(host, port, "http")).build();
             Gson gson = new Gson();
             try {
+                long l = 0;
                 while (true) { // TODO: add some kind of safe stopping mechanism.
                     WebPage newWP = indexQueue.take();
                     HttpEntity en = new StringEntity(gson.toJson(newWP), ContentType.APPLICATION_JSON);
-                    restClient.performRequestAsync(
-                            "POST",
-                            "/" + index + "/" + type + "/",
-                            Collections.<String, String>emptyMap(),
-                            en,
-                            new ResponseListener() {
-                                @Override
-                                public void onSuccess(Response response) {
-                                    System.out.println(new Date().toString()
-                                            + " : Index successful @/" + index + "/" + type);
-                                }
-
-                                @Override
-                                public void onFailure(Exception exception) {
-                                    System.err.println(new Date().toString()
-                                            + " : Index failed @/" + index + "/" + type);
-                                    exception.printStackTrace();
-                                }
-                            }
-                    );
+                    try {
+                        Response response = restClient.performRequest(//Async(
+                                "POST",
+                                "/" + index + "/" + type + "/",
+                                Collections.<String, String>emptyMap(),
+                                en//,
+    //                            new ResponseListener() {
+    //                                @Override
+    //                                public void onSuccess(Response response) {
+    //                                    System.out.println(new Date().toString()
+    //                                            + " : Index successful @/" + index + "/" + type);
+    //                                }
+    //
+    //                                @Override
+    //                                public void onFailure(Exception exception) {
+    //                                    System.err.println(new Date().toString()
+    //                                            + " : Index failed @/" + index + "/" + type);
+    //                                    exception.printStackTrace();
+    //                                }
+    //                            }
+                        );
+                        System.out.println("[INFO] index result: " + response.getStatusLine().getReasonPhrase() + " : " + ++l + " @/" + index + "/" + type);
+                    }
+                    catch (IOException e) { e.printStackTrace(); }
                 }
             }
-            catch (InterruptedException e) { e.printStackTrace(); }
+            catch (InterruptedException e) { System.out.println("[INFO]" + new Date().toString() + " : index operation completed @/" + index + "/" + type); }
             finally {
                 try { restClient.close(); }
                 catch (IOException e) { e.printStackTrace(); }
