@@ -31,7 +31,7 @@ class Consumer implements Runnable {
         while (true) {
             ConsumerRecords<String, String> records;
             do {
-                records = consumer.poll(100);
+                records = consumer.poll(1000);
             } while (records.isEmpty());
             for (ConsumerRecord<String, String> record : records) {
                 queue.add(record.value());
