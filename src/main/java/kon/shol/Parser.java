@@ -8,6 +8,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Parser {
@@ -26,7 +27,6 @@ public class Parser {
     }
 
     static PageData parse(Document doc) {
-
         PageData pageData = new PageData();
         pageData.links = extractLinks(doc);
         pageData.text = doc.text();
@@ -63,6 +63,16 @@ public class Parser {
 
         } catch (Exception ignore) { return null; }
     }
-
+    public static HashMap<String, String> extractAnchors (Document doc){
+        HashMap<String, String> hashMap = new HashMap<>();
+        Elements links;
+        links = doc.select("a");
+        for (Element link : links) {
+            hashMap.put(trimLink(link), link.text());
+            System.out.print(trimLink(link));
+            System.out.println(" : " + link.text());
+        }
+        return hashMap;
+    }
 
 }
