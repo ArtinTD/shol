@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Monitor implements Runnable {
-    int speed;
+
+    private int speed;
 
     private LinkedList<KafkaBaseCrawler> crawlers;
 
-    public void setCrawlers(LinkedList<KafkaBaseCrawler> crawlers) {
+    void setCrawlers(LinkedList<KafkaBaseCrawler> crawlers) {
         this.crawlers = crawlers;
     }
 
-    public LinkedList getCrawlers() {
+    private LinkedList getCrawlers() {
         return crawlers;
     }
 
@@ -29,8 +30,6 @@ public class Monitor implements Runnable {
                 speed += crawler.getNumCycle();
                 crawler.resetNumCycle();
             }
-
-
         }
     }
 }

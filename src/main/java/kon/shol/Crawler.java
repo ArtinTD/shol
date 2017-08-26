@@ -42,6 +42,7 @@ public abstract class Crawler implements Runnable {
             for (String link : fetcher.page.pageData.links) {
                 sendLink(link);
             }
+
             numCycle++;
         }
     }
@@ -49,6 +50,4 @@ public abstract class Crawler implements Runnable {
     abstract void sendLink(String link);
 
     abstract String getLink();
-
-
 }
