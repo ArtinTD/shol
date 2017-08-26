@@ -71,7 +71,7 @@ public class Parser {
         }
     }
 
-    private static HashMap<String, String> extractAnchors(Document doc) throws IOException {
+    static HashMap<String, String> extractAnchors(Document doc) throws IOException {
         HashMap<String, String> hashMap = new HashMap<>();
         Elements links;
         links = doc.select("a");

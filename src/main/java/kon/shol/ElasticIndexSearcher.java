@@ -1,5 +1,5 @@
 package kon.shol;
 
 public interface ElasticIndexSearcher {
-    String search(int numberOfResults, String query);
+    void search(int numberOfResults, String query);
 }
