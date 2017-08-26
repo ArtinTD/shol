@@ -6,6 +6,8 @@ import com.google.common.net.InternetDomainName;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,9 +28,10 @@ public class Parser {
         return result;
     }
 
-    static PageData parse(Document doc) {
+    static PageData parse(Document doc) throws IOException {
         PageData pageData = new PageData();
         pageData.links = extractLinks(doc);
+        pageData.anchors = extractAnchors(doc);
         pageData.text = doc.text();
         pageData.title = doc.title();
         pageData.description = doc.select("meta[name=description]").attr("content");
@@ -52,7 +55,9 @@ public class Parser {
             }
             return temp;
 
-        } catch (StringIndexOutOfBoundsException ignore) { return null; }
+        } catch (StringIndexOutOfBoundsException ignore) {
+            return null;
+        }
     }
 
     static String getDomain(String link) {
@@ -61,16 +66,21 @@ public class Parser {
             URL url = new URL(link);
             return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
 
-        } catch (Exception ignore) { return null; }
+        } catch (Exception ignore) {
+            return null;
+        }
     }
-    public static HashMap<String, String> extractAnchors (Document doc){
+
+    private static HashMap<String, String> extractAnchors(Document doc) throws IOException {
         HashMap<String, String> hashMap = new HashMap<>();
         Elements links;
         links = doc.select("a");
         for (Element link : links) {
-            hashMap.put(trimLink(link), link.text());
-            System.out.print(trimLink(link));
-            System.out.println(" : " + link.text());
+            String linkRef = trimLink(link);
+            String linkText = link.text();
+            if (linkRef != null && linkText.length() > 0) {
+                hashMap.put(linkRef, linkText);
+            }
         }
         return hashMap;
     }
