@@ -1,0 +1,6 @@
+<configuration>
+    <property>
+        <name>fs.default.name</name>
+        <value>hdfs://ns326728.ip-188-165-235.eu:54310</value>
+    </property>
+</configuration>
