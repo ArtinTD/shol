@@ -140,7 +140,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>kon.shol.HBaseTest</mainClass>
+                            <mainClass>kon.shol.Main</mainClass>
                         </manifest>
                     </archive>
 
