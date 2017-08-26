@@ -16,7 +16,7 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 public class Producer {
 
     private KafkaProducer<String, String> producer;
-    private String topic = "urls";
+    private String topic;
 
     Producer(String topic) {
 

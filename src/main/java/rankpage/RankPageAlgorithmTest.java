@@ -40,6 +40,7 @@ public class RankPageAlgorithmTest {
             for (int i = 0; i < 100; i++) { //repeat to Approximate PR
                 pg.update();
             }
+
             for (Page page : pg.pages.values()){
                 System.out.println(page.url + " " + page.getPR());
                 Put put = new Put(Bytes.toBytes(page.url));

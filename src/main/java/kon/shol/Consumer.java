@@ -4,7 +4,9 @@ import org.apache.kafka.clients.consumer.*;
 
 import java.util.*;
 
-class Consumer {
+import static kon.shol.Main.queue;
+
+class Consumer implements Runnable {
 
     private KafkaConsumer<String, String> consumer;
 
@@ -25,15 +27,25 @@ class Consumer {
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    String getLink() throws InterruptedException {
-
-        ConsumerRecords<String, String> records;
-        do {
-            records = consumer.poll(100);
-        } while (records.isEmpty());
-        for (ConsumerRecord<String, String> record : records) {
-            return record.value();
+    private void getLink() throws InterruptedException {
+        while (true) {
+            ConsumerRecords<String, String> records;
+            do {
+                records = consumer.poll(1000);
+            } while (records.isEmpty());
+            for (ConsumerRecord<String, String> record : records) {
+                queue.add(record.value());
+            }
         }
-        return null;
     }
+
+    @Override
+    public void run() {
+        try {
+            getLink();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

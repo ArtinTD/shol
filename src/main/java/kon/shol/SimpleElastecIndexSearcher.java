@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
-public class SimpleElastecIndexSearcher implements ElasticIndexSearcher {
+public class SimpleElastecIndexSearcher{//} implements ElasticIndexSearcher {
     private String host, index, type;
     private int port;
 
@@ -39,7 +39,7 @@ public class SimpleElastecIndexSearcher implements ElasticIndexSearcher {
         s.close();
     }
 
-    @Override
+//    @Override
     public String search(String query) {
         CountDownLatch latch = new CountDownLatch(1);
         final String[] result = new String[1];
