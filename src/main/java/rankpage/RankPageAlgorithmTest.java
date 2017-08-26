@@ -21,7 +21,7 @@ public class RankPageAlgorithmTest {
         System.out.println(System.currentTimeMillis());
         HBase hBase = null;
         try {
-            hBase = new HBase("188.165.230.122:2181", "sites");
+            hBase = new HBase("188.165.230.122:2181", "prtest");
             Table table = hBase.getTable();
             Scan scan = new Scan();
             ResultScanner resultScanner = table.getScanner(scan);
@@ -30,7 +30,7 @@ public class RankPageAlgorithmTest {
 
 //                hBase.getArrayList(Bytes.toString(r.getRow()), "data", "links");
                 pg.addPage( new Page( Bytes.toString(r.getRow() ),
-                        hBase.getArrayList(Bytes.toString(r.getRow()), "data", "links")
+                        hBase.getArrayList(Bytes.toString(r.getRow()), "data", "bulk")
                     )
                 );
             }
@@ -41,6 +41,7 @@ public class RankPageAlgorithmTest {
                 pg.update();
             }
             for (Page page : pg.pages.values()){
+                System.out.println(page.url + " " + page.getPR());
                 Put put = new Put(Bytes.toBytes(page.url));
                 put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("pagerank"), Bytes.toBytes(page.getPR()));
                 table.put(put);
