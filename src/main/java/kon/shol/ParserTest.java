@@ -7,9 +7,8 @@ import java.io.IOException;
 
 public class ParserTest {
     public static void main(String[] args) throws IOException {
-        Document document = Jsoup.connect("http://digikala.com").get();
-        PageData pageData = Parser.parse(document);
-        System.out.println(pageData.imagesAlt);
+        Document document = Jsoup.connect("http://wikipedia.org").get();
+        Parser.extractAnchors(document);
 
     }
 }

@@ -21,7 +21,6 @@ import java.util.Scanner;
 public class Test {
     public static void main(String[] args) {
 
-
         Header[] headers = { new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
                 new BasicHeader("Role", "Read") };
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -71,13 +70,37 @@ public class Test {
         JSONObject hits = object.getJSONObject("hits");
         JSONArray arrayHits = hits.getJSONArray("hits");
         for (int i = 0; i < arrayHits.length(); i++) {
-            System.out.println(arrayHits.get(i).toString());
+            System.out.println( "NUMBER " +Integer.toString(i+1) + "\n" );
             JSONObject jsonObjectResult = new JSONObject(arrayHits.get(i).toString());
-            String score = Double.toString((double) jsonObjectResult.get("_score"));
-            System.out.println("score "+Integer.toString(i) +"  :  "+ score);
 
-//            JSONObject data = new JSONObject(jsonObjectResult.get("_source"));
-//            System.out.println(data.toString());
+            String score = Double.toString((Double) jsonObjectResult.get("_score"));
+            System.out.println("    score " + Integer.toString(i)+ "  :  "+ score);
+
+            JSONObject source = jsonObjectResult.getJSONObject("_source");
+
+            String url = source.getString("url");
+            System.out.println("    url " + Integer.toString(i)+ "  :  " + url);
+
+            String title = source.getString("title");
+            System.out.println("    title " + Integer.toString(i)+ "  :  " + title);
+
+            String text = source.getString("text");
+            System.out.println("    text " + Integer.toString(i)+ "  :  " + text);
+
+            String description = source.getString("description");
+            System.out.println("    description " + Integer.toString(i)+ "  :  " + description);
+
+            String h1h3 = source.getString("h1h3");
+            System.out.println("    h1h3 " + Integer.toString(i)+ "  :  " + h1h3);
+
+            String h4h6 = source.getString("h4h6");
+            System.out.println("    h4h6 " + Integer.toString(i)+ "  :  " + h4h6);
+
+            String imagesAlt = source.getString("imagesAlt");
+            System.out.println("    imagesAlt " + Integer.toString(i)+ "  :  " + imagesAlt);
+
+            String pageRank = Double.toString((Double) source.get("pageRank"));
+            System.out.println("    pageRank " + Integer.toString(i)+ "  :  " + pageRank);
 
         }
     }

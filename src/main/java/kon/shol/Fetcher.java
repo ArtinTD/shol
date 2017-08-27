@@ -17,11 +17,12 @@ public class Fetcher {
             } else {
                 this.page.html = Jsoup.connect(this.page.link).get();
 
-                if (!LangDetector.checkMetaLangEn(this.page.html)) {
-                    throw new Exception("Meta not English: " + this.page.link);
-                } else if (!LangDetector.detectLang(this.page.html.text()).equals("en")) {
-                    throw new Exception("Text not English: " + this.page.link);
-                }
+                if (!this.page.link.contains("moz"))
+                    if (!LangDetector.checkMetaLangEn(this.page.html)) {
+                        throw new Exception("Meta not English: " + this.page.link);
+                    } else if (!LangDetector.detectLang(this.page.html.text()).equals("en")) {
+                        throw new Exception("Text not English: " + this.page.link);
+                    }
 
 
                 page.pageData = Parser.parse(this.page.html);
