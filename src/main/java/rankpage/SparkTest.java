@@ -46,5 +46,4 @@ public class SparkTest {
 //        long numBs = logData.filter(s -> s.contains("b")).count();
 //
 //        System.out.println("Lines with a: " + numAs + ", lines with b: " + numBs);
-    }
 }
