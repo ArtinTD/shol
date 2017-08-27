@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class SparkTest {
     private static final Pattern SPACE = Pattern.compile(" ");
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 //        SparkConf conf = new SparkConf().setAppName("testApp").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
 //        JavaSparkContext sc = new JavaSparkContext(conf);
 //        //  hdfs://ns313900.ip-188-165-230.eu:9000
@@ -40,11 +40,14 @@ public class SparkTest {
 //    }
         String logFile = "/dir/application_log/log4j-SHOL.log.2"; // Should be some file on your system
         SparkSession spark = SparkSession.builder().appName("Simple Application").master("spark://ns326728.ip-188-165-235.eu:7077").getOrCreate();
+        System.out.println("sasas");
+        Thread.sleep(20000);
+
         Dataset<String> logData = spark.read().textFile(logFile).cache();
+
 
         long numAs = logData.filter(s -> s.contains("a")).count();
         long numBs = logData.filter(s -> s.contains("b")).count();
-
 
     }
 }
