@@ -1,8 +1,7 @@
-package kon.shol;
+package kon.shol.searchengine.parser;
 
-;
 import com.google.common.net.InternetDomainName;
-
+import kon.shol.PageData;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -12,10 +11,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 public class Parser {
-
-    static ArrayList<String> extractLinks(Document doc) {
+    public ArrayList<String> extractLinks(Document doc) {
         Elements links;
         ArrayList<String> result = new ArrayList<>();
         links = doc.select("a");
@@ -27,21 +24,20 @@ public class Parser {
         return result;
     }
 
-    static PageData parse(Document doc) throws IOException {
-        PageData pageData = new PageData();
-        /*pageData.links = extractLinks(doc);
-        pageData.anchors = extractAnchors(doc);
-        pageData.text = doc.text();
-        pageData.title = doc.title();
-        pageData.description = doc.select("meta[name=description]").attr("content");
-        pageData.imagesAlt = String.join(" ", doc.select("img").eachAttr("alt"));
-        pageData.h1h3 = doc.select("h1,h2,h3").text();
-        pageData.h4h6 = doc.select("h4,h5,h6").text();*/
+    public PageData parse(Document doc) throws IOException {
+        kon.shol.PageData pageData = new PageData();
+        pageData.setLinks(extractLinks(doc));
+        pageData.setAnchors(extractAnchors(doc));
+        pageData.setText(doc.text());
+        pageData.setTitle(doc.title());
+        pageData.setDescription(doc.select("meta[name=description]").attr("content"));
+        pageData.setImagesAlt(String.join(" ", doc.select("img").eachAttr("alt")));
+        pageData.setH1h3(doc.select("h1,h2,h3").text());
+        pageData.setH4h6(doc.select("h4,h5,h6").text());
         return pageData;
     }
 
-    private static String trimLink(Element link) {
-
+    private String trimLink(Element link) {
         try {
             String temp = link.attr("abs:href");
             if (temp.charAt(temp.length() - 1) == '/') {
@@ -59,7 +55,7 @@ public class Parser {
         }
     }
 
-    static String getDomain(String link) {
+    public String getDomain(String link) {
 
         try {
             URL url = new URL(link);
@@ -70,7 +66,7 @@ public class Parser {
         }
     }
 
-    static HashMap<String, String> extractAnchors(Document doc) throws IOException {
+    private HashMap<String, String> extractAnchors(Document doc) throws IOException {
         HashMap<String, String> hashMap = new HashMap<>();
         Elements links;
         links = doc.select("a");
@@ -83,5 +79,4 @@ public class Parser {
         }
         return hashMap;
     }
-
 }
