@@ -24,7 +24,7 @@ public class SparkTest {
 
         SparkSession spark = SparkSession.builder().appName("JavaWordCount").master("spark://ns326728.ip-188-165-235.eu:7077").getOrCreate();
 
-        JavaRDD<String> lines = spark.read().textFile("hdfs://ns313900.ip-188-165-230.eu:9000/dir/hadoop/hello_world.txt").javaRDD();
+        JavaRDD<String> lines = spark.read().textFile("hdfs://ns313900.ip-188-165-230.eu:54310/dir/hadoop/hello_world.txt").javaRDD();
 
         JavaRDD<String> words = lines.flatMap(s -> Arrays.asList(SPACE.split(s)).iterator());
 
