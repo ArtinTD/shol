@@ -1,6 +1,7 @@
 package kon.shol.searchengine.elasticsearch;
 
 public class WebPage {
+
   private String url;
   private String title;
   private String anchorTexts;
@@ -12,6 +13,7 @@ public class WebPage {
   private double pageRank;
   
   public WebPage(String url, String title, String text, String description, String h1h3, String h4h6, String imagesAlt, double pageRank) {
+
     this.url = url;
     this.title = title;
     this.text = text;
