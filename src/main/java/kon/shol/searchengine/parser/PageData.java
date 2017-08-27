@@ -1,4 +1,5 @@
-package kon.shol;
+package kon.shol.searchengine.parser;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
