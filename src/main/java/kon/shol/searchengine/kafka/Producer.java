@@ -14,7 +14,7 @@ public class Producer {
 
     private KafkaProducer<String, String> producer;
     private static final String PRODUCER_TYPE = "producer.type";
-    final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
+    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
 
     public Producer() {
 
