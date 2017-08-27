@@ -33,6 +33,7 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
     this.port = port;
     this.index = index;
     this.type = type;
+    
     indexer = new Sender();
     indexer.setName("SingleThreadSyncEsIndexer-indexerThread");
     indexer.start();
@@ -50,44 +51,56 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
   public void add(WebPage newWebPage) {
     try {
       indexQueue.put(newWebPage);
-    } catch (InterruptedException ex) {
-      logger.error("indexQueue put error: " + ex.toString());
+    } catch (InterruptedException expected) {
     }
   }
   
   private class Sender extends Thread {
+    private final RestClient restClient = RestClient.builder(new HttpHost(host, port, "http")).build();
+    private final String endpoint = "/" + index + "/" + type + "/";
+    private final Gson jsonMaker = new Gson();
+    private long count = 0;
+    
     @Override
     public void run() {
-      long count = 0;
-      final RestClient restClient = RestClient.builder(new HttpHost(host, port, "http")).build();
-      final Gson jsonMaker = new Gson();
-      final String endpoint = "/" + index + "/" + type + "/";
       while (true) {
         try {
           WebPage newWebPage = indexQueue.take();
-          Response response = restClient.performRequest(
-              "POST",
-              endpoint,
-              Collections.emptyMap(),
-              new StringEntity(jsonMaker.toJson(newWebPage), ContentType.APPLICATION_JSON)
-          );
-          logger.info(
-              "index result: " + response.getStatusLine().getReasonPhrase()
-                  + " : " + ++count
-                  + " @" + endpoint
-          );
+          Response response = performRequest(newWebPage); // throws IOException
+          log(response);
         } catch (IOException ex) {
           logger.error("index error: " + ex.toString());
         } catch (InterruptedException ex) {
           logger.error("indexing done!");
         } finally {
           logger.info(new Date().toString() + " : index operation over @" + endpoint);
-          try {
-            restClient.close();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
+          closeClient();
         }
+      }
+    }
+    
+    private Response performRequest(WebPage newWebPage) throws IOException {
+      return restClient.performRequest(
+          "POST",
+          endpoint,
+          Collections.emptyMap(),
+          new StringEntity(jsonMaker.toJson(newWebPage), ContentType.APPLICATION_JSON)
+      );
+    }
+    
+    private void log(Response response) {
+      logger.info(
+          "index result: " + response.getStatusLine().getReasonPhrase()
+              + " : " + ++count
+              + " @" + endpoint
+      );
+    }
+    
+    private void closeClient() {
+      try {
+        restClient.close();
+      } catch (IOException ex) {
+        logger.error(ex.toString());
       }
     }
   }
