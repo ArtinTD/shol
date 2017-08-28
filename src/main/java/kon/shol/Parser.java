@@ -16,7 +16,6 @@ import java.util.HashMap;
 public class Parser {
 
     static ArrayList<String> extractLinks(Document doc) {
-
         Elements links;
         ArrayList<String> result = new ArrayList<>();
         links = doc.select("a");
@@ -30,14 +29,14 @@ public class Parser {
 
     static PageData parse(Document doc) throws IOException {
         PageData pageData = new PageData();
-        pageData.links = extractLinks(doc);
+        /*pageData.links = extractLinks(doc);
         pageData.anchors = extractAnchors(doc);
         pageData.text = doc.text();
         pageData.title = doc.title();
         pageData.description = doc.select("meta[name=description]").attr("content");
         pageData.imagesAlt = String.join(" ", doc.select("img").eachAttr("alt"));
         pageData.h1h3 = doc.select("h1,h2,h3").text();
-        pageData.h4h6 = doc.select("h4,h5,h6").text();
+        pageData.h4h6 = doc.select("h4,h5,h6").text();*/
         return pageData;
     }
 

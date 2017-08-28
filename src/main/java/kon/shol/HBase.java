@@ -89,6 +89,7 @@ public class HBase {
     public void setTable(String tableNameStr) throws IOException {
         TableName tableName = TableName.valueOf(tableNameStr);
         table = connection.getTable(tableName);
+
     }
 
     // Put Methods
@@ -129,13 +130,13 @@ public class HBase {
     public void putPageData(String url, PageData pageData) {
         Put put = new Put(Bytes.toBytes(url));
         byte[] cfb = Bytes.toBytes("data");
-        put.addColumn(cfb, Bytes.toBytes("title"), Bytes.toBytes(pageData.title));
+     /*   put.addColumn(cfb, Bytes.toBytes("title"), Bytes.toBytes(pageData.title));
         put.addColumn(cfb, Bytes.toBytes("description"), Bytes.toBytes(pageData.description));
         put.addColumn(cfb, Bytes.toBytes("text"), Bytes.toBytes(pageData.text));
         put.addColumn(cfb, Bytes.toBytes("h1h3"), Bytes.toBytes(pageData.h1h3));
         put.addColumn(cfb, Bytes.toBytes("h4h6"), Bytes.toBytes(pageData.h4h6));
         put.addColumn(cfb, Bytes.toBytes("alt"), Bytes.toBytes(pageData.imagesAlt));
-        put.addColumn(cfb, Bytes.toBytes("links"), arrayListToByte(pageData.links));
+        put.addColumn(cfb, Bytes.toBytes("links"), arrayListToByte(pageData.links));*/
         try {
             table.put(put);
         } catch (IOException e) {
@@ -169,12 +170,12 @@ public class HBase {
         ResultScanner resultScanner = table.getScanner(scan);
         for (Result r : resultScanner) {
             PageData pageData = new PageData();
-            pageData.title = Bytes.toString(r.getValue(cfb, Bytes.toBytes("title")));
+           /* pageData.title = Bytes.toString(r.getValue(cfb, Bytes.toBytes("title")));
             pageData.text = Bytes.toString(r.getValue(cfb, Bytes.toBytes("text")));
             pageData.description = Bytes.toString(r.getValue(cfb, Bytes.toBytes("description")));
             pageData.h1h3 = Bytes.toString(r.getValue(cfb, Bytes.toBytes("h1h3")));
             pageData.h4h6 = Bytes.toString(r.getValue(cfb, Bytes.toBytes("h4h6")));
-            pageData.links = castResultToStringArrayList(r, "data", "links");
+            pageData.links = castResultToStringArrayList(r, "data", "links");*/
         }
         return pageDataArrayList;
     }
