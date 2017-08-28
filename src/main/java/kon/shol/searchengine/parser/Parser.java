@@ -1,7 +1,6 @@
 package kon.shol.searchengine.parser;
 
 import com.google.common.net.InternetDomainName;
-import kon.shol.PageData;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,8 +12,9 @@ import java.net.URL;
 import java.util.*;
 
 public class Parser {
+    private PageData pageData;
 
-    public ArrayList<String> extractLinks(Document doc) {
+    private ArrayList<String> extractLinks(Document doc) {
         Elements links;
         ArrayList<String> result = new ArrayList<>();
         links = doc.select("a");
@@ -26,8 +26,11 @@ public class Parser {
         return result;
     }
 
-    public PageData parse(Document doc) throws IOException {
-        kon.shol.PageData pageData = new PageData();
+    public void parse(Document doc) throws IOException {
+        pageData = new PageData();
+
+        //TODO: isValid Function and Throw Exceptions
+
         pageData.setLinks(extractLinks(doc));
         pageData.setAnchors(extractAnchors(doc));
         pageData.setText(doc.text());
@@ -36,7 +39,6 @@ public class Parser {
         pageData.setImagesAlt(String.join(" ", doc.select("img").eachAttr("alt")));
         pageData.setH1h3(doc.select("h1,h2,h3").text());
         pageData.setH4h6(doc.select("h4,h5,h6").text());
-        return pageData;
     }
 
     private String trimLink(Element link) {
@@ -66,6 +68,9 @@ public class Parser {
         }
     }
 
+    private boolean isValid(Document document){
+        //TODO: Implement This Function
+    }
     private HashMap<String, String> extractAnchors(Document doc) throws IOException {
         HashMap<String, String> hashMap = new HashMap<>();
         Elements links;
@@ -93,4 +98,9 @@ public class Parser {
         }
         return null;
     }
+
+    public PageData getPageData() {
+        return pageData;
+    }
+
 }
