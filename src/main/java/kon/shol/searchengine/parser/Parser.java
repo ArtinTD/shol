@@ -80,8 +80,7 @@ public class Parser {
         return hashMap;
     }
 
-    private static String reverseDomain(String url) {
-
+    public String reverseDomain(String url) {
         try {
             if (url.charAt(url.length() - 1) != '/') {
                 url += "/";

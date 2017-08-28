@@ -16,8 +16,8 @@ public class HBaseTest {
             Table table = hBase.getTable();
             Scan scan = new Scan();
             Get get = new Get(Bytes.toBytes("http://linkedin.com"));
-/*            Result r = table.get(get);
-            System.out.println(Bytes.toDouble(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("pagerank"))));*/
+            Result r2 = table.get(get);
+            System.out.println(Bytes.toDouble(r2.getValue(Bytes.toBytes("data"), Bytes.toBytes("pagerank"))));
 //            get.addColumn(Bytes.toBytes("data"),Bytes.toBytes("links"));
             ResultScanner resultScanner = table.getScanner(scan);
             for (Result r : resultScanner) {

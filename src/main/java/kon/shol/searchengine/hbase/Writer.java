@@ -19,16 +19,14 @@ public class Writer {
     private Table table;
     private List<Put> putList;
     private Serializer serializer = new Serializer();
-    private Deserializer deserializer = new Deserializer();
     private final int MAX_BATCH_PUT_SIZE = 40;
+    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
 
     public Writer(String tableNameStr) throws IOException {
         TableName tableName = TableName.valueOf(tableNameStr);
         table = connection.getTable(tableName);
-
     }
 
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
 
     private Put returnPutPageData(String url, PageData pageData) {
         Put put = new Put(Bytes.toBytes(url));
@@ -77,6 +75,4 @@ public class Writer {
             }
         }
     }
-
-
 }

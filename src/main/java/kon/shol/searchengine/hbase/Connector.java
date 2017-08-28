@@ -38,7 +38,7 @@ public class Connector {
         this("188.165.230.122:2181");
     }
 
-    public static Connection getConnection() {
+    public Connection getConnection() {
         return connection;
     }
 
