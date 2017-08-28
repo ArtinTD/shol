@@ -10,7 +10,6 @@ import org.elasticsearch.client.RestClient;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class SingleThreadSyncEsIndexer implements EsIndexer {
@@ -18,18 +17,18 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
   private final static Logger logger = Logger.getLogger(
       kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
   private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<WebPage>();
-  private String host;
+  private String[] hosts;
   private String index;
   private String type;
   private int port;
   private Sender indexer;
   
-  public SingleThreadSyncEsIndexer(String host, String index, String type) {
-    this(host, 9200, index, type);
+  public SingleThreadSyncEsIndexer(String[] hosts, String index, String type) {
+    this(hosts, 9200, index, type);
   }
   
-  public SingleThreadSyncEsIndexer(String host, int port, String index, String type) {
-    this.host = host;
+  public SingleThreadSyncEsIndexer(String[] hosts, int port, String index, String type) {
+    this.hosts = hosts;
     this.port = port;
     this.index = index;
     this.type = type;
@@ -56,10 +55,19 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
   }
   
   private class Sender extends Thread {
-    private final RestClient restClient = RestClient.builder(new HttpHost(host, port, "http")).build();
+    private final int hostCount = hosts.length;
     private final String endpoint = "/" + index + "/" + type + "/";
     private final Gson jsonMaker = new Gson();
+    private RestClient restClient;
     private long count = 0;
+    
+    private Sender() {
+      HttpHost[] httpHosts = new HttpHost[hostCount];
+      for (int i = 0; i < hostCount; i++) {
+        httpHosts[i] = new HttpHost(hosts[i], port, "http");
+      }
+      restClient = RestClient.builder(httpHosts).build();
+    }
     
     @Override
     public void run() {
@@ -71,9 +79,9 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
         } catch (IOException ex) {
           logger.error("index error: " + ex.toString());
         } catch (InterruptedException ex) {
-          logger.error("indexing done!");
+          logger.info("indexing done!");
         } finally {
-          logger.info(new Date().toString() + " : index operation over @" + endpoint);
+          logger.info("index operation over @" + endpoint);
           closeClient();
         }
       }
