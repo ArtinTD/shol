@@ -92,9 +92,9 @@ public class SimpleElasticIndexer implements ElasticIndexer {
                     }
                     catch (IOException e) { e.printStackTrace(); }
                 }
-            }
-            catch (InterruptedException e) { System.out.println("[INFO]" + new Date().toString() + " : index operation completed @/" + index + "/" + type); }
-            finally {
+            } catch (InterruptedException e) {
+                System.out.println("[INFO]" + new Date().toString() + " : index operation completed @/" + index + "/" + type);
+            } finally {
                 try { restClient.close(); }
                 catch (IOException e) { e.printStackTrace(); }
             }
