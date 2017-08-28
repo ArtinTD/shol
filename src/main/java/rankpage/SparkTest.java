@@ -15,16 +15,16 @@ public class SparkTest {
     private static final Pattern SPACE = Pattern.compile(" ");
 
     public static void main(String[] args) {
-        SparkConf conf = new SparkConf().setAppName("testApp").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
-        JavaSparkContext sc = new JavaSparkContext(conf);
-        //  hdfs://ns313900.ip-188-165-230.eu:9000
-        JavaRDD<String> distFile = sc.textFile("hdfs://ns313900.ip-188-165-230.eu:9000/dir/hadoop/hello_world.txt");
+//        SparkConf conf = new SparkConf().setAppName("testApp").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
+//        JavaSparkContext sc = new JavaSparkContext(conf);
+//        //  hdfs://ns313900.ip-188-165-230.eu:9000
+//        JavaRDD<String> distFile = sc.textFile("hdfs://ns313900.ip-188-165-230.eu:9000/dir/hadoop/hello_world.txt");
 
 
 
         SparkSession spark = SparkSession.builder().appName("JavaWordCount").master("spark://ns326728.ip-188-165-235.eu:7077").getOrCreate();
 
-        JavaRDD<String> lines = spark.read().textFile("hdfs://ns313900.ip-188-165-230.eu:54310/dir/hadoop/hello_world.txt").javaRDD();
+        JavaRDD<String> lines = spark.read().textFile("/dir/hadoop/hello_world.txt").javaRDD();
 
         JavaRDD<String> words = lines.flatMap(s -> Arrays.asList(SPACE.split(s)).iterator());
 
@@ -38,7 +38,7 @@ public class SparkTest {
         }
         spark.stop();
     }
-//        String logFile = "/home/hosseinkh/Desktop/sources/spark-2.2.0-bin-hadoop2.7/README.md"; // Should be some file on your system
+//        String logFile = "/dir/hadoop/hello_world.txt"; // Should be some file on your system
 //        SparkSession spark = SparkSession.builder().appName("Simple Application").master("local").getOrCreate();
 //        Dataset<String> logData = spark.read().textFile(logFile).cache();
 //
