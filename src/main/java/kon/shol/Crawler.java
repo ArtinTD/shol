@@ -39,9 +39,9 @@ public abstract class Crawler implements Runnable {
             }
             while (!fetcher.setHTML());
 
-            for (String link : fetcher.page.pageData.links) {
+            /*for (String link : fetcher.page.pageData.links) {
                 sendLink(link);
-            }
+            }*/
 
             numCycle++;
         }
