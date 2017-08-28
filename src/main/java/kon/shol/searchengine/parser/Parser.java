@@ -2,16 +2,18 @@ package kon.shol.searchengine.parser;
 
 import com.google.common.net.InternetDomainName;
 import kon.shol.PageData;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class Parser {
+
     public ArrayList<String> extractLinks(Document doc) {
         Elements links;
         ArrayList<String> result = new ArrayList<>();
@@ -40,10 +42,8 @@ public class Parser {
     private String trimLink(Element link) {
         try {
             String temp = link.attr("abs:href");
-            if (temp.charAt(temp.length() - 1) == '/') {
-                StringBuilder sb = new StringBuilder(temp);
-                sb.deleteCharAt(temp.length() - 1);
-                temp = sb.toString();
+            if (temp.charAt(temp.length() - 1) != '/') {
+                temp += "/";
             }
             if (!temp.contains("http") || temp.contains("#")) {
                 return null;
@@ -78,5 +78,20 @@ public class Parser {
             }
         }
         return hashMap;
+    }
+
+    private static String reverseDomain(String url) {
+
+        try {
+            if (url.charAt(url.length() - 1) != '/') {
+                url += "/";
+            }
+            List<String> domainArray = Arrays.asList(InternetDomainName.from(new URL(url).getHost()).name().split("\\."));
+            Collections.reverse(domainArray);
+            return (String.join(".", domainArray)) + url.substring(StringUtils.ordinalIndexOf(url, "/", 3));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
