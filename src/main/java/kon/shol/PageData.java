@@ -9,6 +9,7 @@ public class PageData {
     private HashMap<String, String> anchors;
     private String description;
     private String title;
+    private String url;
     private String text;
     private String h1h3;
     private String h4h6;
@@ -40,6 +41,14 @@ public class PageData {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public void setTitle(String title) {

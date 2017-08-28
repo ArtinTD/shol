@@ -32,10 +32,11 @@ public class Writer {
         Put put = new Put(Bytes.toBytes(url));
         byte[] dataColumnFamily = Bytes.toBytes("data");
         byte[] linksColumnFamily = Bytes.toBytes("links");
-        byte[] anchorsColumnFamily = Bytes.toBytes("anchros");
+        byte[] anchorsColumnFamily = Bytes.toBytes("anchors");
         put.addColumn(dataColumnFamily, Bytes.toBytes("title"), Bytes.toBytes(pageData.getTitle()));
         put.addColumn(dataColumnFamily, Bytes.toBytes("description"), Bytes.toBytes(pageData.getDescription()));
         put.addColumn(dataColumnFamily, Bytes.toBytes("text"), Bytes.toBytes(pageData.getText()));
+        put.addColumn(dataColumnFamily, Bytes.toBytes("url"), Bytes.toBytes(pageData.getUrl()));
         put.addColumn(dataColumnFamily, Bytes.toBytes("h1h3"), Bytes.toBytes(pageData.getH1h3()));
         put.addColumn(dataColumnFamily, Bytes.toBytes("h4h6"), Bytes.toBytes(pageData.getH4h6()));
         put.addColumn(dataColumnFamily, Bytes.toBytes("alt"), Bytes.toBytes(pageData.getImagesAlt()));
