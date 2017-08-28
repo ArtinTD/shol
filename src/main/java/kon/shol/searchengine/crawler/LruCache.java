@@ -7,7 +7,7 @@ import com.google.common.cache.LoadingCache;
 import java.util.concurrent.TimeUnit;
 
 public class LruCache {
-    static LoadingCache<String, Boolean> lruCache = CacheBuilder.newBuilder()
+    LoadingCache<String, Boolean> lruCache = CacheBuilder.newBuilder()
             .expireAfterWrite(20, TimeUnit.SECONDS)
             .build(
                     new CacheLoader<String, Boolean>() {
