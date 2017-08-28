@@ -25,6 +25,8 @@ public class Producer {
                 "all");
         properties.put(BUFFER_MEMORY_CONFIG,
                 "1000000");
+        properties.put(BATCH_SIZE_CONFIG,
+                "16384");
         properties.put(RETRIES_CONFIG,
                 "1000");
         properties.put(LINGER_MS_CONFIG,

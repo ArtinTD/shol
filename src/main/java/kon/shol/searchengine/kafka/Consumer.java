@@ -30,7 +30,7 @@ public class Consumer {
         props.put(AUTO_OFFSET_RESET_CONFIG,
                 "earliest");
         props.put(DEFAULT_FETCH_MAX_BYTES,
-                "100000");
+                "10000");
         props.put(SESSION_TIMEOUT_MS_CONFIG,
                 "30000");
         props.put(HEARTBEAT_INTERVAL_MS_CONFIG,
