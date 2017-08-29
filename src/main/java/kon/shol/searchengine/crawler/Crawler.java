@@ -38,7 +38,7 @@ public abstract class Crawler implements Runnable {
                 continue;
             }
             if (storage.exists(url)) {
-                logger.error("already exists in storage: " + url);
+                logger.error("Already exists in storage: " + url);
                 continue;
             }
             cache.insert(url);
@@ -51,8 +51,8 @@ public abstract class Crawler implements Runnable {
             }
             try {
                 parser.parse(document);
-            } catch (Exception e) {
-                //TODO: Handle Exceptions
+            } catch (InvalidLanguageException | EmptyDocumentException parseException) {
+                logger.error(parseException.getMessage());
                 continue;
             }
             storage.put(parser.getPageData());
