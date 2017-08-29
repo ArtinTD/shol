@@ -11,16 +11,17 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
 
 
 public class Consumer {
 
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
+    ArrayBlockingQueue<String> consumingQueue;
     private KafkaConsumer<String, String> consumer;
 
-    public Consumer(String groupId, String topic) {
+    public Consumer(String groupId, String topic, Properties props) {
 
-        Properties props = new Properties();
         props.put(BOOTSTRAP_SERVERS_CONFIG,
                 "188.165.235.136:9092,188.165.230.122:9092");
         props.put(KEY_DESERIALIZER_CLASS_CONFIG,
@@ -29,8 +30,6 @@ public class Consumer {
                 "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(AUTO_OFFSET_RESET_CONFIG,
                 "earliest");
-        props.put(DEFAULT_FETCH_MAX_BYTES,
-                "10000");
         props.put(SESSION_TIMEOUT_MS_CONFIG,
                 "30000");
         props.put(HEARTBEAT_INTERVAL_MS_CONFIG,
@@ -49,6 +48,7 @@ public class Consumer {
                 String.valueOf(Thread.currentThread().getId()));
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(topic));
+        consumingQueue = new ArrayBlockingQueue<>(1000);
     }
 
     public ArrayList<String> batchGet() {
@@ -62,5 +62,22 @@ public class Consumer {
             received.add(record.value());
         }
         return received;
+    }
+
+    public void run() {
+
+        while (!Thread.currentThread().isInterrupted()) {
+            ConsumerRecords<String, String> records;
+            do {
+                records = consumer.poll(1000);
+            } while (records.isEmpty());
+            for (ConsumerRecord<String, String> record : records) {
+                consumingQueue.add(record.value());
+            }
+        }
+    }
+
+    public String get() throws InterruptedException {
+        consumingQueue.take();
     }
 }

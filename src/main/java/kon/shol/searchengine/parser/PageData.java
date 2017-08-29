@@ -13,6 +13,7 @@ public class PageData {
     private String text;
     private String h1h3;
     private String h4h6;
+    private String url;
     private String imagesAlt;
 
     public ArrayList<String> getLinks() {
@@ -77,6 +78,14 @@ public class PageData {
 
     public void setImagesAlt(String imagesAlt) {
         this.imagesAlt = imagesAlt;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override
