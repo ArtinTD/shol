@@ -42,7 +42,7 @@ public abstract class Crawler implements Runnable{
                 logger.error("already exists in storage: " + url);
                 continue;
             }
-            cache.put(url);
+            cache.insert(url);
             Document document;
             try {
                 document = fetcher.fetch(url);
