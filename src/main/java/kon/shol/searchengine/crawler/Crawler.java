@@ -13,6 +13,7 @@ public abstract class Crawler implements Runnable{
     private Fetcher fetcher;
     private Parser parser;
     private Storage storage;
+
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.crawler.Crawler.class);
 
     public void crawler(Queue queue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
