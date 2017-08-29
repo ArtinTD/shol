@@ -4,9 +4,10 @@ import kon.shol.searchengine.parser.Parser;
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 
+import java.net.MalformedURLException;
 import java.util.Collections;
 
-public abstract class Crawler implements Runnable {
+public  class Crawler implements Runnable{
 
     private Queue queue;
     private Cache cache;
@@ -16,7 +17,7 @@ public abstract class Crawler implements Runnable {
 
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.crawler.Crawler.class);
 
-    public void crawler(Queue queue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
+    Crawler(Queue queue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
 
         this.queue = queue;
         this.cache = cache;
@@ -28,24 +29,34 @@ public abstract class Crawler implements Runnable {
 
     @Override
     public void run() {
-
+        //TODO: Logger error
         while (!Thread.currentThread().isInterrupted()) {
+
             String url = queue.getUrl();
-            //TODO: get domain
-            if (cache.exists(url)) {
-                queue.send(Collections.singletonList(url));
-                logger.error("Already in cache: " + url);
+            try {
+
+                String domain = parser.getDomain(url);
+                if (cache.exists(domain)) {
+                    queue.send(Collections.singletonList(url));
+                    logger.error("Already in cache: " + url);
+                    continue;
+                }
+                if (storage.exists(url)) {
+                    logger.error("already exists in storage: " + url);
+                    continue;
+                }
+                cache.insert(domain);
+
+            } catch (Exception e) {
+
+                logger.error("Bad link : " + url);
                 continue;
             }
-            if (storage.exists(url)) {
-                logger.error("already exists in storage: " + url);
-                continue;
-            }
-            cache.insert(url);
             Document document;
             try {
                 document = fetcher.fetch(url);
             } catch (Exception e) {
+
                 //TODO: Handle Exceptions
                 continue;
             }
@@ -55,7 +66,7 @@ public abstract class Crawler implements Runnable {
                 //TODO: Handle Exceptions
                 continue;
             }
-            storage.put(parser.getPageData());
+            storage.sendToStorage(parser.getPageData());
             queue.send(parser.getPageData().getLinks());
         }
     }
