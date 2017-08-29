@@ -19,9 +19,9 @@ public class Test {
         map.put("pro1", "v2");
         map.put("pro2", "v3");
         Document document = Jsoup.connect("http://wikipedia.org").get();
-        String json = serializer.serialize(parser.parse(document));
-        System.out.println(deserializer.deserialize(json, PageData.class).getLinks());
-        String json2 = serializer.serialize(map);
-        System.out.println(deserializer.deserialize(json2, HashMap.class).get("pro1"));
+//        String json = serializer.serialize(parser.parse(document));
+//        System.out.println(deserializer.deserialize(json, PageData.class).getLinks());
+//        String json2 = serializer.serialize(map);
+//        System.out.println(deserializer.deserialize(json2, HashMap.class).get("pro1"));
     }
 }

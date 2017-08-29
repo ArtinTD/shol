@@ -1,6 +1,5 @@
 package kon.shol.searchengine.parser;
 
-import kon.shol.LangDetector;
 import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
 import org.apache.tika.language.LanguageIdentifier;
 import org.jsoup.nodes.Document;

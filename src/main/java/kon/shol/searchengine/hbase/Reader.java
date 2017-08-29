@@ -1,6 +1,5 @@
 package kon.shol.searchengine.hbase;
 
-import kon.shol.PageData;
 import kon.shol.searchengine.serializer.Deserializer;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Get;
