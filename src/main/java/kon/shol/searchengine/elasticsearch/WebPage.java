@@ -12,8 +12,8 @@ public class WebPage {
    private String imagesAlt;
    private double pageRank;
    
-   public WebPage(String url, String title, String text, String description
-         , String h1h3, String h4h6, String imagesAlt, double pageRank, String anchorTexts) {
+   public WebPage(String url, String title, String text, String description,
+                  String h1h3, String h4h6, String imagesAlt, double pageRank, String anchorTexts) {
       
       this.url = url;
       this.title = title;

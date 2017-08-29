@@ -24,8 +24,7 @@ public class SingleScanEsFeederFromHbase {
       SingleScanEsFeederFromHbase feeder = new SingleScanEsFeederFromHbase();
       
       try {
-         feeder.init(new String[]{"188.165.230.122", "188.165.235.136"}, "shol" // todo make default vars
-               , "webpagestest3", "188.165.230.122:2181", "db");
+         feeder.init();
       } catch (IOException ex) {
          logger.error("Could not initialize SingleScanEsFeederFromHbase;\n"
                + "details: " + ex.toString());
@@ -35,8 +34,13 @@ public class SingleScanEsFeederFromHbase {
       feeder.close();
    }
    
-   private void init(String[] hosts, String index, String type
-         , String zookeeperAddress, String tablename) throws IOException {
+   private void init() throws IOException {
+      init(new String[]{"188.165.230.122", "188.165.235.136"}, "shol",
+            "webpagestest3", "188.165.230.122:2181", "db");
+   }
+   
+   private void init(String[] hosts, String index, String type,
+                     String zookeeperAddress, String tablename) throws IOException {
       
       indexer = new SingleThreadSyncEsIndexer(hosts, index, type);
       Configuration configuration = HBaseConfiguration.create();

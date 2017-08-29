@@ -72,8 +72,8 @@ public class EsSearcherImpl implements EsSearcher {
       
       String resultString;
       try {
-         Response response = restClient.performRequest("GET", endpoint
-               , Collections.singletonMap("pretty", "true"), queryJsonHttpEntity);
+         Response response = restClient.performRequest("GET", endpoint,
+               Collections.singletonMap("pretty", "true"), queryJsonHttpEntity);
          
          resultString = EntityUtils.toString(response.getEntity()).trim();
       } catch (IOException ex) {
@@ -96,9 +96,9 @@ public class EsSearcherImpl implements EsSearcher {
       for (int i = 0; i < hits.length(); i++) {
          JSONObject hit = hits.getJSONObject(i).getJSONObject("_source");
          searchResults[i] = new EsSearchResult(
-               hit.getString("url")
-               , hit.getString("title")
-               , hit.getString("description"));
+               hit.getString("url"),
+               hit.getString("title"),
+               hit.getString("description"));
       }
       
       return searchResults;

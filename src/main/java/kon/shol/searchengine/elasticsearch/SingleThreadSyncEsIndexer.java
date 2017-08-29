@@ -19,8 +19,8 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
    
    private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();
    private String[] hosts;
-   private String index; // TODO make a single var out
-   private String type;  // TODO of these 2 -> endpoint
+   private String index;
+   private String type;
    private Sender indexer;
    private int port;
    
