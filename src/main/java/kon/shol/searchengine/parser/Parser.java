@@ -48,6 +48,7 @@ public class Parser {
             if (temp.charAt(temp.length() - 1) != '/') {
                 temp += "/";
             }
+            // TODO:Fix Relative Links & hash
             if (!temp.contains("http") || temp.contains("#")) {
                 return null;
             }
