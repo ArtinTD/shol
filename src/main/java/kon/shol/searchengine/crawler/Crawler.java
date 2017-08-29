@@ -22,6 +22,7 @@ public abstract class Crawler implements Runnable{
         this.fetcher = fetcher;
         this.parser = parser;
         this.storage = storage;
+
     }
 
     @Override
@@ -30,7 +31,8 @@ public abstract class Crawler implements Runnable{
         while (!Thread.currentThread().isInterrupted()) {
 
             String url = queue.getUrl();
-            if (cache.lruCache.getIfPresent(url)) {
+            //TODO: get domain
+            if (cache.exists(url)) {
                 queue.send(Collections.singletonList(url));
                 logger.error("Already in cache: " + url);
                 continue;
@@ -39,7 +41,7 @@ public abstract class Crawler implements Runnable{
                 logger.error("already exists in storage: " + url);
                 continue;
             }
-            cache.lruCache.get(Url);
+            cache.put(url);
             Document document;
             try {
                 document = fetcher.fetch(url);
@@ -53,7 +55,7 @@ public abstract class Crawler implements Runnable{
                 //TODO: Handle Exceptions
                 continue;
             }
-            storage.store(parser.getPageData());
+            storage.put(parser.getPageData());
             queue.send(parser.getPageData().getLinks());
         }
     }

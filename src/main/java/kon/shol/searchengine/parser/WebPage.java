@@ -1,6 +1,5 @@
 package kon.shol.searchengine.parser;
 
-import kon.shol.PageData;
 import org.jsoup.nodes.Document;
 
 public class WebPage {
