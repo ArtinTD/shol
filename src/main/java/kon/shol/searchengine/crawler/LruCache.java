@@ -7,7 +7,7 @@ import com.google.common.cache.LoadingCache;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class LruCache{
+public class LruCache implements Cache {
     private static LoadingCache<String, Boolean> lruCache = CacheBuilder.newBuilder()
             .expireAfterWrite(20, TimeUnit.SECONDS)
             .build(
@@ -18,13 +18,18 @@ public class LruCache{
                         }
                     });
 
-    public boolean exists(String element){
-        return lruCache.getIfPresent(element) == null;
+    @Override
+    public boolean exists(Object element) {
+        if (element instanceof String)
+            return lruCache.getIfPresent(element) == null;
+        else
+            return false;
     }
 
-    public void insert(String element){
+    @Override
+    public void insert(Object element) {
         try {
-            lruCache.get(element);
+            lruCache.get((String) element);
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
