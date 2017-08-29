@@ -2,28 +2,28 @@ package kon.shol.searchengine.kafka;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 
 
-public class Consumer {
+public class Consumer implements Runnable{
 
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
-    ArrayBlockingQueue<String> consumingQueue;
+    private ArrayBlockingQueue<String> consumingQueue;
     private KafkaConsumer<String, String> consumer;
+    private static final Object LOCK = new Object();
+    private static final String BOOTSTRAP_SERVERS = "188.165.235.136:9092,188.165.230.122:9092";
 
     public Consumer(String groupId, String topic, Properties props) {
 
         props.put(BOOTSTRAP_SERVERS_CONFIG,
-                "188.165.235.136:9092,188.165.230.122:9092");
+                BOOTSTRAP_SERVERS);
         props.put(KEY_DESERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(VALUE_DESERIALIZER_CLASS_CONFIG,
@@ -51,19 +51,6 @@ public class Consumer {
         consumingQueue = new ArrayBlockingQueue<>(1000);
     }
 
-    public ArrayList<String> batchGet() {
-
-        ArrayList<String> received = new ArrayList<>();
-        ConsumerRecords<String, String> records;
-        do {
-            records = consumer.poll(1000);
-        } while (records.isEmpty());
-        for (ConsumerRecord<String, String> record : records) {
-            received.add(record.value());
-        }
-        return received;
-    }
-
     public void run() {
 
         while (!Thread.currentThread().isInterrupted()) {
@@ -74,10 +61,22 @@ public class Consumer {
             for (ConsumerRecord<String, String> record : records) {
                 consumingQueue.add(record.value());
             }
+            synchronized (LOCK) {
+                try {
+                    LOCK.wait();
+                } catch (InterruptedException interruptedException) {
+                    logger.error("Error while waiting to fill the consuming queue");
+                }
+            }
         }
     }
 
     public String get() throws InterruptedException {
-        consumingQueue.take();
+        if (consumingQueue.size() <= 50) {
+            synchronized (LOCK) {
+                LOCK.notify();
+            }
+        }
+        return consumingQueue.take();
     }
 }

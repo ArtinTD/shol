@@ -1,6 +1,5 @@
 package kon.shol.searchengine.kafka;
 
-import kon.shol.searchengine.crawler.Queue;
 import kon.shol.searchengine.parser.PageData;
 import kon.shol.searchengine.serializer.Serializer;
 
@@ -20,9 +19,10 @@ public class HbaseQueue {
     public HbaseQueue() {
         producer = new Producer();
         Properties properties = new Properties();
-        properties.put(FETCH_MAX_BYTES_CONFIG,
-                DEFAULT_FETCH_MAX_BYTES);
+        properties.put(FETCH_MAX_BYTES_CONFIG, DEFAULT_FETCH_MAX_BYTES);
         consumer = new Consumer("1", TOPIC, properties);
+        Thread hBaseKafkaConsumingThread = new Thread(consumer);
+        hBaseKafkaConsumingThread.start();
         serializer = new Serializer();
     }
 
@@ -32,4 +32,8 @@ public class HbaseQueue {
         producer.send(serializedPageData, TOPIC);
     }
 
+    public String get() throws InterruptedException {
+
+        return consumer.get();
+    }
 }
