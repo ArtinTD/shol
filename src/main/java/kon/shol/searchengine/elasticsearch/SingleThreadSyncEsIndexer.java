@@ -18,8 +18,8 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
       kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
   private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<WebPage>();
   private String[] hosts;
-  private String index;
-  private String type;
+  private String index; // TODO make a single var out
+  private String type;  // TODO of these 2 -> endpoint
   private int port;
   private Sender indexer;
   
