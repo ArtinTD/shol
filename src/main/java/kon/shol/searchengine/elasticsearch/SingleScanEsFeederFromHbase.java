@@ -1,10 +1,9 @@
 package kon.shol.searchengine.elasticsearch;
 
-import kon.shol.HBase;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
@@ -13,12 +12,14 @@ import java.io.IOException;
 public class SingleScanEsFeederFromHbase {
   private final static Logger logger = Logger.getLogger(
       kon.shol.searchengine.elasticsearch.SingleScanEsFeederFromHbase.class);
-  private SingleThreadSyncEsIndexer indexer;
-  private HBase hbase;
-  private Scan scan;
+
   private Table table;
+  private Connection connection;
   private ResultScanner resultScanner;
-  
+
+
+  private SingleThreadSyncEsIndexer indexer;
+
   public static void main(String[] args) {
     SingleScanEsFeederFromHbase feeder = new SingleScanEsFeederFromHbase();
     try {
@@ -32,15 +33,17 @@ public class SingleScanEsFeederFromHbase {
     feeder.index();
     feeder.close();
   }
-  
+
   private void init(String[] hosts, String index, String type
       , String zookeeperIp, String tablename) throws IOException {
     indexer = new SingleThreadSyncEsIndexer(hosts, index, type);
-    hbase = new HBase(zookeeperIp, tablename);
-    scan = new Scan();
-    resultScanner = table.getScanner(scan);
+    Configuration configuration = HBaseConfiguration.create();
+    configuration.set("hbase.zookeeper.quorum", zookeeperIp);
+    connection = ConnectionFactory.createConnection(configuration);
+    table = connection.getTable(TableName.valueOf(tablename));
+    resultScanner = table.getScanner(new Scan());
   }
-  
+
   private WebPage makeWebpage(Result r) {
     String url = Bytes.toString(r.getRow());
     String title = Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("title")));
@@ -63,7 +66,7 @@ public class SingleScanEsFeederFromHbase {
     }
     return new WebPage(url, title, text, desc, h1h3, h4h6, imagesAlt, pageRank, anchorTxts);
   }
-  
+
   private void index() {
     for (Result r : resultScanner) {
       try {
@@ -76,7 +79,8 @@ public class SingleScanEsFeederFromHbase {
   
   private void close() {
     try {
-      hbase.close();
+      table.close();
+      connection.close();
     } catch (IOException expected) {
     }
     while (!indexer.isDone()) {
