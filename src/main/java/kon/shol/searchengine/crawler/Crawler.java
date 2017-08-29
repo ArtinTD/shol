@@ -6,7 +6,7 @@ import org.jsoup.nodes.Document;
 
 import java.util.Collections;
 
-public abstract class Crawler implements Runnable{
+public abstract class Crawler implements Runnable {
 
     private Queue queue;
     private Cache cache;
@@ -28,7 +28,6 @@ public abstract class Crawler implements Runnable{
     public void run() {
 
         while (!Thread.currentThread().isInterrupted()) {
-
             String url = queue.getUrl();
             if (cache.lruCache.getIfPresent(url)) {
                 queue.send(Collections.singletonList(url));
