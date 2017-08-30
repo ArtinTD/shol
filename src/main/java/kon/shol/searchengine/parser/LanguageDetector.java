@@ -13,9 +13,7 @@ class LanguageDetector {
 
 
     private String detectLanguage(Document document) throws IOException {
-        System.out.println(document.text());
         LanguageIdentifier identifier = new LanguageIdentifier(document.title());
-        System.out.println(identifier.getLanguage());
         return identifier.getLanguage();
     }
 

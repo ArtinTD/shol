@@ -63,7 +63,6 @@ public class Crawler implements Runnable {
             Document document;
             try {
                 document = fetcher.fetch(url);
-                System.out.println("sag");
             } catch (IOException exception) {
                 logger.error("Error fetching " + url + ": " + exception.getMessage());
                 continue;

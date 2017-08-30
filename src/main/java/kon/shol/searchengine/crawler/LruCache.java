@@ -21,7 +21,7 @@ public class LruCache implements Cache {
     @Override
     public boolean exists(Object element) {
         if (element instanceof String)
-            return lruCache.getIfPresent(element) == null;
+            return lruCache.getIfPresent(element) != null;
         else
             return false;
     }
