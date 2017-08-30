@@ -79,27 +79,19 @@ public class SparkTest {
                 ImmutableBytesWritable.class,
                 Result.class);
 
-        JavaPairRDD<String, Iterable<String>> links = hBaseRDD.flatMapToPair(s -> {
-            List<Tuple2<String, String>> results = new ArrayList<Tuple2<String, String>>();
+        JavaPairRDD<String, Iterable<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
             String row = Bytes.toString(r.getRow());
             ArrayList<String> adj = castResultToStringArrayList(r, "data", "bulk");
             //             r.getValue(Bytes.toBytes("data"), Bytes.toBytes("bulk"));
-            for (String part : adj) {
-                results.add( new Tuple2<>(row, part) );
-            }
-
-                return results.iterator();
-        }).mapToPair(s -> {
-            return new Tuple2<String, String>(s._1, s._2);
-            }
-        ).distinct().groupByKey().cache();
+            return new Tuple2<>(row , adj);
+        });
 
         // Loads all URLs with other URL(s) link to from input file and initialize ranks of them to one.
         JavaPairRDD<String, Double> ranks = links.mapValues(rs -> 1.0);
 
         // Calculates and updates URL ranks continuously using PageRank algorithm.
-        for (int current = 0; current < 100; current++) {
+        for (int current = 0; current < 50; current++) {
             // Calculates URL contributions to the rank of other URLs.
             JavaPairRDD<String, Double> contribs = links.join(ranks).values()
                     .flatMapToPair(s -> {
@@ -118,6 +110,7 @@ public class SparkTest {
         // Collects all URL ranks and dump them to console.
         List<Tuple2<String, Double>> output = ranks.collect();
         for (Tuple2<?,?> tuple : output) {
+
             System.out.println(tuple._1() + " has rank: " + tuple._2() + ".");
         }
 
