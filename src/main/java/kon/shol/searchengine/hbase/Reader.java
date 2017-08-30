@@ -4,6 +4,7 @@ import kon.shol.searchengine.serializer.Deserializer;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -18,6 +19,10 @@ public class Reader {
     public Reader(String tableNameStr) throws IOException {
         TableName tableName = TableName.valueOf(tableNameStr);
         table = connection.getTable(tableName);
+    }
+
+    public boolean exists(String rowKey) throws IOException {
+        return table.exists(new Get(Bytes.toBytes(rowKey)));
     }
 
 }

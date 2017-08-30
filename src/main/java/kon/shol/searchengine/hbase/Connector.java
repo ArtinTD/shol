@@ -42,7 +42,4 @@ public class Connector {
         return connection;
     }
 
-    public boolean isClosed(){
-        return connection.isClosed();
-    }
 }

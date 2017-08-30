@@ -1,6 +1,7 @@
 package kon.shol.searchengine.parser;
 
 import com.google.common.net.InternetDomainName;
+import com.google.gson.Gson;
 import kon.shol.searchengine.parser.exceptions.EmptyDocumentException;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
@@ -35,8 +36,10 @@ public class Parser {
             pageData.setAnchors(extractAnchors(doc));
             pageData.setText(doc.text());
             pageData.setTitle(doc.title());
-            pageData.setDescription(doc.select("meta[name=description]").attr("content"));
-            pageData.setImagesAlt(String.join(" ", doc.select("img").eachAttr("alt")));
+            pageData.setDescription(doc.select("meta[name=description]")
+                    .attr("content"));
+            pageData.setImagesAlt(String.join(" ", doc.select("img")
+                    .eachAttr("alt")));
             pageData.setH1h3(doc.select("h1,h2,h3").text());
             pageData.setH4h6(doc.select("h4,h5,h6").text());
         }
@@ -59,15 +62,15 @@ public class Parser {
         }
     }
 
-    public String getDomain(String link) throws MalformedURLException, IllegalArgumentException  {
-            URL url = new URL(link);
-            return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
+    public String getDomain(String link) throws MalformedURLException, IllegalArgumentException {
+        URL url = new URL(link);
+        return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
     }
 
     private boolean isValid(Document document) throws IOException {
         if (!document.hasText())
             throw new EmptyDocumentException("Empty Document: " + document.location());
-        else if (languageDetector.isEnglish(document)){
+        else if (languageDetector.isEnglish(document)) {
             return true;
         }
         return false;
@@ -92,9 +95,11 @@ public class Parser {
             if (url.charAt(url.length() - 1) != '/') {
                 url += "/";
             }
-            List<String> domainArray = Arrays.asList(InternetDomainName.from(new URL(url).getHost()).name().split("\\."));
+            List<String> domainArray = Arrays.asList(InternetDomainName.from(
+                    new URL(url).getHost()).name().split("\\."));
             Collections.reverse(domainArray);
-            return (String.join(".", domainArray)) + url.substring(StringUtils.ordinalIndexOf(url, "/", 3));
+            return (String.join(".", domainArray)) + url.substring(
+                    StringUtils.ordinalIndexOf(url, "/", 3));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -103,6 +108,14 @@ public class Parser {
 
     public PageData getPageData() {
         return pageData;
+    }
+
+    public <T> T deserialize(String payload, Class<T> tClass) {
+        return new Gson().fromJson(payload, tClass);
+    }
+
+    public String serialize(Object payload) {
+        return new Gson().toJson(payload);
     }
 
 }
