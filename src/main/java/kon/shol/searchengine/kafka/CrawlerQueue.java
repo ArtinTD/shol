@@ -15,7 +15,7 @@ public class CrawlerQueue implements Queue {
         producer = new Producer();
         Properties properties = new Properties();
         properties.put(FETCH_MAX_BYTES_CONFIG, "10000");
-        consumer = new Consumer("0", TOPIC, properties);
+        consumer = new Consumer("8", TOPIC, properties);
         Thread crawlerKafkaConsumingThread = new Thread(consumer);
         crawlerKafkaConsumingThread.start();
     }

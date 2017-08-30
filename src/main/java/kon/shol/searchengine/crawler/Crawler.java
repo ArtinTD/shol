@@ -47,7 +47,7 @@ public class Crawler implements Runnable {
             try {
                 String domain = parser.getDomain(url);
                 if (cache.exists(domain)) {
-                    queue.send(Collections.singletonList(url));
+                    queue.send(url);
                     logger.error("Already in cache: " + url);
                     continue;
                 }
@@ -57,12 +57,13 @@ public class Crawler implements Runnable {
                 }
                 cache.insert(domain);
             } catch (Exception e) {
-                logger.error(e.getStackTrace());
+                e.printStackTrace();
                 continue;
             }
             Document document;
             try {
                 document = fetcher.fetch(url);
+                System.out.println("sag");
             } catch (IOException exception) {
                 logger.error("Error fetching " + url + ": " + exception.getMessage());
                 continue;

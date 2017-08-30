@@ -51,7 +51,7 @@ public class Producer {
 
     public void send(String message, String topic) {
 
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(message, topic);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, message);
         producer.send(producerRecord, (metadata, exception) -> {
             if (exception != null) {
                 //todo handle future
