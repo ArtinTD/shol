@@ -1,5 +1,6 @@
 package kon.shol.searchengine.crawler;
 
+import kon.shol.searchengine.crawler.exceptions.InvalidStatusCodeException;
 import kon.shol.searchengine.parser.Parser;
 import kon.shol.searchengine.parser.exceptions.EmptyDocumentException;
 import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
@@ -35,7 +36,14 @@ public class Crawler implements Runnable {
         //TODO: Logger error
         while (!Thread.currentThread().isInterrupted()) {
 
-            String url = queue.getUrl();
+            String url;
+            try {
+                url = queue.get();
+            } catch (InterruptedException interruptedException) {
+                logger.error("Interruption while getting from CrawlerQueue:\n " +
+                        interruptedException.getMessage());
+                continue;
+            }
             try {
                 String domain = parser.getDomain(url);
                 if (cache.exists(domain)) {
@@ -55,16 +63,15 @@ public class Crawler implements Runnable {
             Document document;
             try {
                 document = fetcher.fetch(url);
-            } catch (Exception e) {
-
-                //TODO: Handle Exceptions
+            } catch (IOException exception) {
+                logger.error("Error fetching " + url + ": " + exception.getMessage());
                 continue;
             }
             try {
                 try {
                     parser.parse(document);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                } catch (IOException exception) {
+                    logger.error("Error parsing " + url + ": " + exception.getMessage());
                 }
             } catch (InvalidLanguageException | EmptyDocumentException parseException) {
                 logger.error(parseException.getMessage());

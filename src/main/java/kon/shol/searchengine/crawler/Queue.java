@@ -2,7 +2,7 @@ package kon.shol.searchengine.crawler;
 
 public interface Queue {
 
-    String getUrl();
-    void send(Object ... element);
+    String get() throws InterruptedException;
+    void send(Object element);
 
 }

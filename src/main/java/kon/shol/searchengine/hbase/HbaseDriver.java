@@ -4,7 +4,6 @@ import kon.shol.searchengine.crawler.Storage;
 import kon.shol.searchengine.kafka.HbaseQueue;
 import kon.shol.searchengine.parser.PageData;
 import kon.shol.searchengine.parser.Parser;
-import kon.shol.searchengine.serializer.Deserializer;
 
 import java.io.IOException;
 

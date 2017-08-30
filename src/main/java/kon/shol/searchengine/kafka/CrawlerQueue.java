@@ -21,12 +21,15 @@ public class CrawlerQueue implements Queue {
     }
 
     @Override
-    public String getUrl() {
-        return null;
+    public String get() throws InterruptedException {
+
+        return consumer.get();
     }
 
     @Override
     public void send(Object element) {
 
+        String toSend = (String) element;
+        producer.send(toSend, TOPIC);
     }
 }
