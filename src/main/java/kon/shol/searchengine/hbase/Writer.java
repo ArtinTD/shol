@@ -22,7 +22,7 @@ public class Writer implements Runnable {
     private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
     
-    private final int MAX_BATCH_PUT_SIZE = 40;
+    private final int  MAX_BATCH_PUT_SIZE = 40;
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");
@@ -75,6 +75,7 @@ public class Writer implements Runnable {
         String url = parser.reverseDomain(pageData.getUrl());
         Put put = returnPutPageData(url, pageData);
         putList.add(put);
+        logger.error("Added " + pageData.getUrl() + " to the Put List ... ");
         if (putList.size() > MAX_BATCH_PUT_SIZE) {
             if (connection.isClosed()) {
                 try {
@@ -87,6 +88,7 @@ public class Writer implements Runnable {
                 }
             } else {
                 try {
+                    logger.error("Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
                     table.put(putList);
                 } catch (IOException e) {
                     logger.error("Couldn't Put in HBase");

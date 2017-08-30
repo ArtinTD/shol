@@ -4,14 +4,18 @@ import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
 import org.apache.tika.language.LanguageIdentifier;
 import org.jsoup.nodes.Document;
 
+
 import java.io.IOException;
 
 class LanguageDetector {
 
     private final String ENGLISH_LANGUAGE = "en";
 
+
     private String detectLanguage(Document document) throws IOException {
-        LanguageIdentifier identifier = new LanguageIdentifier(document.text());
+        System.out.println(document.text());
+        LanguageIdentifier identifier = new LanguageIdentifier(document.title());
+        System.out.println(identifier.getLanguage());
         return identifier.getLanguage();
     }
 
