@@ -54,6 +54,7 @@ public class Producer {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(message, topic);
         producer.send(producerRecord, (metadata, exception) -> {
             if (exception != null) {
+                //todo handle future
                 logger.error(exception.getMessage());
             }
             if (exception instanceof UnknownServerException) {

@@ -19,7 +19,7 @@ public class Writer implements Runnable {
 
     private Table table;
     private List<Put> putList;
-    private HbaseQueue hbaseQueue;
+    private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
     
     private final int MAX_BATCH_PUT_SIZE = 40;
@@ -35,7 +35,6 @@ public class Writer implements Runnable {
         TableName tableName = TableName.valueOf(tableNameStr);
         putList = new ArrayList<>();
         parser = new Parser();
-        hbaseQueue = new HbaseQueue();
         table = connection.getTable(tableName);
     }
 

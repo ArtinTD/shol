@@ -21,7 +21,7 @@ public class Crawler implements Runnable {
 
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.crawler.Crawler.class);
 
-    Crawler(Queue queue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
+    public Crawler(Queue queue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
 
         this.queue = queue;
         this.cache = cache;
@@ -57,7 +57,7 @@ public class Crawler implements Runnable {
                 }
                 cache.insert(domain);
             } catch (Exception e) {
-                logger.error("Bad link : " + url);
+                logger.error(e.getStackTrace());
                 continue;
             }
             Document document;
