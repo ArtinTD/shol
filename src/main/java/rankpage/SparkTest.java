@@ -12,7 +12,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
+import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat;
+import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2;
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat;
+import org.apache.hadoop.hbase.mapreduce.TableOutputFormat;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.Text;
@@ -70,6 +73,7 @@ public class SparkTest {
         Configuration conf = HBaseConfiguration.create();
 
         conf.set(TableInputFormat.INPUT_TABLE, "prtest");
+        conf.set(TableOutputFormat.OUTPUT_TABLE, "prtest2");
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
 
         // Initialize hBase table if necessary
@@ -113,6 +117,8 @@ public class SparkTest {
 
             System.out.println(tuple._1() + " has rank: " + tuple._2() + ".");
         }
+
+        ranks.saveAsNewAPIHadoopDataset(conf);
 
         sc.stop();
     }
