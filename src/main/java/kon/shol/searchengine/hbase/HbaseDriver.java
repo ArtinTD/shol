@@ -2,8 +2,6 @@ package kon.shol.searchengine.hbase;
 
 import kon.shol.searchengine.crawler.Storage;
 import kon.shol.searchengine.kafka.HbaseQueue;
-import kon.shol.searchengine.parser.PageData;
-import kon.shol.searchengine.parser.Parser;
 
 import java.io.IOException;
 
@@ -12,7 +10,7 @@ import static kon.shol.searchengine.hbase.Connector.connection;
 public class HbaseDriver implements Storage {
     private Writer writer;
     private Reader reader;
-    private HbaseQueue hbaseQueue;
+    private HbaseQueue hBaseQueue;
 
     public HbaseDriver (String tableName) throws IOException {
         if (connection.isClosed()){
@@ -20,11 +18,11 @@ public class HbaseDriver implements Storage {
         }
         writer = new Writer(tableName);
         reader = new Reader(tableName);
-        hbaseQueue = new HbaseQueue();
+        hBaseQueue = new HbaseQueue();
     }
     @Override
     public void sendToStorage(Object element) {
-        //TODO: Call Kafka
+        hBaseQueue.send(element);
     }
 
     @Override

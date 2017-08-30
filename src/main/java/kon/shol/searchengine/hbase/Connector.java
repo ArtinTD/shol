@@ -26,10 +26,10 @@ public class Connector {
             if (connection.isClosed()) {
                 connect(zooKeeperIp);
             } else {
-                System.out.println("There is a valid connection");
+                logger.error("There is a valid connection");
             }
         } catch (NullPointerException e) {
-            System.out.println("Initiating Hbase Connection");
+            logger.error("Initiating Hbase Connection");
             connect(zooKeeperIp);
         }
     }
