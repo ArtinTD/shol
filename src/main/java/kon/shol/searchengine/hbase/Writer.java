@@ -21,9 +21,13 @@ public class Writer implements Runnable {
     private List<Put> putList;
     private HbaseQueue hbaseQueue;
     private Parser parser;
+    
     private final int MAX_BATCH_PUT_SIZE = 40;
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
-
+    private final byte[] DATA_CF = Bytes.toBytes("data");
+    private final byte[] LINKS_CF = Bytes.toBytes("links");
+    private final byte[] ANCHORS_CF = Bytes.toBytes("anchors");
+    
     public Writer(String tableNameStr) throws IOException {
         if (connection.isClosed()){
             new Connector();
@@ -38,26 +42,23 @@ public class Writer implements Runnable {
 
     private Put returnPutPageData(String url, PageData pageData) {
         Put put = new Put(Bytes.toBytes(url));
-        byte[] dataColumnFamily = Bytes.toBytes("data");
-        byte[] linksColumnFamily = Bytes.toBytes("links");
-        byte[] anchorsColumnFamily = Bytes.toBytes("anchors");
-        put.addColumn(dataColumnFamily, Bytes.toBytes("title"),
+        put.addColumn(DATA_CF, Bytes.toBytes("title"),
                 Bytes.toBytes(pageData.getTitle()));
-        put.addColumn(dataColumnFamily, Bytes.toBytes("description"),
+        put.addColumn(DATA_CF, Bytes.toBytes("description"),
                 Bytes.toBytes(pageData.getDescription()));
-        put.addColumn(dataColumnFamily, Bytes.toBytes("text"),
+        put.addColumn(DATA_CF, Bytes.toBytes("text"),
                 Bytes.toBytes(pageData.getText()));
-        put.addColumn(dataColumnFamily, Bytes.toBytes("url"),
+        put.addColumn(DATA_CF, Bytes.toBytes("url"),
                 Bytes.toBytes(pageData.getUrl()));
-        put.addColumn(dataColumnFamily, Bytes.toBytes("h1h3"),
+        put.addColumn(DATA_CF, Bytes.toBytes("h1h3"),
                 Bytes.toBytes(pageData.getH1h3()));
-        put.addColumn(dataColumnFamily, Bytes.toBytes("h4h6"),
+        put.addColumn(DATA_CF, Bytes.toBytes("h4h6"),
                 Bytes.toBytes(pageData.getH4h6()));
-        put.addColumn(dataColumnFamily, Bytes.toBytes("alt"),
+        put.addColumn(DATA_CF, Bytes.toBytes("alt"),
                 Bytes.toBytes(pageData.getImagesAlt()));
-        put.addColumn(linksColumnFamily, Bytes.toBytes("links"),
+        put.addColumn(LINKS_CF, Bytes.toBytes("links"),
                 Bytes.toBytes(parser.serialize(pageData.getLinks())));
-        put.addColumn(anchorsColumnFamily, Bytes.toBytes("anchors"),
+        put.addColumn(ANCHORS_CF, Bytes.toBytes("anchors"),
                 Bytes.toBytes(parser.serialize(pageData.getAnchors())));
         return put;
     }
