@@ -37,7 +37,6 @@ public class Crawler implements Runnable {
 
             String url = queue.getUrl();
             try {
-
                 String domain = parser.getDomain(url);
                 if (cache.exists(domain)) {
                     queue.send(Collections.singletonList(url));
@@ -49,7 +48,6 @@ public class Crawler implements Runnable {
                     continue;
                 }
                 cache.insert(domain);
-
             } catch (Exception e) {
                 logger.error("Bad link : " + url);
                 continue;
