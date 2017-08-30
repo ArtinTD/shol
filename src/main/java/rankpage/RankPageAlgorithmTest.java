@@ -21,18 +21,20 @@ public class RankPageAlgorithmTest {
         System.out.println(System.currentTimeMillis());
         HBase hBase = null;
         try {
-            hBase = new HBase("188.165.230.122:2181", "prtest");
+            hBase = new HBase("188.165.230.122:2181", "prtest2");
             Table table = hBase.getTable();
             Scan scan = new Scan();
             ResultScanner resultScanner = table.getScanner(scan);
             for (Result r : resultScanner) {
-//                System.out.print(Bytes.toString(r.getRow()));
+                System.out.print(Bytes.toString(r.getRow()));
+                System.out.println(Bytes.toDouble(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("pagerank"))));
+
 
 //                hBase.getArrayList(Bytes.toString(r.getRow()), "data", "links");
-                pg.addPage( new Page( Bytes.toString(r.getRow() ),
-                        hBase.getArrayList(Bytes.toString(r.getRow()), "data", "bulk")
-                    )
-                );
+//                pg.addPage( new Page( Bytes.toString(r.getRow() ),
+//                        hBase.getArrayList(Bytes.toString(r.getRow()), "data", "bulk")
+//                    )
+//                );
             }
 
             System.out.println("scan finished");

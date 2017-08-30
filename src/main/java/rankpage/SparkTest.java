@@ -79,6 +79,7 @@ public class SparkTest {
         conf.set(TableOutputFormat.OUTPUT_TABLE, "prtest2");
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
         conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
+        conf.set("mapreduce.output.fileoutputformat.outputdir", "/hbase");
 
         // Initialize hBase table if necessary
         JavaPairRDD<ImmutableBytesWritable, Result> hBaseRDD = sc.newAPIHadoopRDD(
@@ -89,6 +90,7 @@ public class SparkTest {
 
         JavaPairRDD<String, Iterable<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
+            r.getRow();
             String row = Bytes.toString(r.getRow());
             ArrayList<String> adj = castResultToStringArrayList(r, "data", "bulk");
             //             r.getValue(Bytes.toBytes("data"), Bytes.toBytes("bulk"));
