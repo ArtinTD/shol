@@ -10,7 +10,9 @@ import java.util.regex.Pattern;
 import kon.shol.HBase;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat;
 import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2;
@@ -20,6 +22,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
@@ -61,7 +64,7 @@ public class SparkTest {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //        SparkSession spark = SparkSession.builder().appName("JavaWordCount").master("spark://ns326728.ip-188-165-235.eu:7077").getOrCreate();
 
         SparkConf con = new SparkConf().setAppName("testApp").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
@@ -75,6 +78,7 @@ public class SparkTest {
         conf.set(TableInputFormat.INPUT_TABLE, "prtest");
         conf.set(TableOutputFormat.OUTPUT_TABLE, "prtest2");
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
+        conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
 
         // Initialize hBase table if necessary
         JavaPairRDD<ImmutableBytesWritable, Result> hBaseRDD = sc.newAPIHadoopRDD(
@@ -118,7 +122,17 @@ public class SparkTest {
             System.out.println(tuple._1() + " has rank: " + tuple._2() + ".");
         }
 
-        ranks.saveAsNewAPIHadoopDataset(conf);
+//        Job newAPIJobConfiguration1 = Job.getInstance(conf);
+//        newAPIJobConfiguration1.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, "tableName");
+//        newAPIJobConfiguration1.setOutputFormatClass(org.apache.hadoop.hbase.mapreduce.TableOutputFormat.class);
+
+        JavaPairRDD<ImmutableBytesWritable, Put> hbasePuts = ranks.mapToPair(s -> {
+            Put put = new Put(Bytes.toBytes(s._1));
+            put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("pagerank"), Bytes.toBytes(s._2));
+            return new Tuple2<>(new ImmutableBytesWritable(), put);
+        });
+
+        hbasePuts.saveAsNewAPIHadoopDataset(conf);
 
         sc.stop();
     }
