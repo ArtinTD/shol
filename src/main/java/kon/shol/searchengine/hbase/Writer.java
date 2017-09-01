@@ -22,7 +22,7 @@ public class Writer implements Runnable {
     private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
 
-    private final int MAX_BATCH_PUT_SIZE = 40;
+    private final int MAX_BATCH_PUT_SIZE = 5;
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");

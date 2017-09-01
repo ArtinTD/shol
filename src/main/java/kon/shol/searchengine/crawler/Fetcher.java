@@ -23,6 +23,11 @@ public class Fetcher {
         } else {
             throw new InvalidStatusCodeException(statusCode, url);
         }*/
-        return Jsoup.connect(url).get();
+        return Jsoup.connect(url)
+                .timeout(3*1000)
+                .followRedirects(true)
+                .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                .referrer("http://google.com")
+                .get();
     }
 }
