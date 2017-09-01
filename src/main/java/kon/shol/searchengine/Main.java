@@ -44,6 +44,7 @@ public class Main {
             parser = new Parser();
             executor.execute(new Crawler(crawlerQueue, lruCache, fetcher, parser, hBase));
         }
+//        TODO: Check Hbase Threads Behaviors
         for (int i = 0; i < 10; i++) {
             try {
                 hBaseWriter = new Writer("testdb");
