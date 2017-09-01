@@ -27,11 +27,11 @@ class LanguageDetector {
     }
 
     boolean isEnglish(Document document) throws IOException {
-        if (!checkMetaLanguage(document, ENGLISH_LANGUAGE)) {
+        /*if (!checkMetaLanguage(document, ENGLISH_LANGUAGE)) {
             throw new InvalidLanguageException("Meta not English: " + document.location());
         } else if (!detectLanguage(document).equals(ENGLISH_LANGUAGE)) {
             throw new InvalidLanguageException("Text not English: " + document.location());
-        }
+        }*/
         return true;
     }
 }

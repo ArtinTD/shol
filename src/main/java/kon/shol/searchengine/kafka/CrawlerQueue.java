@@ -1,7 +1,10 @@
 package kon.shol.searchengine.kafka;
 
 import kon.shol.searchengine.crawler.Queue;
+
 import static org.apache.kafka.clients.consumer.ConsumerConfig.FETCH_MAX_BYTES_CONFIG;
+
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class CrawlerQueue implements Queue {
@@ -28,8 +31,13 @@ public class CrawlerQueue implements Queue {
 
     @Override
     public void send(Object element) {
-
-        String toSend = (String) element;
-        producer.send(toSend, TOPIC);
+        if (element instanceof String) {
+            String toSend = (String) element;
+            producer.send(toSend, TOPIC);
+        }else if (element instanceof ArrayList){
+            for (String s : (ArrayList<String>) element){
+                this.send(s);
+            }
+        }
     }
 }

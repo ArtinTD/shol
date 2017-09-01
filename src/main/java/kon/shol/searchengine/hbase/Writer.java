@@ -81,6 +81,7 @@ public class Writer implements Runnable {
         Put put = returnPutPageData(url, pageData);
         putList.add(put);
         logger.error("Added " + pageData.getUrl() + " to the Put List ... ");
+        System.out.println("Putlist size " +  putList.size());
         if (putList.size() > MAX_BATCH_PUT_SIZE) {
             if (connection.isClosed()) {
                 try {
