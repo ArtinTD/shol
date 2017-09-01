@@ -14,7 +14,9 @@ class LanguageDetector {
 
     private String detectLanguage(Document document) throws IOException {
         LanguageIdentifier identifier = new LanguageIdentifier(document.title());
+//        return "en";
         return identifier.getLanguage();
+//        TODO: THIS IS NOT WORKING :|
     }
 
     private boolean checkMetaLanguage(Document document, String language) {

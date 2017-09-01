@@ -36,6 +36,7 @@ public class Parser {
             pageData.setAnchors(extractAnchors(doc));
             pageData.setText(doc.text());
             pageData.setTitle(doc.title());
+            pageData.setUrl(doc.location());
             pageData.setDescription(doc.select("meta[name=description]")
                     .attr("content"));
             pageData.setImagesAlt(String.join(" ", doc.select("img")

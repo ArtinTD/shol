@@ -13,7 +13,7 @@ public class Fetcher {
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.crawler.Fetcher.class);
 
     public Document fetch(String url) throws IOException {
-        Connection connection = Jsoup.connect(url)
+        /*Connection connection = Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21");
 //                .timeout(3000);
         Connection.Response response = connection.execute();
@@ -22,6 +22,7 @@ public class Fetcher {
             return connection.get();
         } else {
             throw new InvalidStatusCodeException(statusCode, url);
-        }
+        }*/
+        return Jsoup.connect(url).get();
     }
 }

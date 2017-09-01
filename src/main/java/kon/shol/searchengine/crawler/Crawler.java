@@ -48,7 +48,7 @@ public class Crawler implements Runnable {
                 String domain = parser.getDomain(url);
                 if (cache.exists(domain)) {
                     queue.send(url);
-                    logger.error("Already in cache: " + url);
+//                    logger.error("Already in cache: " + url);
                     continue;
                 }
                 if (storage.exists(url)) {

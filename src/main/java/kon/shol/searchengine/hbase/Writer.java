@@ -21,15 +21,15 @@ public class Writer implements Runnable {
     private List<Put> putList;
     private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
-    
-    private final int  MAX_BATCH_PUT_SIZE = 40;
+
+    private final int MAX_BATCH_PUT_SIZE = 40;
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");
     private final byte[] ANCHORS_CF = Bytes.toBytes("anchors");
-    
+
     public Writer(String tableNameStr) throws IOException {
-        if (connection.isClosed()){
+        if (connection.isClosed()) {
             new Connector();
         }
         TableName tableName = TableName.valueOf(tableNameStr);
@@ -57,8 +57,11 @@ public class Writer implements Runnable {
                 Bytes.toBytes(pageData.getImagesAlt()));
         put.addColumn(LINKS_CF, Bytes.toBytes("links"),
                 Bytes.toBytes(parser.serialize(pageData.getLinks())));
-        put.addColumn(ANCHORS_CF, Bytes.toBytes("anchors"),
-                Bytes.toBytes(parser.serialize(pageData.getAnchors())));
+        /*put.addColumn(ANCHORS_CF, Bytes.toBytes("anchors"),
+                Bytes.toBytes(parser.serialize(pageData.getAnchors())));*/
+        pageData.getAnchors().forEach((key, value) -> {
+            put.addColumn(ANCHORS_CF, Bytes.toBytes(key), Bytes.toBytes(value));
+        });
         return put;
     }
 
@@ -66,7 +69,9 @@ public class Writer implements Runnable {
         Put put = returnPutPageData(url, pageData);
         try {
             table.put(put);
+            System.out.println("Put " + url + " to Hbase Was Successful");
         } catch (IOException e) {
+            e.printStackTrace();
             logger.error("Can't put to HBase");
         }
     }
@@ -97,6 +102,7 @@ public class Writer implements Runnable {
             }
         }
     }
+
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {

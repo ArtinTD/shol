@@ -33,7 +33,7 @@ public class Main {
         ExecutorService executor = Executors.newFixedThreadPool(110);
 
         try {
-            hBase = new HbaseDriver("main");
+            hBase = new HbaseDriver("testdb");
         } catch (IOException e) {
             logger.error("are dige...");
         }
@@ -46,7 +46,7 @@ public class Main {
         }
         for (int i = 0; i < 10; i++) {
             try {
-                hBaseWriter = new Writer("main");
+                hBaseWriter = new Writer("testdb");
             } catch (IOException e) {
                 logger.error("chera aziat mikoni...");
             }
