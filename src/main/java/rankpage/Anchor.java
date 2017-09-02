@@ -13,6 +13,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.NavigableMap;
 
 public class Anchor {
@@ -41,16 +42,14 @@ public class Anchor {
 
         JavaPairRDD<String, String> anchors = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
-            NavigableMap<byte[], byte[]> anchorsMap = r.getFamilyMap(Bytes.toBytes("anchors"));
-            NavigableMap<byte[], byte[]> linksMap = r.getFamilyMap(Bytes.toBytes("links"));
-            anchorsMap.forEach((k, v) -> {
-                System.out.println(Bytes.toString(k) + " : " + Bytes.toString(v));
-            });
-            linksMap.forEach((k,v)->{
-                System.out.println(Bytes.toString(k));
-            });
+            Map<byte[], byte[]> anchorsMap = r.getFamilyMap(Bytes.toBytes("anchors"));
+
+            for (Map.Entry<byte[], byte[]> z : anchorsMap.entrySet()){
+                System.out.println( Bytes.toString( z.getKey() ) + " * " + Bytes.toString(z.getValue()) );
+            }
 
             //             r.getValue(Bytes.toBytes("data"), Bytes.toBytes("bulk"));
+            System.out.println("DADA");
             return new Tuple2<>("a", "a");
         });
 
