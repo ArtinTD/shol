@@ -13,6 +13,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 
@@ -40,18 +41,22 @@ public class Anchor {
                 ImmutableBytesWritable.class,
                 Result.class);
 
-        JavaPairRDD<String, String> anchors = hBaseRDD.mapToPair(s -> {
+        JavaPairRDD<String, String> anchors = hBaseRDD.flatMapToPair(s -> {
             Result r = s._2;
             Map<byte[], byte[]> anchorsMap = r.getFamilyMap(Bytes.toBytes("anchors"));
+            List<Tuple2<String, String>> anchor = new ArrayList<>();
 
             for (Map.Entry<byte[], byte[]> z : anchorsMap.entrySet()){
-                System.out.println( Bytes.toString( z.getKey() ) + " * " + Bytes.toString(z.getValue()) );
+                anchor.add( new Tuple2<>(Bytes.toString(z.getKey()) , Bytes.toString(z.getValue())) );
             }
 
-            //             r.getValue(Bytes.toBytes("data"), Bytes.toBytes("bulk"));
-            System.out.println("DADA");
-            return new Tuple2<>("a", "a");
+            return anchor.iterator();
         });
 
+        Map<String, String> ret = anchors.collectAsMap();
+
+        ret.forEach( (k, v) -> {
+            System.out.println(k + ": " + v);
+        });
     }
 }
