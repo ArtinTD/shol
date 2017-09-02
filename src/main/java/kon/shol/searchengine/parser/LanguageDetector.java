@@ -34,6 +34,7 @@ class LanguageDetector {
             throw new InvalidLanguageException("Text not English: " + document.location());
         }
         return true;
+
     }
 
     public static void main(String args[]){
