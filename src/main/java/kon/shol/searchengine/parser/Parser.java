@@ -54,7 +54,7 @@ public class Parser {
 
     public String getDomain(String link) throws MalformedURLException, IllegalArgumentException {
         URL url = new URL(link);
-        return InternetDomainName.from(url.getHost()).topPrivateDomain().name();
+        return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
     }
 
     private boolean isValid(Document document) throws IOException {
@@ -102,7 +102,7 @@ public class Parser {
                 url += "/";
             }
             List<String> domainArray = Arrays.asList(InternetDomainName.from(
-                    new URL(url).getHost()).name().split("\\."));
+                    new URL(url).getHost()).toString().split("\\."));
             Collections.reverse(domainArray);
             return (String.join(".", domainArray)) + url.substring(
                     StringUtils.ordinalIndexOf(url, "/", 3));
