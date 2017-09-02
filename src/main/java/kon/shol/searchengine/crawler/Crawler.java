@@ -18,7 +18,7 @@ public class Crawler implements Runnable {
     private Fetcher fetcher;
     private Parser parser;
     private Storage storage;
-    private int numCycle;
+    private int numCycle = 0;
 
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.crawler.Crawler.class);
 

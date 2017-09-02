@@ -47,6 +47,13 @@ public class Main {
             monitor.addCrawler(temp);
             executor.execute(temp);
         }
+        Thread t = new Thread(monitor);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
        /* //TODO: Check Hbase Threads Behaviors
         for (int i = 0; i < 50; i++) {
             try {
