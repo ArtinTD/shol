@@ -89,7 +89,7 @@ public class Crawler implements Runnable {
             }
 //           TODO: Let's Move the Parse section  to other threads. Cuz pageData is too heavy to go through Kafka, Should be Asked from the Mentors
             storage.sendToStorage(parser.getPageData());
-            queue.send(parser.getPageData().getLinks());
+            queue.send(parser.getPageData().getAnchors());
             numCycle++;
         }
     }
