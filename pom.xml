@@ -27,7 +27,11 @@
             <artifactId>jsoup</artifactId>
             <version>1.10.3</version>
         </dependency>
-
+        <dependency><!-- used for the Optional and other things -->
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
@@ -39,21 +43,26 @@
             <version>1.1.0</version>
         </dependency>
         <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
             <groupId>com.optimaize.languagedetector</groupId>
             <artifactId>language-detector</artifactId>
             <version>0.6</version>
         </dependency>
-        <!--<dependency>
+       <!-- <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
             <version>1.2.4</version>
         </dependency>-->
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-common</artifactId>
             <version>1.2.4</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -66,12 +75,14 @@
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
+<!--
 
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-server</artifactId>
             <version>1.2.4</version>
         </dependency>
+-->
 
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -128,12 +139,12 @@
             <version>1.2.1</version>
         </dependency>
 
-        <dependency>
+       <!-- <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.0.4</version>
         </dependency>
-
+-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>

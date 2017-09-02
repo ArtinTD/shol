@@ -15,7 +15,7 @@ import java.util.*;
 
 public class Parser {
     private PageData pageData;
-    private LanguageDetector languageDetector = new LanguageDetector();
+    private LangDetector langDetector = new LangDetector();
 
     public void parse(Document doc) throws IOException {
         if (isValid(doc)) {
@@ -60,7 +60,7 @@ public class Parser {
     private boolean isValid(Document document) throws IOException {
         if (!document.hasText())
             throw new EmptyDocumentException("Empty Document: " + document.location());
-        else if (languageDetector.isEnglish(document)) {
+        else if (langDetector.isEnglish(document)) {
             return true;
         }
         return false;

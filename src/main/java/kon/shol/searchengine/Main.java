@@ -29,6 +29,8 @@ public class Main {
         } catch (IOException e) {
             logger.error("Couldn't Connect to Hbase, Fatal Error");
             System.exit(0);
+        } catch (Exception e){
+
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(510);
