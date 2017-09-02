@@ -63,7 +63,9 @@ public class Writer implements Runnable {
             put.addColumn(LINKS_CF, Bytes.toBytes(parser.reverseDomain(s)), Bytes.toBytes(1));
         });*/
         pageData.getAnchors().forEach((key, value) -> {
-            put.addColumn(ANCHORS_CF, Bytes.toBytes(parser.reverseDomain(key)), Bytes.toBytes(value));
+            String reversedUrl = parser.reverseDomain(key);
+            if (reversedUrl !=  null)
+                put.addColumn(ANCHORS_CF, Bytes.toBytes(reversedUrl), Bytes.toBytes(value));
         });
         return put;
     }
@@ -84,8 +86,8 @@ public class Writer implements Runnable {
         String url = parser.reverseDomain(pageData.getUrl());
         Put put = returnPutPageData(url, pageData);
         putList.add(put);
-        logger.error("Added " + pageData.getUrl() + " to the Put List ... ");
-        System.out.println("Putlist size " +  putList.size());
+        logger.error("Thread: " + Thread.currentThread().getName() + " | Added " + pageData.getUrl() + " to the Put List ... ");
+        System.out.println("Putlist size " + putList.size());
         if (putList.size() > MAX_BATCH_PUT_SIZE) {
             if (connection.isClosed()) {
                 try {
@@ -98,7 +100,7 @@ public class Writer implements Runnable {
                 }
             } else {
                 try {
-                    logger.error("Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
+                    logger.error("Thread: " + Thread.currentThread().getName() + " | Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
                     table.put(putList);
                     putList.clear();
                 } catch (IOException e) {

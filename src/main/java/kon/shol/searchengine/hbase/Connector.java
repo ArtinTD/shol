@@ -14,11 +14,11 @@ public class Connector {
     static Connection connection;
 
     private void connect(String zooKeeperIp) throws IOException {
-        logger.info("Connecting to Hbase");
+        logger.error("Connecting to Hbase");
         Configuration configuration = HBaseConfiguration.create();
         configuration.set("hbase.zookeeper.quorum", zooKeeperIp);
         connection = ConnectionFactory.createConnection(configuration);
-        logger.info("Connection to Hbase established");
+        logger.error("Connection to Hbase established");
     }
 
     private Connector(String zooKeeperIp) throws IOException {
@@ -26,10 +26,10 @@ public class Connector {
             if (connection.isClosed()) {
                 connect(zooKeeperIp);
             } else {
-                logger.info("There is a valid connection");
+                logger.error("There is a valid connection");
             }
         } catch (NullPointerException e) {
-            logger.info("Initiating Hbase Connection");
+            logger.error("Initiating Hbase Connection");
             connect(zooKeeperIp);
         }
     }
