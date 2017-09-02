@@ -36,7 +36,7 @@ public class Main {
         lruCache = new LruCache();
         for (int i = 0; i < 100; i++) {
             try {
-                hBase = new HbaseDriver("testdb");
+                hBase = new HbaseDriver("anchors");
             } catch (IOException e) {
                 logger.error("are dige...");
             }

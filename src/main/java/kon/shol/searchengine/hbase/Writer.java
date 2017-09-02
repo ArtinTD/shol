@@ -23,7 +23,7 @@ public class Writer implements Runnable {
     private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
 
-    private final int MAX_BATCH_PUT_SIZE = 20;
+    private final int MAX_BATCH_PUT_SIZE = 50;
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");
@@ -59,11 +59,11 @@ public class Writer implements Runnable {
                 Bytes.toBytes(parser.serialize(pageData.getLinks())));*/
         /*put.addColumn(ANCHORS_CF, Bytes.toBytes("anchors"),
                 Bytes.toBytes(parser.serialize(pageData.getAnchors())));*/
-        pageData.getLinks().forEach((s)->{
-            put.addColumn(LINKS_CF, Bytes.toBytes(s), Bytes.toBytes(1));
-        });
+       /* pageData.getLinks().forEach((s)->{
+            put.addColumn(LINKS_CF, Bytes.toBytes(parser.reverseDomain(s)), Bytes.toBytes(1));
+        });*/
         pageData.getAnchors().forEach((key, value) -> {
-            put.addColumn(ANCHORS_CF, Bytes.toBytes(key), Bytes.toBytes(value));
+            put.addColumn(ANCHORS_CF, Bytes.toBytes(parser.reverseDomain(key)), Bytes.toBytes(value));
         });
         return put;
     }
