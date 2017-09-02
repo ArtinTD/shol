@@ -146,7 +146,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>rankpage.SparkTest</mainClass>
+                            <mainClass>rankpage.Anchor</mainClass>
                         </manifest>
                     </archive>
 

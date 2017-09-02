@@ -2,6 +2,7 @@ package rankpage;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableInputFormat;
@@ -28,8 +29,8 @@ public class Anchor {
 
         Configuration conf = HBaseConfiguration.create();
 
-        conf.set(TableInputFormat.INPUT_TABLE, "testdb");
-        conf.set(TableOutputFormat.OUTPUT_TABLE, "testdb");
+        conf.set(TableInputFormat.INPUT_TABLE, "anchors");
+        conf.set(TableOutputFormat.OUTPUT_TABLE, "anchors");
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
         conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
         conf.set("mapreduce.output.fileoutputformat.outputdir", "/hbase");
@@ -46,17 +47,23 @@ public class Anchor {
             Map<byte[], byte[]> anchorsMap = r.getFamilyMap(Bytes.toBytes("anchors"));
             List<Tuple2<String, String>> anchor = new ArrayList<>();
 
-            for (Map.Entry<byte[], byte[]> z : anchorsMap.entrySet()){
-                anchor.add( new Tuple2<>(Bytes.toString(z.getKey()) , Bytes.toString(z.getValue())) );
+            for (Map.Entry<byte[], byte[]> z : anchorsMap.entrySet()) {
+                anchor.add(new Tuple2<>(Bytes.toString(z.getKey()), Bytes.toString(z.getValue())));
             }
 
             return anchor.iterator();
+        }).reduceByKey((k, v) -> k + v);
+
+        JavaPairRDD<ImmutableBytesWritable, Put> hbasePuts = anchors.mapToPair(s -> {
+            Put put = new Put(Bytes.toBytes(s._1));
+            put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("anchors"), Bytes.toBytes(s._2));
+            return new Tuple2<>(new ImmutableBytesWritable(), put);
         });
 
-        Map<String, String> ret = anchors.collectAsMap();
+        hbasePuts.saveAsNewAPIHadoopDataset(conf);
 
-        ret.forEach( (k, v) -> {
-            System.out.println(k + ": " + v);
-        });
+        sc.stop();
+
+
     }
 }
