@@ -38,7 +38,6 @@ public class Writer implements Runnable {
         table = connection.getTable(tableName);
     }
 
-
     private Put returnPutPageData(String url, PageData pageData) {
         Put put = new Put(Bytes.toBytes(url));
         put.addColumn(DATA_CF, Bytes.toBytes("title"),
@@ -55,10 +54,13 @@ public class Writer implements Runnable {
                 Bytes.toBytes(pageData.getH4h6()));
         put.addColumn(DATA_CF, Bytes.toBytes("alt"),
                 Bytes.toBytes(pageData.getImagesAlt()));
-        put.addColumn(LINKS_CF, Bytes.toBytes("links"),
-                Bytes.toBytes(parser.serialize(pageData.getLinks())));
+        /*put.addColumn(LINKS_CF, Bytes.toBytes("links"),
+                Bytes.toBytes(parser.serialize(pageData.getLinks())));*/
         /*put.addColumn(ANCHORS_CF, Bytes.toBytes("anchors"),
                 Bytes.toBytes(parser.serialize(pageData.getAnchors())));*/
+        pageData.getLinks().forEach((s)->{
+            put.addColumn(LINKS_CF, Bytes.toBytes(s), Bytes.toBytes(1));
+        });
         pageData.getAnchors().forEach((key, value) -> {
             put.addColumn(ANCHORS_CF, Bytes.toBytes(key), Bytes.toBytes(value));
         });

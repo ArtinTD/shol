@@ -170,7 +170,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>kon.shol.Main</mainClass>
+                            <mainClass>kon.shol.searchengine.Main</mainClass>
                         </manifest>
                     </archive>
 
