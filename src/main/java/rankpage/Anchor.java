@@ -44,15 +44,13 @@ public class Anchor {
 
         JavaPairRDD<String, String> anchors = hBaseRDD.flatMapToPair(s -> {
             Result r = s._2;
-            Map<byte[], byte[]> anchorsMap = r.getFamilyMap(Bytes.toBytes("anchors"));
             List<Tuple2<String, String>> anchor = new ArrayList<>();
-
-            for (Map.Entry<byte[], byte[]> z : anchorsMap.entrySet()) {
-                anchor.add(new Tuple2<>(Bytes.toString(z.getKey()), Bytes.toString(z.getValue())));
-            }
+            r.getFamilyMap(Bytes.toBytes("anchors")).forEach((k, v) -> {
+                anchor.add(new Tuple2<>(Bytes.toString(k), Bytes.toString(v)));
+            });
 
             return anchor.iterator();
-        }).reduceByKey((k, v) -> k + v);
+        }).reduceByKey((k, v) -> k + " " + v);
 
         JavaPairRDD<ImmutableBytesWritable, Put> hbasePuts = anchors.mapToPair(s -> {
             Put put = new Put(Bytes.toBytes(s._1));
@@ -63,7 +61,6 @@ public class Anchor {
         hbasePuts.saveAsNewAPIHadoopDataset(conf);
 
         sc.stop();
-
 
     }
 }
