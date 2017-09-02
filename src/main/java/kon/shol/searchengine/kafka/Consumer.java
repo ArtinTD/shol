@@ -48,7 +48,7 @@ public class Consumer implements Runnable{
                 String.valueOf(Thread.currentThread().getId()));
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(topic));
-        consumingQueue = new ArrayBlockingQueue<>(1000);
+        consumingQueue = new ArrayBlockingQueue<>(40*1000);
     }
 
     public void run() {

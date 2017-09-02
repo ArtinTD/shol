@@ -48,16 +48,12 @@ public class Parser {
 
     private String trimLink(Element link) {
         try {
-//            TODO: Some Links do not Response whit / at the end! Think about it
-            String temp = link.attr("abs:href");
-            if (temp.charAt(temp.length() - 1) != '/') {
-                temp += "/";
+            // TODO: Some Links do not Response whit / at the end! Think about it
+            String absHref = link.attr("abs:href");
+            if (absHref.charAt(absHref.length() - 1) != '/') {
+                absHref += "/";
             }
-            // TODO:Fix Relative Links & hash
-            if (!temp.contains("http") || temp.contains("#")) {
-                return null;
-            }
-            return temp;
+            return absHref;
 
         } catch (StringIndexOutOfBoundsException ignore) {
             return null;

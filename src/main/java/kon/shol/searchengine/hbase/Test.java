@@ -18,7 +18,6 @@ public class Test {
 //        Connection connection = connector.getConnection();
         Document document = fetcher.fetch("https://spring.io/guides/gs/consuming-rest/");
         parser.parse(document);
-        writer.putPageData(parser.reverseDomain(parser.getPageData().getUrl()), parser.getPageData());
-
+//        writer.putPageData(parser.reverseDomain(parser.getPageData().getUrl()), parser.getPageData());
     }
 }

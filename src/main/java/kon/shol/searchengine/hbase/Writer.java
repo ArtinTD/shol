@@ -8,6 +8,7 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
+import org.spark_project.jetty.util.BlockingArrayQueue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class Writer implements Runnable {
     private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
 
-    private final int MAX_BATCH_PUT_SIZE = 5;
+    private final int MAX_BATCH_PUT_SIZE = 20;
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");
@@ -67,7 +68,8 @@ public class Writer implements Runnable {
         return put;
     }
 
-    public void putPageData(String url, PageData pageData) {
+    public void putPageData(PageData pageData) {
+        String url = parser.reverseDomain(pageData.getUrl());
         Put put = returnPutPageData(url, pageData);
         try {
             table.put(put);
@@ -78,7 +80,7 @@ public class Writer implements Runnable {
         }
     }
 
-    private void batchPut(PageData pageData) {
+    public void batchPut(PageData pageData) {
         String url = parser.reverseDomain(pageData.getUrl());
         Put put = returnPutPageData(url, pageData);
         putList.add(put);
@@ -98,6 +100,7 @@ public class Writer implements Runnable {
                 try {
                     logger.error("Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
                     table.put(putList);
+                    putList.clear();
                 } catch (IOException e) {
                     logger.error("Couldn't Put in HBase");
 

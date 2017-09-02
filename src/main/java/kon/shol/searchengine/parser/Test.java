@@ -16,7 +16,7 @@ public class Test {
     public static void main(String[] args) throws IOException {
         Parser parser = new Parser();
         Fetcher fetcher = new Fetcher();
-        Document document = fetcher.fetch("https://linkedin.com");
+        Document document = fetcher.fetch("http://www.quantcast.com/top-sites/");
         parser.parse(document);
         System.out.println(parser.getPageData().getLinks());
     }

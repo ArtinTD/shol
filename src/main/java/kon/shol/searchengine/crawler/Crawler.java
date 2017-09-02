@@ -65,7 +65,7 @@ public class Crawler implements Runnable {
                 document = fetcher.fetch(url);
             } catch (IOException exception) {
                 logger.error("Error fetching " + url + ": " + exception.getMessage());
-                exception.printStackTrace();
+//                exception.printStackTrace();
                 continue;
             }
             try {

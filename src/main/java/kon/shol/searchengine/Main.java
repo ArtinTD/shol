@@ -32,26 +32,26 @@ public class Main {
 
         ExecutorService executor = Executors.newFixedThreadPool(110);
 
-        try {
-            hBase = new HbaseDriver("testdb");
-        } catch (IOException e) {
-            logger.error("are dige...");
-        }
         crawlerQueue = new CrawlerQueue();
         lruCache = new LruCache();
         for (int i = 0; i < 100; i++) {
+            try {
+                hBase = new HbaseDriver("testdb");
+            } catch (IOException e) {
+                logger.error("are dige...");
+            }
             fetcher = new Fetcher();
             parser = new Parser();
             executor.execute(new Crawler(crawlerQueue, lruCache, fetcher, parser, hBase));
         }
-//        TODO: Check Hbase Threads Behaviors
-        for (int i = 0; i < 10; i++) {
+       /* //TODO: Check Hbase Threads Behaviors
+        for (int i = 0; i < 50; i++) {
             try {
                 hBaseWriter = new Writer("testdb");
             } catch (IOException e) {
                 logger.error("chera aziat mikoni...");
             }
             executor.execute(hBaseWriter);
-        }
+        }*/
     }
 }

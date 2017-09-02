@@ -2,6 +2,7 @@ package kon.shol.searchengine.hbase;
 
 import kon.shol.searchengine.crawler.Storage;
 import kon.shol.searchengine.kafka.HbaseQueue;
+import kon.shol.searchengine.parser.PageData;
 
 import java.io.IOException;
 
@@ -22,7 +23,8 @@ public class HbaseDriver implements Storage {
     }
     @Override
     public void sendToStorage(Object element) {
-        hBaseQueue.send(element);
+//        hBaseQueue.send(element);
+        writer.batchPut((PageData) element);
     }
 
     @Override
