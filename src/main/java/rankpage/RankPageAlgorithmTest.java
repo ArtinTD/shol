@@ -37,6 +37,8 @@ public class RankPageAlgorithmTest {
 //                );
             }
 
+            System.exit(0);
+
             System.out.println("scan finished");
 
             for (int i = 0; i < 100; i++) { //repeat to Approximate PR

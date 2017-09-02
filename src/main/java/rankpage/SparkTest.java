@@ -90,7 +90,6 @@ public class SparkTest {
 
         JavaPairRDD<String, Iterable<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
-            r.getRow();
             String row = Bytes.toString(r.getRow());
             ArrayList<String> adj = castResultToStringArrayList(r, "data", "bulk");
             //             r.getValue(Bytes.toBytes("data"), Bytes.toBytes("bulk"));
@@ -118,11 +117,11 @@ public class SparkTest {
         }
 
         // Collects all URL ranks and dump them to console.
-        List<Tuple2<String, Double>> output = ranks.collect();
-        for (Tuple2<?,?> tuple : output) {
-
-            System.out.println(tuple._1() + " has rank: " + tuple._2() + ".");
-        }
+//        List<Tuple2<String, Double>> output = ranks.collect();
+//        for (Tuple2<?,?> tuple : output) {
+//
+//            System.out.println(tuple._1() + " has rank: " + tuple._2() + ".");
+//        }
 
 //        Job newAPIJobConfiguration1 = Job.getInstance(conf);
 //        newAPIJobConfiguration1.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, "tableName");
