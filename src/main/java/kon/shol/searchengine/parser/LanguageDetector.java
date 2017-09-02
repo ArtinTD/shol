@@ -12,10 +12,10 @@ class LanguageDetector {
     private final String ENGLISH_LANGUAGE = "en";
 
 
-    private String detectLanguage(Document document) throws IOException {
-        LanguageIdentifier identifier = new LanguageIdentifier(document.title());
-//        return "en";
-        return identifier.getLanguage();
+    public String detectLanguage(Document document) throws IOException {
+        System.out.println(document.text());
+        LanguageIdentifier identifier = new LanguageIdentifier(document.text());
+        return identifier.getLanguage() + " " + identifier.isReasonablyCertain();
 //        TODO: THIS IS NOT WORKING :|
     }
 

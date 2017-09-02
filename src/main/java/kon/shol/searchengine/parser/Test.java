@@ -16,8 +16,9 @@ public class Test {
     public static void main(String[] args) throws IOException {
         Parser parser = new Parser();
         Fetcher fetcher = new Fetcher();
-        Document document = fetcher.fetch("http://www.quantcast.com/top-sites/");
-        parser.parse(document);
-        System.out.println(parser.getPageData().getLinks());
+        Document document = fetcher.fetch("http://wikipedia.org");
+        LanguageDetector languageDetector = new LanguageDetector();
+        System.out.println(languageDetector.detectLanguage(document));
+//        System.out.println(parser.getPageData().getLinks());
     }
 }
