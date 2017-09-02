@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 public class PageData {
 
-    private ArrayList<String> links;
     private HashMap<String, String> anchors;
     private String description;
     private String title;
@@ -15,14 +14,6 @@ public class PageData {
     private String h4h6;
     private String url;
     private String imagesAlt;
-
-    public ArrayList<String> getLinks() {
-        return links;
-    }
-
-    public void setLinks(ArrayList<String> links) {
-        this.links = links;
-    }
 
     public HashMap<String, String> getAnchors() {
         return anchors;

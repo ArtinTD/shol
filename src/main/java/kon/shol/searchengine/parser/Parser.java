@@ -17,23 +17,11 @@ public class Parser {
     private PageData pageData;
     private LanguageDetector languageDetector = new LanguageDetector();
 
-    private ArrayList<String> extractLinks(Document doc) {
-        Elements links;
-        ArrayList<String> result = new ArrayList<>();
-        links = doc.select("a");
-        for (Element link : links) {
-            String temp = trimLink(link);
-            if (temp != null)
-                result.add(trimLink(link));
-        }
-        return result;
-    }
-
     public void parse(Document doc) throws IOException {
         if (isValid(doc)) {
             pageData = new PageData();
-            pageData.setLinks(extractLinks(doc));
             pageData.setAnchors(extractAnchors(doc));
+            pageData.setUrl(doc.location());
             pageData.setText(doc.text());
             pageData.setTitle(doc.title());
             pageData.setUrl(doc.location());
@@ -79,17 +67,27 @@ public class Parser {
     }
 
     private HashMap<String, String> extractAnchors(Document doc) throws IOException {
-        HashMap<String, String> hashMap = new HashMap<>();
-        Elements links;
-        links = doc.select("a");
-        for (Element link : links) {
-            String linkRef = trimLink(link);
-            String linkText = link.text();
-            if (linkRef != null && linkText.length() > 0) {
-                hashMap.put(linkRef, linkText);
+        HashMap<String, String> anchors = new HashMap<>();
+        Elements urls;
+        urls = doc.select("a");
+        for (Element url : urls) {
+            String urlRef = trimLink(url);
+            if (urlRef == null) {
+                continue;
             }
+            String urlText = url.text()
+                    .replaceAll("here", "")
+                    .replaceAll("link", "")
+                    .replaceAll("click", "")
+                    .replaceAll("next", "")
+                    .replaceAll("more", "")
+                    .replaceAll("show", "")
+                    .replaceAll("visit", "")
+                    .replaceAll("website", "")
+                    .replaceAll("[0-9]", "");
+            anchors.put(urlRef, urlText);
         }
-        return hashMap;
+        return anchors;
     }
 
     public String reverseDomain(String url) {
