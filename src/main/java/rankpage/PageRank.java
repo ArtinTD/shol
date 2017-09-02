@@ -1,5 +1,6 @@
 package rankpage;
 
+import com.google.common.collect.Iterables;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Put;
@@ -15,14 +16,12 @@ import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
 
-public class Anchor {
-
+public class PageRank {
     public static void main(String[] args) {
-        SparkConf con = new SparkConf().setAppName("Anchor").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
+        SparkConf con = new SparkConf().setAppName("PageRank").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
         JavaSparkContext sc = new JavaSparkContext(con);
+
 
         Configuration conf = HBaseConfiguration.create();
 
@@ -32,25 +31,41 @@ public class Anchor {
         conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
         conf.set("mapreduce.output.fileoutputformat.outputdir", "/hbase");
 
+        // Initialize hBase table if necessary
         JavaPairRDD<ImmutableBytesWritable, Result> hBaseRDD = sc.newAPIHadoopRDD(
                 conf,
                 TableInputFormat.class,
                 ImmutableBytesWritable.class,
                 Result.class);
 
-        JavaPairRDD<String, String> anchors = hBaseRDD.flatMapToPair(s -> {
+        JavaPairRDD<String, Iterable<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
-            List<Tuple2<String, String>> anchor = new ArrayList<>();
+            String row = Bytes.toString(r.getRow());
+            ArrayList<String> adj = new ArrayList<>();
             r.getFamilyMap(Bytes.toBytes("anchors")).forEach((k, v) -> {
-                anchor.add(new Tuple2<>(Bytes.toString(k), Bytes.toString(v)));
+                adj.add(Bytes.toString(k));
             });
+            return new Tuple2<>(row , adj);
+        });
 
-            return anchor.iterator();
-        }).reduceByKey((k, v) -> k + " " + v);
+        JavaPairRDD<String, Double> ranks = links.mapValues(rs -> 1.0);
 
-        JavaPairRDD<ImmutableBytesWritable, Put> hbasePuts = anchors.mapToPair(s -> {
+        for (int current = 0; current < 50; current++) {
+            JavaPairRDD<String, Double> contribs = links.join(ranks).values()
+                    .flatMapToPair(s -> {
+                        int urlCount = Iterables.size(s._1());
+                        List<Tuple2<String, Double>> results = new ArrayList<>();
+                        for (String n : s._1) {
+                            results.add(new Tuple2<>(n, s._2() / urlCount));
+                        }
+                        return results.iterator();
+                    });
+            ranks = contribs.reduceByKey((k, v) -> k + v).mapValues(sum -> 0.15 + sum * 0.85);
+        }
+
+        JavaPairRDD<ImmutableBytesWritable, Put> hbasePuts = ranks.mapToPair(s -> {
             Put put = new Put(Bytes.toBytes(s._1));
-            put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("anchors"), Bytes.toBytes(s._2));
+            put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("pagerank"), Bytes.toBytes(s._2));
             return new Tuple2<>(new ImmutableBytesWritable(), put);
         });
 
