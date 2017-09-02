@@ -2,6 +2,7 @@ package kon.shol.searchengine.parser;
 
 import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
 import org.apache.tika.language.LanguageIdentifier;
+import org.apache.tika.language.LanguageProfile;
 import org.jsoup.nodes.Document;
 
 
@@ -34,4 +35,11 @@ class LanguageDetector {
         }*/
         return true;
     }
+
+    public static void main(String args[]){
+        LanguageProfile profile = new LanguageProfile("hello world what apple bill ");
+        LanguageIdentifier identifier = new LanguageIdentifier(profile);
+        System.out.println(identifier.getLanguage());
+    }
+
 }

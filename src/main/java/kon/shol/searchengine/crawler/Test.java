@@ -12,12 +12,13 @@ import java.util.List;
 
 public class Test {
 
-    public static void main(String[] args) {
-        Parser parser = new Parser();
-        try {
-            System.out.println(parser.getDomain("http://www.980.sdks;dkfsdfk.com"));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+    public static void main(String[] args) throws jg {
+        Object t = null;
+        if(t.equals(null)){
+            throw new NullPointerException();
         }
+    }
+
+    private static class jg extends Throwable {
     }
 }

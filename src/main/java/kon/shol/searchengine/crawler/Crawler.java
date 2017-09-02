@@ -18,6 +18,7 @@ public class Crawler implements Runnable {
     private Fetcher fetcher;
     private Parser parser;
     private Storage storage;
+    private int numCycle = 0;
 
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.crawler.Crawler.class);
 
@@ -29,6 +30,14 @@ public class Crawler implements Runnable {
         this.parser = parser;
         this.storage = storage;
 
+    }
+
+    public synchronized int getNumCycle(){
+        return numCycle;
+    }
+
+    public synchronized void resetNumCycle(){
+        numCycle = 0;
     }
 
     @Override
@@ -80,7 +89,8 @@ public class Crawler implements Runnable {
             }
 //           TODO: Let's Move the Parse section  to other threads. Cuz pageData is too heavy to go through Kafka, Should be Asked from the Mentors
             storage.sendToStorage(parser.getPageData());
-            queue.send(parser.getPageData().getAnchors());
+            queue.send(parser.getPageData().getLinks());
+            numCycle++;
         }
     }
 }

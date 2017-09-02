@@ -5,6 +5,7 @@ import kon.shol.searchengine.hbase.Connector;
 import kon.shol.searchengine.hbase.HbaseDriver;
 import kon.shol.searchengine.hbase.Writer;
 import kon.shol.searchengine.kafka.CrawlerQueue;
+import kon.shol.searchengine.monitor.Monitor;
 import kon.shol.searchengine.parser.Parser;
 import org.apache.log4j.Logger;
 
@@ -31,7 +32,7 @@ public class Main {
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(110);
-
+        Monitor monitor = new Monitor();
         crawlerQueue = new CrawlerQueue();
         lruCache = new LruCache();
         for (int i = 0; i < 100; i++) {
@@ -42,7 +43,16 @@ public class Main {
             }
             fetcher = new Fetcher();
             parser = new Parser();
-            executor.execute(new Crawler(crawlerQueue, lruCache, fetcher, parser, hBase));
+            Crawler temp = new Crawler(crawlerQueue, lruCache, fetcher, parser, hBase);
+            monitor.addCrawler(temp);
+            executor.execute(temp);
+        }
+        Thread t = new Thread(monitor);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
        /* //TODO: Check Hbase Threads Behaviors
         for (int i = 0; i < 50; i++) {
