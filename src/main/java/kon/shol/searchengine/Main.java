@@ -31,13 +31,13 @@ public class Main {
             System.exit(0);
         }
 
-        ExecutorService executor = Executors.newFixedThreadPool(110);
+        ExecutorService executor = Executors.newFixedThreadPool(510);
         Monitor monitor = new Monitor();
         crawlerQueue = new CrawlerQueue();
         lruCache = new LruCache();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             try {
-                hBase = new HbaseDriver("anchors");
+                hBase = new HbaseDriver("artinBulk2");
             } catch (IOException e) {
                 logger.error("are dige...");
             }

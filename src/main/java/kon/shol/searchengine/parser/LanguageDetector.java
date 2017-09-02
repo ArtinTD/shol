@@ -16,7 +16,7 @@ class LanguageDetector {
     public String detectLanguage(Document document) throws IOException {
         System.out.println(document.text());
         LanguageIdentifier identifier = new LanguageIdentifier(document.text());
-        return identifier.getLanguage() + " " + identifier.isReasonablyCertain();
+        return identifier.getLanguage();
 //        TODO: THIS IS NOT WORKING :|
     }
 
@@ -28,11 +28,11 @@ class LanguageDetector {
     }
 
     boolean isEnglish(Document document) throws IOException {
-        /*if (!checkMetaLanguage(document, ENGLISH_LANGUAGE)) {
+        if (!checkMetaLanguage(document, ENGLISH_LANGUAGE)) {
             throw new InvalidLanguageException("Meta not English: " + document.location());
         } else if (!detectLanguage(document).equals(ENGLISH_LANGUAGE)) {
             throw new InvalidLanguageException("Text not English: " + document.location());
-        }*/
+        }
         return true;
     }
 
