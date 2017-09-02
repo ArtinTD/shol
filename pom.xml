@@ -33,12 +33,21 @@
             <artifactId>hadoop-client</artifactId>
             <version>2.7.3</version>
         </dependency>
-
         <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-shaded-client</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.optimaize.languagedetector</groupId>
+            <artifactId>language-detector</artifactId>
+            <version>0.6</version>
+        </dependency>
+        <!--<dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
             <version>1.2.4</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.apache.hbase</groupId>
@@ -170,6 +179,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
+
                             <mainClass>kon.shol.searchengine.Main</mainClass>
                         </manifest>
                     </archive>

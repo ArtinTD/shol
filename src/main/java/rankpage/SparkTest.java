@@ -1,3 +1,4 @@
+/*
 package rankpage;
 
 import java.io.ByteArrayInputStream;
@@ -69,6 +70,9 @@ public class SparkTest {
         SparkConf con = new SparkConf().setAppName("testApp").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
         JavaSparkContext sc = new JavaSparkContext(con);
         //  hdfs://ns313900.ip-188-165-230.eu:9000
+//        SparkConf conf = new SparkConf().setAppName("testApp").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
+//        JavaSparkContext sc = new JavaSparkContext(conf);
+//        //  hdfs://ns313900.ip-188-165-230.eu:9000
 //        JavaRDD<String> distFile = sc.textFile("hdfs://ns313900.ip-188-165-230.eu:9000/dir/hadoop/hello_world.txt");
 
 
@@ -80,12 +84,15 @@ public class SparkTest {
         conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
         conf.set("mapreduce.output.fileoutputformat.outputdir", "/hbase");
 
+
         // Initialize hBase table if necessary
         JavaPairRDD<ImmutableBytesWritable, Result> hBaseRDD = sc.newAPIHadoopRDD(
                 conf,
                 TableInputFormat.class,
                 ImmutableBytesWritable.class,
                 Result.class);
+        JavaRDD<String> lines = spark.read().textFile("/dir/hadoop/hello_world.txt").javaRDD();
+
 
         JavaPairRDD<String, Iterable<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
@@ -136,6 +143,10 @@ public class SparkTest {
 
         sc.stop();
     }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 1f6467cd4c7b5a40611921bc040aa6a952419dc0
 
         //        JavaRDD<String> lines = spark.read().textFile("/dir/hadoop/hello_world.txt").javaRDD();
 //
@@ -151,6 +162,11 @@ public class SparkTest {
 //        }
 //        spark.stop();
 //    }
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c9e08d1756713090cb83bfed35a16cd1635dc01a
+>>>>>>> 1f6467cd4c7b5a40611921bc040aa6a952419dc0
 //        String logFile = "/dir/hadoop/hello_world.txt"; // Should be some file on your system
 //        SparkSession spark = SparkSession.builder().appName("Simple Application").master("local").getOrCreate();
 //        Dataset<String> logData = spark.read().textFile(logFile).cache();
@@ -160,3 +176,4 @@ public class SparkTest {
 //
 //        System.out.println("Lines with a: " + numAs + ", lines with b: " + numBs);
 }
+*/
