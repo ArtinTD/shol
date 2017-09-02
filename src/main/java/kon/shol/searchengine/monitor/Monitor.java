@@ -26,7 +26,7 @@ public class Monitor implements Runnable{
             speed += crawler.getNumCycle();
             crawler.resetNumCycle();
         }
-        System.out.println(speed);
+        System.out.println("Rate of crawlers : " + speed);
         speed = 0;
         try {
             Thread.sleep(1000);
