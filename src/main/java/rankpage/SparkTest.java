@@ -56,6 +56,7 @@ public class SparkTest {
         return list;
     }
 
+<<<<<<< HEAD
     private static class Sum implements Function2<Double, Double, Double> {
         @Override
         public Double call(Double a, Double b) {
@@ -70,6 +71,12 @@ public class SparkTest {
         SparkConf con = new SparkConf().setAppName("testApp").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
         JavaSparkContext sc = new JavaSparkContext(con);
         //  hdfs://ns313900.ip-188-165-230.eu:9000
+=======
+    public static void main(String[] args) {
+//        SparkConf conf = new SparkConf().setAppName("testApp").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
+//        JavaSparkContext sc = new JavaSparkContext(conf);
+//        //  hdfs://ns313900.ip-188-165-230.eu:9000
+>>>>>>> c9e08d1756713090cb83bfed35a16cd1635dc01a
 //        JavaRDD<String> distFile = sc.textFile("hdfs://ns313900.ip-188-165-230.eu:9000/dir/hadoop/hello_world.txt");
 
 
@@ -81,12 +88,16 @@ public class SparkTest {
         conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
         conf.set("mapreduce.output.fileoutputformat.outputdir", "/hbase");
 
+<<<<<<< HEAD
         // Initialize hBase table if necessary
         JavaPairRDD<ImmutableBytesWritable, Result> hBaseRDD = sc.newAPIHadoopRDD(
                 conf,
                 TableInputFormat.class,
                 ImmutableBytesWritable.class,
                 Result.class);
+=======
+        JavaRDD<String> lines = spark.read().textFile("/dir/hadoop/hello_world.txt").javaRDD();
+>>>>>>> c9e08d1756713090cb83bfed35a16cd1635dc01a
 
         JavaPairRDD<String, Iterable<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
@@ -137,6 +148,7 @@ public class SparkTest {
 
         sc.stop();
     }
+<<<<<<< HEAD
 
         //        JavaRDD<String> lines = spark.read().textFile("/dir/hadoop/hello_world.txt").javaRDD();
 //
@@ -152,6 +164,8 @@ public class SparkTest {
 //        }
 //        spark.stop();
 //    }
+=======
+>>>>>>> c9e08d1756713090cb83bfed35a16cd1635dc01a
 //        String logFile = "/dir/hadoop/hello_world.txt"; // Should be some file on your system
 //        SparkSession spark = SparkSession.builder().appName("Simple Application").master("local").getOrCreate();
 //        Dataset<String> logData = spark.read().textFile(logFile).cache();

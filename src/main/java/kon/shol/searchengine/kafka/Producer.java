@@ -25,6 +25,8 @@ public class Producer {
                 "all");
         properties.put(BUFFER_MEMORY_CONFIG,
                 "1000000");
+        properties.put(BATCH_SIZE_CONFIG,
+                "16384");
         properties.put(RETRIES_CONFIG,
                 "1000");
         properties.put(LINGER_MS_CONFIG,
@@ -49,9 +51,10 @@ public class Producer {
 
     public void send(String message, String topic) {
 
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(message, topic);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, message);
         producer.send(producerRecord, (metadata, exception) -> {
             if (exception != null) {
+                //todo handle future
                 logger.error(exception.getMessage());
             }
             if (exception instanceof UnknownServerException) {

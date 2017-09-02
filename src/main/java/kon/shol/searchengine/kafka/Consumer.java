@@ -2,35 +2,34 @@ package kon.shol.searchengine.kafka;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
 
 
-public class Consumer {
+public class Consumer implements Runnable{
 
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
+    private ArrayBlockingQueue<String> consumingQueue;
     private KafkaConsumer<String, String> consumer;
+    private static final Object LOCK = new Object();
+    private static final String BOOTSTRAP_SERVERS = "188.165.235.136:9092,188.165.230.122:9092";
 
-    public Consumer(String groupId, String topic) {
+    public Consumer(String groupId, String topic, Properties props) {
 
-        Properties props = new Properties();
         props.put(BOOTSTRAP_SERVERS_CONFIG,
-                "188.165.235.136:9092,188.165.230.122:9092");
+                BOOTSTRAP_SERVERS);
         props.put(KEY_DESERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(VALUE_DESERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(AUTO_OFFSET_RESET_CONFIG,
                 "earliest");
-        props.put(DEFAULT_FETCH_MAX_BYTES,
-                "100000");
         props.put(SESSION_TIMEOUT_MS_CONFIG,
                 "30000");
         props.put(HEARTBEAT_INTERVAL_MS_CONFIG,
@@ -49,18 +48,35 @@ public class Consumer {
                 String.valueOf(Thread.currentThread().getId()));
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(topic));
+        consumingQueue = new ArrayBlockingQueue<>(40*1000);
     }
 
-    public ArrayList<String> batchGet() {
+    public void run() {
 
-        ArrayList<String> received = new ArrayList<>();
-        ConsumerRecords<String, String> records;
-        do {
-            records = consumer.poll(1000);
-        } while (records.isEmpty());
-        for (ConsumerRecord<String, String> record : records) {
-            received.add(record.value());
+        while (!Thread.currentThread().isInterrupted()) {
+            ConsumerRecords<String, String> records;
+            do {
+                records = consumer.poll(1000);
+            } while (records.isEmpty());
+            for (ConsumerRecord<String, String> record : records) {
+                consumingQueue.add(record.value());
+            }
+            synchronized (LOCK) {
+                try {
+                    LOCK.wait();
+                } catch (InterruptedException interruptedException) {
+                    logger.error("Error while waiting to fill the consuming queue");
+                }
+            }
         }
-        return received;
+    }
+
+    public String get() throws InterruptedException {
+        if (consumingQueue.size() <= 50) {
+            synchronized (LOCK) {
+                LOCK.notify();
+            }
+        }
+        return consumingQueue.take();
     }
 }

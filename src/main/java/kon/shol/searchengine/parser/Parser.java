@@ -1,7 +1,8 @@
 package kon.shol.searchengine.parser;
 
 import com.google.common.net.InternetDomainName;
-import kon.shol.PageData;
+import com.google.gson.Gson;
+import kon.shol.searchengine.parser.exceptions.EmptyDocumentException;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,8 +14,10 @@ import java.net.URL;
 import java.util.*;
 
 public class Parser {
+    private PageData pageData;
+    private LanguageDetector languageDetector = new LanguageDetector();
 
-    public ArrayList<String> extractLinks(Document doc) {
+    private ArrayList<String> extractLinks(Document doc) {
         Elements links;
         ArrayList<String> result = new ArrayList<>();
         links = doc.select("a");
@@ -26,44 +29,53 @@ public class Parser {
         return result;
     }
 
-    public PageData parse(Document doc) throws IOException {
-        kon.shol.PageData pageData = new PageData();
-        pageData.setLinks(extractLinks(doc));
-        pageData.setAnchors(extractAnchors(doc));
-        pageData.setText(doc.text());
-        pageData.setTitle(doc.title());
-        pageData.setDescription(doc.select("meta[name=description]").attr("content"));
-        pageData.setImagesAlt(String.join(" ", doc.select("img").eachAttr("alt")));
-        pageData.setH1h3(doc.select("h1,h2,h3").text());
-        pageData.setH4h6(doc.select("h4,h5,h6").text());
-        return pageData;
+    public void parse(Document doc) throws IOException {
+        if (isValid(doc)) {
+            pageData = new PageData();
+            pageData.setLinks(extractLinks(doc));
+            pageData.setAnchors(extractAnchors(doc));
+            pageData.setText(doc.text());
+            pageData.setTitle(doc.title());
+            pageData.setUrl(doc.location());
+            pageData.setDescription(doc.select("meta[name=description]")
+                    .attr("content"));
+            pageData.setImagesAlt(String.join(" ", doc.select("img")
+                    .eachAttr("alt")));
+            pageData.setH1h3(doc.select("h1,h2,h3").text());
+            pageData.setH4h6(doc.select("h4,h5,h6").text());
+        }
     }
 
     private String trimLink(Element link) {
         try {
-            String temp = link.attr("abs:href");
-            if (temp.charAt(temp.length() - 1) != '/') {
-                temp += "/";
+            // TODO: Some Links do not Response whit / at the end! Think about it
+            String absHref = link.attr("abs:href");
+            if (absHref.charAt(absHref.length() - 1) != '/') {
+                absHref += "/";
             }
-            if (!temp.contains("http") || temp.contains("#")) {
+            if (absHref.contains("http"))
+                return absHref;
+            else{
                 return null;
             }
-            return temp;
 
         } catch (StringIndexOutOfBoundsException ignore) {
             return null;
         }
     }
 
-    public String getDomain(String link) {
+    public String getDomain(String link) throws MalformedURLException, IllegalArgumentException {
+        URL url = new URL(link);
+        return InternetDomainName.from(url.getHost()).topPrivateDomain().name();
+    }
 
-        try {
-            URL url = new URL(link);
-            return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
-
-        } catch (Exception ignore) {
-            return null;
+    private boolean isValid(Document document) throws IOException {
+        if (!document.hasText())
+            throw new EmptyDocumentException("Empty Document: " + document.location());
+        else if (languageDetector.isEnglish(document)) {
+            return true;
         }
+        return false;
     }
 
     private HashMap<String, String> extractAnchors(Document doc) throws IOException {
@@ -82,15 +94,36 @@ public class Parser {
 
     public String reverseDomain(String url) {
         try {
+            if (url == null) {
+                System.out.println("NULL URL");
+            }
+            if (url.equals("")) {
+                System.out.println("empty url");
+            }
             if (url.charAt(url.length() - 1) != '/') {
                 url += "/";
             }
-            List<String> domainArray = Arrays.asList(InternetDomainName.from(new URL(url).getHost()).name().split("\\."));
+            List<String> domainArray = Arrays.asList(InternetDomainName.from(
+                    new URL(url).getHost()).name().split("\\."));
             Collections.reverse(domainArray);
-            return (String.join(".", domainArray)) + url.substring(StringUtils.ordinalIndexOf(url, "/", 3));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            return (String.join(".", domainArray)) + url.substring(
+                    StringUtils.ordinalIndexOf(url, "/", 3));
+        } catch (MalformedURLException | IllegalArgumentException e) {
+//            e.printStackTrace();
         }
         return null;
     }
+
+    public PageData getPageData() {
+        return pageData;
+    }
+
+    public <T> T deserialize(String payload, Class<T> tClass) {
+        return new Gson().fromJson(payload, tClass);
+    }
+
+    public String serialize(Object payload) {
+        return new Gson().toJson(payload);
+    }
+
 }

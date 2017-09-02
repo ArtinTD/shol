@@ -1,6 +1,7 @@
+/*
 package kon.shol;
 
-import static kon.shol.LRU.lruCache;
+import static kon.shol.searchengine.crawler.LruCache.lruCache;
 import static kon.shol.Parser.getDomain;
 
 public abstract class Crawler implements Runnable {
@@ -15,7 +16,6 @@ public abstract class Crawler implements Runnable {
     }
 
     public void run() {
-
         while (true) {
 
             Fetcher fetcher = new Fetcher();
@@ -26,22 +26,26 @@ public abstract class Crawler implements Runnable {
                 String link = fetcher.page.link;
 
                 try {
-                    while (lruCache.getIfPresent(getDomain(link)) != null) {
+            //        while (lruCache.getIfPresent(getDomain(link)) != null) {
 
                         sendLink(link);
                         fetcher.page.link = getLink();
                         link = fetcher.page.link;
-                    }
+              */
+/*      }
                     lruCache.get(getDomain(link));
 
                 } catch (Exception ignore) {
                 }
             }
             while (!fetcher.setHTML());
+*//*
 
-            /*for (String link : fetcher.page.pageData.links) {
+            */
+/*for (String link : fetcher.page.pageData.links) {
                 sendLink(link);
-            }*/
+            }*//*
+
 
             numCycle++;
         }
@@ -51,3 +55,4 @@ public abstract class Crawler implements Runnable {
 
     abstract String getLink();
 }
+*/
