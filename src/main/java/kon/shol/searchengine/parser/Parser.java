@@ -53,7 +53,11 @@ public class Parser {
             if (absHref.charAt(absHref.length() - 1) != '/') {
                 absHref += "/";
             }
-            return absHref;
+            if (absHref.contains("http"))
+                return absHref;
+            else{
+                return null;
+            }
 
         } catch (StringIndexOutOfBoundsException ignore) {
             return null;
@@ -90,6 +94,12 @@ public class Parser {
 
     public String reverseDomain(String url) {
         try {
+            if (url == null) {
+                System.out.println("NULL URL");
+            }
+            if (url.equals("")) {
+                System.out.println("empty url");
+            }
             if (url.charAt(url.length() - 1) != '/') {
                 url += "/";
             }
@@ -98,8 +108,8 @@ public class Parser {
             Collections.reverse(domainArray);
             return (String.join(".", domainArray)) + url.substring(
                     StringUtils.ordinalIndexOf(url, "/", 3));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        } catch (MalformedURLException | IllegalArgumentException e) {
+//            e.printStackTrace();
         }
         return null;
     }

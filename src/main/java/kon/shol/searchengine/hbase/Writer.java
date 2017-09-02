@@ -63,7 +63,9 @@ public class Writer implements Runnable {
             put.addColumn(LINKS_CF, Bytes.toBytes(parser.reverseDomain(s)), Bytes.toBytes(1));
         });*/
         pageData.getAnchors().forEach((key, value) -> {
-            put.addColumn(ANCHORS_CF, Bytes.toBytes(parser.reverseDomain(key)), Bytes.toBytes(value));
+            String reversedUrl = parser.reverseDomain(key);
+            if (reversedUrl !=  null)
+                put.addColumn(ANCHORS_CF, Bytes.toBytes(reversedUrl), Bytes.toBytes(value));
         });
         return put;
     }
