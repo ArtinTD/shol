@@ -95,8 +95,8 @@ public class Parser {
             if (url.charAt(url.length() - 1) != '/') {
                 url += "/";
             }
-            List<String> domainArray = Arrays.asList(InternetDomainName.from(
-                    new URL(url).getHost()).toString().split("\\."));
+            List<String> domainArray = new LinkedList<>(Arrays.asList(InternetDomainName.from(
+                    new URL(url).getHost()).toString().split("\\.")));
             if (domainArray.get(0).equals("www")) {
                 domainArray.remove(0);
             }
