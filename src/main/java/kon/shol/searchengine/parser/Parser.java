@@ -52,8 +52,8 @@ public class Parser {
         }
     }
 
-    public String getDomain(String link) throws MalformedURLException, IllegalArgumentException {
-        URL url = new URL(link);
+    public String getDomain(String inputUrl) throws MalformedURLException, IllegalArgumentException {
+        URL url = new URL(inputUrl);
         return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
     }
 
