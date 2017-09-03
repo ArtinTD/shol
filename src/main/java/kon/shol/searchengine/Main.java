@@ -7,13 +7,17 @@ import kon.shol.searchengine.hbase.Writer;
 import kon.shol.searchengine.kafka.CrawlerQueue;
 import kon.shol.searchengine.monitor.Monitor;
 import kon.shol.searchengine.parser.Parser;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
+    public static List<Put> putList = new CopyOnWriteArrayList<>();
     private final static Logger logger =
             Logger.getLogger(kon.shol.searchengine.Main.class);
 

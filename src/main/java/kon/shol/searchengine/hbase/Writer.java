@@ -13,17 +13,19 @@ import org.spark_project.jetty.util.BlockingArrayQueue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+import static kon.shol.searchengine.Main.putList;
 import static kon.shol.searchengine.hbase.Connector.connection;
 
 public class Writer implements Runnable {
 
     private Table table;
-    private List<Put> putList;
+
     private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
 
-    private final int MAX_BATCH_PUT_SIZE = 50;
+    private final int MAX_BATCH_PUT_SIZE = 150;
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");
@@ -34,7 +36,6 @@ public class Writer implements Runnable {
             new Connector();
         }
         TableName tableName = TableName.valueOf(tableNameStr);
-        putList = new ArrayList<>();
         parser = new Parser();
         table = connection.getTable(tableName);
     }
