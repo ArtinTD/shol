@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 
 public class Crawler implements Runnable {
 
@@ -40,7 +41,6 @@ public class Crawler implements Runnable {
             String url;
             try {
                 url = queue.get();
-                logger.error(url);
             } catch (InterruptedException interruptedException) {
                 logger.error("Interruption while getting from CrawlerQueue:\n " +
                         interruptedException.getMessage());
@@ -51,6 +51,9 @@ public class Crawler implements Runnable {
                 domain = parser.getDomain(url);
             } catch (MalformedURLException e) {
                 logger.error("Malformed: " + url);
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                logger.error("Domain name not valid: " + url);
+                continue;
             }
             if (cache.exists(domain)) {
                 queue.send(url);
@@ -62,18 +65,23 @@ public class Crawler implements Runnable {
                 }
             } catch (IOException e) {
                 logger.error("Can't check existence from storage: " + url);
+                e.printStackTrace();
             }
-            cache.insert(domain);
+            try {
+                cache.insert(domain);
+            } catch (ExecutionException e) {
+                logger.error("Can't insert to cache: " + domain);
+            }
             Document document;
             try {
                 document = fetcher.fetch(url);
             } catch (IOException exception) {
-                logger.error("Error fetching " + url + ": " + exception.getMessage());
+                logger.error("Error fetching: " + url);
                 continue;
             }
             try {
                 parser.parse(document);
-            } catch (IOException exception) {
+            } catch (IOException | EmptyDocumentException exception) {
                     logger.error("Error parsing " + url + ": " + exception.getMessage());
             }
             storage.sendToStorage(parser.getPageData());

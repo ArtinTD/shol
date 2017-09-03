@@ -17,7 +17,7 @@ public class Parser {
     private PageData pageData;
     private LangDetector languageDetector = new LangDetector();
 
-    public void parse(Document doc) throws IOException {
+    public void parse(Document doc) throws IOException, EmptyDocumentException {
         if (isValid(doc)) {
             pageData = new PageData();
             pageData.setAnchors(extractAnchors(doc));
@@ -54,7 +54,7 @@ public class Parser {
 
     public String getDomain(String inputUrl) throws MalformedURLException, IllegalArgumentException {
         URL url = new URL(inputUrl);
-        return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
+        return InternetDomainName.from(url.getHost()).topPrivateDomain().name();
     }
 
     private boolean isValid(Document document) throws IOException {
@@ -96,7 +96,7 @@ public class Parser {
                 url += "/";
             }
             List<String> domainArray = new LinkedList<>(Arrays.asList(InternetDomainName.from(
-                    new URL(url).getHost()).toString().split("\\.")));
+                    new URL(url).getHost()).name().split("\\.")));
             if (domainArray.get(0).equals("www")) {
                 domainArray.remove(0);
             }

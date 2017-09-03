@@ -7,13 +7,17 @@ import kon.shol.searchengine.hbase.Writer;
 import kon.shol.searchengine.kafka.CrawlerQueue;
 import kon.shol.searchengine.monitor.Monitor;
 import kon.shol.searchengine.parser.Parser;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
+
     private final static Logger logger =
             Logger.getLogger(kon.shol.searchengine.Main.class);
 
@@ -29,8 +33,6 @@ public class Main {
         } catch (IOException e) {
             logger.error("Couldn't Connect to Hbase, Fatal Error");
             System.exit(0);
-        } catch (Exception e){
-
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(510);
@@ -54,7 +56,7 @@ public class Main {
         try {
             t.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Couldn't join thread");
         }
        /* //TODO: Check Hbase Threads Behaviors
         for (int i = 0; i < 50; i++) {

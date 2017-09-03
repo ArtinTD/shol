@@ -54,6 +54,10 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
       indexer.interrupt();
    }
    
+   public void flush() {
+      indexer.flush();
+   }
+   
    @Override
    public void add(WebPage newWebPage) {
       try {

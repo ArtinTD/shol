@@ -22,31 +22,31 @@
             <artifactId>jsoup</artifactId>
             <version>1.10.3</version>
         </dependency>
-        <dependency><!-- used for the Optional and other things -->
+       <!-- <dependency>&lt;!&ndash; used for the Optional and other things &ndash;&gt;
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>19.0</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
             <version>2.7.3</version>
         </dependency>
-        <dependency>
+       <!-- <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-shaded-client</artifactId>
             <version>1.3.1</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+      <!--  <dependency>
             <groupId>com.optimaize.languagedetector</groupId>
             <artifactId>language-detector</artifactId>
             <version>0.6</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>1.2.4</version>
         </dependency>
-       <!-- <dependency>-->
-            <!--<groupId>org.apache.hbase</groupId>-->
-            <!--<artifactId>hbase-client</artifactId>-->
-            <!--<version>1.2.4</version>-->
-        <!--</dependency>-->
 
         <!--<dependency>
             <groupId>org.apache.hbase</groupId>

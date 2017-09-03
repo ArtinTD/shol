@@ -27,11 +27,7 @@ public class LruCache implements Cache {
     }
 
     @Override
-    public void insert(Object element) {
-        try {
-            lruCache.get((String) element);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+    public void insert(Object element) throws ExecutionException {
+        lruCache.get((String) element);
     }
 }

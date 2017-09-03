@@ -1,6 +1,7 @@
 package kon.shol.searchengine.monitor;
 
 import kon.shol.searchengine.crawler.Crawler;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 
@@ -8,6 +9,7 @@ public class Monitor implements Runnable {
 
     int speed;
     private ArrayList<Crawler> crawlers = new ArrayList<>();
+    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.monitor.Monitor.class);
 
     static int numberOfFetchedLinksFromQueueToCrawl;
     static int numberOfPoliteDomains;
@@ -26,7 +28,7 @@ public class Monitor implements Runnable {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Monitor thread interrupted while sleeping");
             }
             for (Crawler crawler : crawlers) {
                 speed += crawler.getNumCycle();
