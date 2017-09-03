@@ -14,7 +14,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class Consumer implements Runnable{
 
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
+    private final static Logger logger = Logger.getLogger("custom");
     private ArrayBlockingQueue<String> consumingQueue;
     private KafkaConsumer<String, String> consumer;
     private static final Object LOCK = new Object();
@@ -63,18 +63,18 @@ public class Consumer implements Runnable{
             }
             synchronized (LOCK) {
                 try {
-                    if (consumingQueue.size() > 100) {
+                    if (consumingQueue.size() > 500) {
                         LOCK.wait();
                     }
                 } catch (InterruptedException interruptedException) {
-                    logger.error("Error while waiting to fill the consuming queue");
+                    logger.fatal("Interruption while waiting to fill the consuming queue");
                 }
             }
         }
     }
 
     public String get() throws InterruptedException {
-        if (consumingQueue.size() <= 100) {
+        if (consumingQueue.size() <= 500) {
             synchronized (LOCK) {
                 LOCK.notify();
             }

@@ -14,7 +14,7 @@ import static kon.shol.searchengine.hbase.Connector.connection;
 public class Reader {
     private Table table;
     private Parser parser;
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Reader.class);
+    private final static Logger logger = Logger.getLogger("custom");
 
     public Reader(String tableNameStr) throws IOException {
         if (connection.isClosed()) {

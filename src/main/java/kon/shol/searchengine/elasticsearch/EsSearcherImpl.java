@@ -20,8 +20,7 @@ import java.util.Collections;
 
 public class EsSearcherImpl implements EsSearcher {
    
-   private final static Logger logger = Logger.getLogger(
-         kon.shol.searchengine.elasticsearch.EsSearcherImpl.class);
+   private final static Logger logger = Logger.getLogger("custom");
    
    private final Gson jsonMaker = new Gson();
    private String endpoint;

@@ -24,7 +24,7 @@ public class Writer implements Runnable {
     private Parser parser;
 
     private final int MAX_BATCH_PUT_SIZE = 20;
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
+    private final static Logger logger = Logger.getLogger("custom");
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");
     private final byte[] ANCHORS_CF = Bytes.toBytes("anchors");
@@ -71,7 +71,7 @@ public class Writer implements Runnable {
             System.out.println("Put " + url + " to Hbase Was Successful");
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("Can't put to HBase");
+            logger.fatal("Can't put to HBase");
         }
     }
 
@@ -79,25 +79,25 @@ public class Writer implements Runnable {
         String url = parser.reverseDomain(pageData.getUrl());
         Put put = returnPutPageData(url, pageData);
         putList.add(put);
-        logger.error("Thread: " + Thread.currentThread().getName() + " | Added " + pageData.getUrl() + " to the Put List ... ");
+        logger.debug("Thread: " + Thread.currentThread().getName() + " | Stored: " + pageData.getUrl());
         System.out.println("Putlist size " + putList.size());
         if (putList.size() > MAX_BATCH_PUT_SIZE) {
             if (connection.isClosed()) {
                 try {
                     new Connector();
                 } catch (IOException ioe) {
-                    logger.error("Cannot Establish Connection to Hbase");
+                    logger.fatal("Cannot Establish Connection to Hbase");
                 } finally {
                     //TODO: fix this shit
                     batchPut(pageData);
                 }
             } else {
                 try {
-                    logger.error("Thread: " + Thread.currentThread().getName() + " | Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
+                    logger.debug("Thread: " + Thread.currentThread().getName() + " | Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
                     table.put(putList);
                     putList = new ArrayList<>();
                 } catch (IOException e) {
-                    logger.error("Couldn't Put in HBase");
+                    logger.fatal("Couldn't Put in HBase");
 
                 }
             }
