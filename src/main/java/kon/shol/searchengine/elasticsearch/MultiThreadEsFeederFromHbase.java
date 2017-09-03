@@ -15,9 +15,11 @@ import static kon.shol.searchengine.elasticsearch.WebpageMaker.makeWebpage;
 public class MultiThreadEsFeederFromHbase {
    
    
-   private final static Logger logger = Logger.getLogger("custom");
-   private final static int THREAD_COUNT = 24;
-   private final EsIndexer[] indexers = new SingleThreadSyncEsBulkIndexer[THREAD_COUNT];
+   private final static Logger logger = Logger.getLogger(
+         kon.shol.searchengine.elasticsearch.SingleScanEsFeederFromHbase.class);
+   private final static int THREAD_COUNT = 16;
+   private final SingleThreadSyncEsBulkIndexer[] indexers =
+         new SingleThreadSyncEsBulkIndexer[THREAD_COUNT];
    private ExecutorService executor;
    private Table table;
    private Connection connection;
@@ -89,6 +91,9 @@ public class MultiThreadEsFeederFromHbase {
       try {
          table.close();
          connection.close();
+         for (SingleThreadSyncEsBulkIndexer indexer : indexers) {
+            indexer.end();
+         }
       } catch (IOException ignored) {
       }
    }
@@ -107,7 +112,7 @@ public class MultiThreadEsFeederFromHbase {
          Scan scan = new Scan();
          scan.setTimeRange(minStamp, maxStamp);
          results = table.getScanner(scan);
-         indexer = (SingleThreadSyncEsBulkIndexer) indexers[indexerNumber];
+         indexer = indexers[indexerNumber];
       }
       
       
@@ -130,6 +135,7 @@ public class MultiThreadEsFeederFromHbase {
          if (foundAnythingYet) {
             if (foundAnythingNow) {
                System.out.println("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
+               indexer.flush();
             } else {
                System.out.println("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
                emptyCyclesCount++;
