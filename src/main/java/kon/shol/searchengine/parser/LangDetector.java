@@ -25,8 +25,10 @@ class LangDetector {
     }
 
     private boolean checkMetaLanguage(Document document, String language) {
-        String lng2 = language + "mul";
-        if (!lng2.contains(document.select("html").attr("lang")) && !document.select("html")
+
+        if (!(document.select("html").attr("lang").contains(ENGLISH_LANGUAGE) ||
+                document.select("html").attr("lang").contains("mul")) &&
+                !document.select("html")
                 .attr("lang").isEmpty()) {
             return false;
         }
@@ -62,7 +64,7 @@ class LangDetector {
     public static void main(String args[]) throws IOException {
 
         LangDetector langDetector = new LangDetector();
-        System.out.println(langDetector.isEnglish(Jsoup.connect("http://en.wikipedia.org").get()));
+        System.out.println(langDetector.isEnglish(Jsoup.connect("http://varzesh3.com").get()));
 
     }
 
