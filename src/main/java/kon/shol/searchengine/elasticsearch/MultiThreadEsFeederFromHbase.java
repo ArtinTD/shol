@@ -12,18 +12,12 @@ import java.util.concurrent.Executors;
 
 import static kon.shol.searchengine.elasticsearch.WebpageMaker.makeWebpage;
 
-public class MultiThreadEsSyncEsFeederFromHbase {
+public class MultiThreadEsFeederFromHbase {
    
-   
-   public static void main(String[] args) {
-   
-   }
    
    private final static Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleScanEsFeederFromHbase.class);
-   
    private final static int THREAD_COUNT = 24;
-   
    private final EsIndexer[] indexers = new SingleThreadSyncEsBulkIndexer[THREAD_COUNT];
    private ExecutorService executor;
    private Table table;
@@ -31,6 +25,22 @@ public class MultiThreadEsSyncEsFeederFromHbase {
    private boolean foundAnythingYet = false;
    private byte emptyCyclesCount = 0; // TODO rename.
    private int indexerNumber = 0;
+   
+   public static void main(String[] args) {
+      
+      MultiThreadEsFeederFromHbase feeder =
+            new MultiThreadEsFeederFromHbase();
+      
+      try {
+         feeder.init();
+      } catch (IOException ex) {
+         logger.error("Could not initialize MultiThreadEsFeederFromHbase;\n"
+               + "details: " + ex.toString());
+         System.exit(1);
+      }
+      feeder.index();
+      feeder.close();
+   }
    
    private void init() throws IOException {
       
