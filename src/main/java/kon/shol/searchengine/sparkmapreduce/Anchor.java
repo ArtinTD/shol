@@ -1,4 +1,4 @@
-package rankpage;
+package kon.shol.searchengine.sparkmapreduce;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -15,19 +15,17 @@ import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
 
 public class Anchor {
 
     public static void main(String[] args) {
-        SparkConf con = new SparkConf().setAppName("Anchor").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
+        SparkConf con = new SparkConf().setAppName("Anchor").setMaster("spark://ns313900.ip-188-165-230.eu:7077");
         JavaSparkContext sc = new JavaSparkContext(con);
 
         Configuration conf = HBaseConfiguration.create();
 
-        conf.set(TableInputFormat.INPUT_TABLE, "artinbulk");
-        conf.set(TableOutputFormat.OUTPUT_TABLE, "artinbulk");
+        conf.set(TableInputFormat.INPUT_TABLE, "artinBulk2");
+        conf.set(TableOutputFormat.OUTPUT_TABLE, "artinBulk2");
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
         conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
         conf.set("mapreduce.output.fileoutputformat.outputdir", "/hbase");
