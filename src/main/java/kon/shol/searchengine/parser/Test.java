@@ -16,6 +16,7 @@ public class Test {
     public static void main(String[] args) throws IOException {
         Parser parser = new Parser();
         Fetcher fetcher = new Fetcher();
+        System.out.println(parser.getDomain("https://www.wikipedia.org"));
         System.out.println(parser.reverseDomain("https://www.wikipedia.org"));
     }
 }
