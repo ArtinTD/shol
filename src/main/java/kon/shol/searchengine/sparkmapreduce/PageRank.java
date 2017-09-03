@@ -38,7 +38,7 @@ public class PageRank {
                 ImmutableBytesWritable.class,
                 Result.class);
 
-        JavaPairRDD<String, Iterable<String>> links = hBaseRDD.mapToPair(s -> {
+        JavaPairRDD<String, ArrayList<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
             String row = Bytes.toString(r.getRow());
             ArrayList<String> adj = new ArrayList<>();
@@ -46,7 +46,7 @@ public class PageRank {
                 adj.add(Bytes.toString(k));
             });
             return new Tuple2<>(row , adj);
-        });
+        }).cache();
 
         JavaPairRDD<String, Double> ranks = links.mapValues(rs -> 1.0);
 

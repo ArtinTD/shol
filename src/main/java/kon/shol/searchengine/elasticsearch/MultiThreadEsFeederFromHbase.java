@@ -98,8 +98,13 @@ public class MultiThreadEsFeederFromHbase {
    private class PartialFeeder implements Runnable {
       private ResultScanner results;
       private SingleThreadSyncEsBulkIndexer indexer;
+      private long minStamp;
+      private long maxStamp;
       
       public PartialFeeder(long minStamp, long maxStamp, int indexerNumber) throws IOException {
+         this.minStamp = minStamp;
+         this.maxStamp = maxStamp;
+         
          Scan scan = new Scan();
          scan.setTimeRange(minStamp, maxStamp);
          results = table.getScanner(scan);
@@ -122,10 +127,19 @@ public class MultiThreadEsFeederFromHbase {
             }
          }
          
-         if (foundAnythingYet & !foundAnythingNow) {
-            emptyCyclesCount++;
-         }
          
+         if (foundAnythingYet) {
+            if (foundAnythingNow) {
+               System.out.println("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
+            } else {
+               System.out.println("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
+               emptyCyclesCount++;
+            }
+         } else {
+            if (!foundAnythingNow) {
+               System.out.println("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
+            }
+         }
          
          if (emptyCyclesCount > 11) {
             try {
