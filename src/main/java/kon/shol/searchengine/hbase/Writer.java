@@ -19,7 +19,7 @@ import static kon.shol.searchengine.hbase.Connector.connection;
 public class Writer implements Runnable {
 
     private Table table;
-    private static List<Put> putList;
+    private List<Put> putList;
     private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
 
