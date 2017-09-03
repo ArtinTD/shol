@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class Fetcher {
 
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.crawler.Fetcher.class);
+    private final static Logger logger = Logger.getLogger("custom");
 
     public Document fetch(String url) throws IOException {
         /*Connection connection = Jsoup.connect(url)

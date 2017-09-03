@@ -9,7 +9,7 @@ public class Monitor implements Runnable {
 
     int speed;
     private ArrayList<Crawler> crawlers = new ArrayList<>();
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.monitor.Monitor.class);
+    private final static Logger logger = Logger.getLogger("custom");
 
     static int numberOfFetchedLinksFromQueueToCrawl;
     static int numberOfPoliteDomains;
@@ -28,7 +28,7 @@ public class Monitor implements Runnable {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                logger.error("Monitor thread interrupted while sleeping");
+                logger.fatal("Monitor thread interrupted while sleeping");
             }
             for (Crawler crawler : crawlers) {
                 speed += crawler.getNumCycle();

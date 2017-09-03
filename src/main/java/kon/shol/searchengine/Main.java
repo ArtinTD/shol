@@ -18,8 +18,7 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    private final static Logger logger =
-            Logger.getLogger(kon.shol.searchengine.Main.class);
+    private final static Logger logger = Logger.getLogger("custom");
 
     public static void main(String[] args) {
         Queue crawlerQueue;
@@ -31,7 +30,7 @@ public class Main {
         try {
             new Connector();
         } catch (IOException e) {
-            logger.error("Couldn't Connect to Hbase, Fatal Error");
+            logger.fatal("Couldn't Connect to Hbase, Fatal Error");
             System.exit(0);
         }
 
@@ -43,7 +42,7 @@ public class Main {
             try {
                 hBase = new HbaseDriver("webpages");
             } catch (IOException e) {
-                logger.error("are dige...");
+                logger.fatal("Can't create HbaseDriver");
             }
             fetcher = new Fetcher();
             parser = new Parser();
@@ -56,7 +55,7 @@ public class Main {
         try {
             t.join();
         } catch (InterruptedException e) {
-            logger.error("Couldn't join thread");
+            logger.fatal("Couldn't join thread");
         }
        /* //TODO: Check Hbase Threads Behaviors
         for (int i = 0; i < 50; i++) {

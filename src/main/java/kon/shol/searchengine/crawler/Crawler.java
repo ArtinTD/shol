@@ -21,7 +21,7 @@ public class Crawler implements Runnable {
     private Storage storage;
     private int numCycle = 0;
 
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.crawler.Crawler.class);
+    private final static Logger logger = Logger.getLogger("custom");
 
     public Crawler(Queue queue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
 
@@ -42,17 +42,16 @@ public class Crawler implements Runnable {
             try {
                 url = queue.get();
             } catch (InterruptedException interruptedException) {
-                logger.error("Interruption while getting from CrawlerQueue:\n " +
-                        interruptedException.getMessage());
+                logger.fatal("Interruption while getting from queue");
                 continue;
             }
             String domain = null;
             try {
                 domain = parser.getDomain(url);
             } catch (MalformedURLException e) {
-                logger.error("Malformed: " + url);
+                logger.debug("Malformed: " + url);
             } catch (IllegalArgumentException | IllegalStateException e) {
-                logger.error("Domain name not valid: " + url);
+                logger.debug("Domain name not valid: " + url);
                 continue;
             }
             if (cache.exists(domain)) {
@@ -64,25 +63,25 @@ public class Crawler implements Runnable {
                     continue;
                 }
             } catch (IOException e) {
-                logger.error("Can't check existence from storage: " + url);
+                logger.fatal("Can't check existence from storage: " + url);
                 e.printStackTrace();
             }
             try {
                 cache.insert(domain);
             } catch (ExecutionException e) {
-                logger.error("Can't insert to cache: " + domain);
+                logger.fatal("Can't insert to cache: " + domain);
             }
             Document document;
             try {
                 document = fetcher.fetch(url);
             } catch (IOException exception) {
-                logger.error("Error fetching: " + url);
+                logger.debug("Error fetching: " + url);
                 continue;
             }
             try {
                 parser.parse(document);
             } catch (IOException | EmptyDocumentException exception) {
-                    logger.error("Error parsing " + url + ": " + exception.getMessage());
+                    logger.debug("Error parsing " + url + ": " + exception.getMessage());
             }
             storage.sendToStorage(parser.getPageData());
             queue.send(parser.getPageData().getAnchors());

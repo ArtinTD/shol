@@ -15,8 +15,7 @@ import static kon.shol.searchengine.elasticsearch.WebpageMaker.makeWebpage;
 public class MultiThreadEsFeederFromHbase {
    
    
-   private final static Logger logger = Logger.getLogger(
-         kon.shol.searchengine.elasticsearch.SingleScanEsFeederFromHbase.class);
+   private final static Logger logger = Logger.getLogger("custom");
    private final static int THREAD_COUNT = 24;
    private final EsIndexer[] indexers = new SingleThreadSyncEsBulkIndexer[THREAD_COUNT];
    private ExecutorService executor;

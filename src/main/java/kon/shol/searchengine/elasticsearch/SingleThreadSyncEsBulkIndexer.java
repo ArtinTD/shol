@@ -18,8 +18,7 @@ import java.util.concurrent.Semaphore;
 
 public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
-   private final static Logger logger = Logger.getLogger(
-         kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
+   private final static Logger logger = Logger.getLogger("custom");
    
    private String indexActionLine;
    private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();

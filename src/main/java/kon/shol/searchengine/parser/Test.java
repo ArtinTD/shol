@@ -11,12 +11,11 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 
 public class Test {
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.parser.Test.class);
+    private final static Logger logger = Logger.getLogger("custom");
 
     public static void main(String[] args) throws IOException {
         Parser parser = new Parser();
-        Fetcher fetcher = new Fetcher();
-        System.out.println(parser.getDomain("https://www.wikipedia.org"));
-        System.out.println(parser.reverseDomain("https://www.wikipedia.org"));
+        logger.info(parser.getDomain("https://www.wikipedia.org"));
+        logger.fatal(parser.reverseDomain("https://www.wikipedia.org"));
     }
 }

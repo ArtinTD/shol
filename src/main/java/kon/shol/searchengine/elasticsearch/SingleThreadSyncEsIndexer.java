@@ -14,8 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class SingleThreadSyncEsIndexer implements EsIndexer {
    
-   private final static Logger logger = Logger.getLogger(
-         kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
+   private final static Logger logger = Logger.getLogger("custom");
    
    private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();
    private String[] hosts;

@@ -13,14 +13,11 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 public class Producer {
 
     private KafkaProducer<String, String> producer;
-    private static final String PRODUCER_TYPE = "producer.type";
-    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
+    private final static Logger logger = Logger.getLogger("custom");
 
     public Producer() {
 
         Properties properties = new Properties();
-        properties.put(PRODUCER_TYPE,
-                "async");
         properties.put(ACKS_CONFIG,
                 "all");
         properties.put(BUFFER_MEMORY_CONFIG,
@@ -58,7 +55,7 @@ public class Producer {
                 logger.error(exception.getMessage());
             }
             if (exception instanceof UnknownServerException) {
-                logger.error("Kafka UnknownServerException, application closed!");
+                logger.fatal("Kafka UnknownServerException, application closed!");
                 System.exit(0);
             }
         });
