@@ -73,7 +73,7 @@ public class MultiThreadEsFeederFromHbase {
             partialFeeder = new PartialFeeder(min, max,
                   (indexerNumber = (indexerNumber + 1) % THREAD_COUNT));
          } catch (IOException ex) {
-            logger.error(ex.toString());
+//            logger.error(ex.toString());
             continue;
          } finally {
             max = min;
@@ -118,7 +118,7 @@ public class MultiThreadEsFeederFromHbase {
             try {
                indexer.add(makeWebpage(result));
             } catch (Exception ex) {
-               logger.error(ex.toString());
+//               logger.error(ex.toString());
             }
          }
          

@@ -48,9 +48,10 @@ public class Crawler implements Runnable {
             String url;
             try {
                 url = queue.get();
+                logger.error(url);
             } catch (InterruptedException interruptedException) {
-                logger.error("Interruption while getting from CrawlerQueue:\n " +
-                        interruptedException.getMessage());
+/*                logger.error("Interruption while getting from CrawlerQueue:\n " +
+                        interruptedException.getMessage());*/
                 continue;
             }
             try {
@@ -61,7 +62,7 @@ public class Crawler implements Runnable {
                     continue;
                 }
                 if (storage.exists(url)) {
-                    logger.error("already exists in storage: " + url);
+//                    logger.error("already exists in storage: " + url);
                     continue;
                 }
                 cache.insert(domain);
@@ -73,17 +74,17 @@ public class Crawler implements Runnable {
             try {
                 document = fetcher.fetch(url);
             } catch (IOException exception) {
-                logger.error("Error fetching " + url + ": " + exception.getMessage());
+//                logger.error("Error fetching " + url + ": " + exception.getMessage());
                 continue;
             }
             try {
                 try {
                     parser.parse(document);
                 } catch (IOException exception) {
-                    logger.error("Error parsing " + url + ": " + exception.getMessage());
+//                    logger.error("Error parsing " + url + ": " + exception.getMessage());
                 }
             } catch (InvalidLanguageException | EmptyDocumentException parseException) {
-                logger.error(parseException.getMessage());
+//                logger.error(parseException.getMessage());
                 continue;
             }
 //           TODO: Let's Move the Parse section  to other threads. Cuz pageData is too heavy to go through Kafka, Should be Asked from the Mentors
