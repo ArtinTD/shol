@@ -1,51 +1,65 @@
 package kon.shol.searchengine.elasticsearch;
 
+import com.google.gson.annotations.Expose;
+
 public class SearchQuery {
+   @Expose private BaseQueryObject query;
    
-   private QueryObject query;
+   public SearchQuery(String query) { this (query, EsQueryConfig.DEFAULT_CONFIG); }
+   public SearchQuery(String query, EsQueryConfig config) { this.query = new BaseQueryObject(query, config); }
    
-   public SearchQuery(String query) {
-      this(query, EsQueryConfig.DEFAULT_CONFIG);
-   }
+   public BaseQueryObject getQuery() { return query; }
    
-   public SearchQuery(String query, EsQueryConfig config) {
-      this.query = new QueryObject(query, config);
-   }
    
-   public QueryObject getQuery() {
-      return query;
-   }
-   
-   private class QueryObject {
+   private class BaseQueryObject {
+      @Expose private FunctionScoreObject function_score;
       
-      private MultiMatchObject multi_match;
+      public FunctionScoreObject getFunction_score() { return function_score; }
       
-      public QueryObject(String query, EsQueryConfig config) {
-         multi_match = new MultiMatchObject(query, config);
-      }
+      private BaseQueryObject(String query, EsQueryConfig config) { function_score = new FunctionScoreObject(query, config); }
       
-      public MultiMatchObject getMulti_match() {
-         return multi_match;
-      }
-      
-      private class MultiMatchObject {
+      private class FunctionScoreObject {
+         @Expose private QueryObject query;
+         @Expose private FieldValueFactor field_value_factor =
+               new FieldValueFactor("pageRank");
          
-         private String query;
-         private String fields;
+         public QueryObject getQuery() { return query; }
+         public FieldValueFactor getField_value_factor() { return field_value_factor; }
          
-         public MultiMatchObject(String query, EsQueryConfig config) {
+         private FunctionScoreObject(String query, EsQueryConfig config) { this.query = new QueryObject(query, config); }
+         
+         
+         
+         private class QueryObject {
             
-            this.query = query;
-            this.fields = config.toString();
+            @Expose private MultiMatchObject multi_match;
+            
+            private QueryObject(String query, EsQueryConfig config) { multi_match = new MultiMatchObject(query, config); }
+            
+            public MultiMatchObject getMulti_match() { return multi_match; }
+            
+            private class MultiMatchObject {
+               
+               @Expose private String query;
+               @Expose private final String type = "cross_fields";
+               @Expose private String[] fields;
+               
+               public MultiMatchObject(String query, EsQueryConfig config) { this.query = query; this.fields = config.toStringArray(); }
+               
+               public String getQuery() { return query; }
+               public String getType() { return type; }
+               public String[] getFields() { return fields; }
+            }
          }
          
-         public String getQuery() {
-            return query;
-         }
-         
-         public String getFields() {
-            return fields;
+         private class FieldValueFactor {
+            private String field;
+            
+            private FieldValueFactor(String field) { this.field = field; }
+            
+            public String getField() { return field; }
          }
       }
    }
+   
 }
