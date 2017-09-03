@@ -72,10 +72,13 @@ public class Consumer implements Runnable{
     }
 
     public String get() throws InterruptedException {
-        if (consumingQueue.size() <= 50) {
+        if (consumingQueue.size() <= 2000) {
             synchronized (LOCK) {
                 LOCK.notify();
             }
+        }
+        if (consumingQueue.size() == 0) {
+            logger.error("consumingQueue EMPTY!");
         }
         return consumingQueue.take();
     }
