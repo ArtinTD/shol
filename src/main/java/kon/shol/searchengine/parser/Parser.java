@@ -17,7 +17,7 @@ public class Parser {
     private PageData pageData;
     private LangDetector languageDetector = new LangDetector();
 
-    public void parse(Document doc) throws IOException {
+    public void parse(Document doc) throws IOException, EmptyDocumentException {
         if (isValid(doc)) {
             pageData = new PageData();
             pageData.setAnchors(extractAnchors(doc));

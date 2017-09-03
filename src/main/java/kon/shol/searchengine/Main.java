@@ -58,7 +58,7 @@ public class Main {
         try {
             t.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Couldn't join thread");
         }
        /* //TODO: Check Hbase Threads Behaviors
         for (int i = 0; i < 50; i++) {

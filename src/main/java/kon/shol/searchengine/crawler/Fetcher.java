@@ -26,7 +26,7 @@ public class Fetcher {
         return Jsoup.connect(url)
                 .timeout(60*1000)
                 .followRedirects(true)
-                .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.21 (KHTML, like Gecko) Chrome/19.0.1042.0 Safari/535.21")
+                .userAgent("Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3")
                 .get();
     }
 }
