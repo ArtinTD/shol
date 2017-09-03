@@ -25,18 +25,18 @@ class LangDetector {
     private final String ENGLISH_LANGUAGE = "en";
 
 
-    private static String detectLang(Document document) throws IOException {
+    private String detectLang(Document document) throws IOException {
         List<LanguageProfile> languageProfiles = new LanguageProfileReader().readAllBuiltIn();
 
         LanguageDetector languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
                 .withProfiles(languageProfiles)
                 .build();
         TextObjectFactory textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
-        try {
+//        try {
             TextObject textObject = textObjectFactory.forText(document.text());
             Optional<LdLocale> lang = languageDetector.detect(textObject);
             return lang.get().getLanguage();
-        } catch (IllegalStateException e) {
+        /*} catch (IllegalStateException e) {
             try {
                 TextObject textObject = textObjectFactory.forText(document.select("meta[name=description]")
                         .attr("content"));
@@ -51,7 +51,7 @@ class LangDetector {
                     throw new UnknownLanguageException(document.location());
                 }
             }
-        }
+        }*/
 
     }
 /*
@@ -70,19 +70,19 @@ class LangDetector {
     }
 
     boolean isEnglish(Document document) throws IOException {
-        if (!checkMetaLanguage(document, ENGLISH_LANGUAGE)) {
+       /* if (!checkMetaLanguage(document, ENGLISH_LANGUAGE)) {
             throw new InvalidLanguageException("Meta not English: " + document.location());
         } else if (!detectLang(document).equals(ENGLISH_LANGUAGE)) {
             throw new InvalidLanguageException("Text not English: " + document.location());
-        }
+        }*/
         return true;
 
     }
 
     public static void main(String args[]) throws IOException {
-        Fetcher fetcher = new Fetcher();
+        /*Fetcher fetcher = new Fetcher();
         Document document = fetcher.fetch("http://wikipedia.org");
-        System.out.println(detectLang(document));
+        System.out.println(detectLang(document));*/
     }
 
 }

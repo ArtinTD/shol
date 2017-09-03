@@ -32,14 +32,6 @@ public class Crawler implements Runnable {
 
     }
 
-    public synchronized int getNumCycle(){
-        return numCycle;
-    }
-
-    public synchronized void resetNumCycle(){
-        numCycle = 0;
-    }
-
     @Override
     public void run() {
         //TODO: Logger error
@@ -48,27 +40,30 @@ public class Crawler implements Runnable {
             String url;
             try {
                 url = queue.get();
+                logger.error(url);
             } catch (InterruptedException interruptedException) {
                 logger.error("Interruption while getting from CrawlerQueue:\n " +
                         interruptedException.getMessage());
                 continue;
             }
+            String domain = null;
             try {
-                String domain = parser.getDomain(url);
-                if (cache.exists(domain)) {
-                    queue.send(url);
-//                    logger.error("Already in cache: " + url);
-                    continue;
-                }
-                if (storage.exists(url)) {
-                    logger.error("already exists in storage: " + url);
-                    continue;
-                }
-                cache.insert(domain);
-            } catch (Exception e) {
-                e.printStackTrace();
+                domain = parser.getDomain(url);
+            } catch (MalformedURLException e) {
+                logger.error("Malformed: " + url);
+            }
+            if (cache.exists(domain)) {
+                queue.send(url);
                 continue;
             }
+            try {
+                if (storage.exists(url)) {
+                    continue;
+                }
+            } catch (IOException e) {
+                logger.error("Can't check existence from storage: " + url);
+            }
+            cache.insert(domain);
             Document document;
             try {
                 document = fetcher.fetch(url);
@@ -77,20 +72,22 @@ public class Crawler implements Runnable {
                 continue;
             }
             try {
-                try {
-                    parser.parse(document);
-                } catch (IOException exception) {
+                parser.parse(document);
+            } catch (IOException exception) {
                     logger.error("Error parsing " + url + ": " + exception.getMessage());
-                }
-            } catch (InvalidLanguageException | EmptyDocumentException parseException) {
-                logger.error(parseException.getMessage());
-                continue;
             }
-//           TODO: Let's Move the Parse section  to other threads. Cuz pageData is too heavy to go through Kafka, Should be Asked from the Mentors
             storage.sendToStorage(parser.getPageData());
             queue.send(parser.getPageData().getAnchors());
             numCycle++;
         }
+    }
+
+    public synchronized int getNumCycle(){
+        return numCycle;
+    }
+
+    public synchronized void resetNumCycle(){
+        numCycle = 0;
     }
 }
 

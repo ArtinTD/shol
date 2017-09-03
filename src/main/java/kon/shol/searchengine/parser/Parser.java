@@ -52,8 +52,8 @@ public class Parser {
         }
     }
 
-    public String getDomain(String link) throws MalformedURLException, IllegalArgumentException {
-        URL url = new URL(link);
+    public String getDomain(String inputUrl) throws MalformedURLException, IllegalArgumentException {
+        URL url = new URL(inputUrl);
         return InternetDomainName.from(url.getHost()).topPrivateDomain().toString();
     }
 
@@ -95,8 +95,8 @@ public class Parser {
             if (url.charAt(url.length() - 1) != '/') {
                 url += "/";
             }
-            List<String> domainArray = Arrays.asList(InternetDomainName.from(
-                    new URL(url).getHost()).toString().split("\\."));
+            List<String> domainArray = new LinkedList<>(Arrays.asList(InternetDomainName.from(
+                    new URL(url).getHost()).toString().split("\\.")));
             if (domainArray.get(0).equals("www")) {
                 domainArray.remove(0);
             }
