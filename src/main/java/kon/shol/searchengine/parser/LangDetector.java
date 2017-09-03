@@ -1,10 +1,12 @@
 package kon.shol.searchengine.parser;
 
-import com.google.common.base.Optional;
-import kon.shol.searchengine.crawler.Fetcher;
-import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
 
-import kon.shol.searchengine.parser.exceptions.UnknownLanguageException;
+import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
+import org.apache.tika.language.LanguageIdentifier;
+import org.apache.tika.language.LanguageProfile;
+import org.apache.tika.language.ProfilingHandler;
+import org.apache.tika.language.ProfilingWriter;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 
@@ -15,65 +17,53 @@ class LangDetector {
 
     private final String ENGLISH_LANGUAGE = "en";
 
-/*
-    private String detectLang(Document document) throws IOException {
-        List<LanguageProfile> languageProfiles = new LanguageProfileReader().readAllBuiltIn();
+    private String detectLang(String text) throws IOException {
 
-        LanguageDetector languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
-                .withProfiles(languageProfiles)
-                .build();
-        TextObjectFactory textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
-//        try {
-            TextObject textObject = textObjectFactory.forText(document.text());
-            Optional<LdLocale> lang = languageDetector.detect(textObject);
-            return lang.get().getLanguage();
-        *//*} catch (IllegalStateException e) {
-            try {
-                TextObject textObject = textObjectFactory.forText(document.select("meta[name=description]")
-                        .attr("content"));
-                Optional<LdLocale> lang = languageDetector.detect(textObject);
-                return lang.get().getLanguage();
-            } catch (Exception e2) {
-                try {
-                    TextObject textObject = textObjectFactory.forText(new String(new char[20]).replace("\0", document.title() + " "));
-                    Optional<LdLocale> lang = languageDetector.detect(textObject);
-                    return lang.get().getLanguage();
-                } catch (Exception e3) {
-                    throw new UnknownLanguageException(document.location());
-                }
-            }
-        }*//*
-
-    }*/
-/*
-    public String detectLanguage(Document document) throws IOException {
-        System.out.println(document.text());
-        LanguageIdentifier identifier = new LanguageIdentifier(document.text());
+        LanguageProfile profile = new LanguageProfile(text);
+        LanguageIdentifier identifier = new LanguageIdentifier(profile);
         return identifier.getLanguage();
-//        TODO: THIS IS NOT WORKING :|
-    }*/
+    }
 
     private boolean checkMetaLanguage(Document document, String language) {
-        if (!document.select("html").attr("lang").contains(language) && !document.select("html").attr("lang").isEmpty()) {
+        String lng2 = language + "mul";
+        if (!lng2.contains(document.select("html").attr("lang")) && !document.select("html")
+                .attr("lang").isEmpty()) {
             return false;
         }
         return true;
     }
 
     boolean isEnglish(Document document) throws IOException {
-       /* if (!checkMetaLanguage(document, ENGLISH_LANGUAGE)) {
-            throw new InvalidLanguageException("Meta not English: " + document.location());
-        } else if (!detectLang(document).equals(ENGLISH_LANGUAGE)) {
-            throw new InvalidLanguageException("Text not English: " + document.location());
-        }*/
-        return true;
-
+        String lang ;
+        if(!checkMetaLanguage(document, ENGLISH_LANGUAGE)){
+            return false;
+        }
+        else{
+            lang = detectLang(document.select("meta[name=description]").attr("content"));
+            if(lang.equals(ENGLISH_LANGUAGE)){
+                return true;
+            }
+            else{
+                lang = detectLang(document.title());
+                if(lang.equals(ENGLISH_LANGUAGE)){
+                    return true;
+                }
+                else {
+                    lang = detectLang(document.text());
+                    if(lang.equals(ENGLISH_LANGUAGE))
+                        return true;
+                    else
+                        return false;
+                }
+            }
+        }
     }
 
     public static void main(String args[]) throws IOException {
-        /*Fetcher fetcher = new Fetcher();
-        Document document = fetcher.fetch("http://wikipedia.org");
-        System.out.println(detectLang(document));*/
+
+        LangDetector langDetector = new LangDetector();
+        System.out.println(langDetector.isEnglish(Jsoup.connect("http://en.wikipedia.org").get()));
+
     }
 
 }

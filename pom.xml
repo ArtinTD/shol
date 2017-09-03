@@ -85,12 +85,6 @@
             <version>0.11.0.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>3.4.10</version>
-        </dependency>
-
         <!--ElasticSearch java client-->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
@@ -139,6 +133,12 @@
             <artifactId>spring</artifactId>
             <version>2.5.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>1.4</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>shol</finalName>
