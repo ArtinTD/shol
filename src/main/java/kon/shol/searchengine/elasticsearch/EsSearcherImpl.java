@@ -77,8 +77,8 @@ public class EsSearcherImpl implements EsSearcher {
          
          resultString = EntityUtils.toString(response.getEntity()).trim();
       } catch (IOException ex) {
-         logger.error("Could not perform search request;\n"
-               + "Details: " + ex.toString());
+/*         logger.error("Could not perform search request;\n"
+               + "Details: " + ex.toString());*/
          return null;
       }
       
