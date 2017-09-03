@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-    public static List<Put> putList = new CopyOnWriteArrayList<>();
+
     private final static Logger logger =
             Logger.getLogger(kon.shol.searchengine.Main.class);
 

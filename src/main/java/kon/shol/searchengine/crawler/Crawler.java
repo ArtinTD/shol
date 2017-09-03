@@ -62,6 +62,7 @@ public class Crawler implements Runnable {
                 }
             } catch (IOException e) {
                 logger.error("Can't check existence from storage: " + url);
+                e.printStackTrace();
             }
             cache.insert(domain);
             Document document;

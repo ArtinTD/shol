@@ -13,19 +13,17 @@ import org.spark_project.jetty.util.BlockingArrayQueue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import static kon.shol.searchengine.Main.putList;
 import static kon.shol.searchengine.hbase.Connector.connection;
 
 public class Writer implements Runnable {
 
     private Table table;
-
+    private static List<Put> putList;
     private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
 
-    private final int MAX_BATCH_PUT_SIZE = 150;
+    private final int MAX_BATCH_PUT_SIZE = 20;
     private final static Logger logger = Logger.getLogger(kon.shol.searchengine.hbase.Writer.class);
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");
@@ -36,6 +34,7 @@ public class Writer implements Runnable {
             new Connector();
         }
         TableName tableName = TableName.valueOf(tableNameStr);
+        putList = new ArrayList<>();
         parser = new Parser();
         table = connection.getTable(tableName);
     }
@@ -56,13 +55,6 @@ public class Writer implements Runnable {
                 Bytes.toBytes(pageData.getH4h6()));
         put.addColumn(DATA_CF, Bytes.toBytes("alt"),
                 Bytes.toBytes(pageData.getImagesAlt()));
-        /*put.addColumn(LINKS_CF, Bytes.toBytes("links"),
-                Bytes.toBytes(parser.serialize(pageData.getLinks())));*/
-        /*put.addColumn(ANCHORS_CF, Bytes.toBytes("anchors"),
-                Bytes.toBytes(parser.serialize(pageData.getAnchors())));*/
-       /* pageData.getLinks().forEach((s)->{
-            put.addColumn(LINKS_CF, Bytes.toBytes(parser.reverseDomain(s)), Bytes.toBytes(1));
-        });*/
         pageData.getAnchors().forEach((key, value) -> {
             String reversedUrl = parser.reverseDomain(key);
             if (reversedUrl !=  null)
@@ -103,7 +95,7 @@ public class Writer implements Runnable {
                 try {
                     logger.error("Thread: " + Thread.currentThread().getName() + " | Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
                     table.put(putList);
-                    putList.clear();
+                    putList = new ArrayList<>();
                 } catch (IOException e) {
                     logger.error("Couldn't Put in HBase");
 
