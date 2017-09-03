@@ -13,6 +13,7 @@ import com.optimaize.langdetect.text.TextObjectFactory;
 import kon.shol.searchengine.crawler.Fetcher;
 import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
 
+import kon.shol.searchengine.parser.exceptions.UnknownLanguageException;
 import org.jsoup.nodes.Document;
 
 
@@ -24,18 +25,34 @@ class LangDetector {
     private final String ENGLISH_LANGUAGE = "en";
 
 
-    private  String detectLang(Document document) throws IOException {
+    private static String detectLang(Document document) throws IOException {
         List<LanguageProfile> languageProfiles = new LanguageProfileReader().readAllBuiltIn();
 
         LanguageDetector languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
                 .withProfiles(languageProfiles)
                 .build();
-
         TextObjectFactory textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
+        try {
+            TextObject textObject = textObjectFactory.forText(document.text());
+            Optional<LdLocale> lang = languageDetector.detect(textObject);
+            return lang.get().getLanguage();
+        } catch (IllegalStateException e) {
+            try {
+                TextObject textObject = textObjectFactory.forText(document.select("meta[name=description]")
+                        .attr("content"));
+                Optional<LdLocale> lang = languageDetector.detect(textObject);
+                return lang.get().getLanguage();
+            } catch (Exception e2) {
+                try {
+                    TextObject textObject = textObjectFactory.forText(new String(new char[20]).replace("\0", document.title() + " "));
+                    Optional<LdLocale> lang = languageDetector.detect(textObject);
+                    return lang.get().getLanguage();
+                } catch (Exception e3) {
+                    throw new UnknownLanguageException(document.location());
+                }
+            }
+        }
 
-        TextObject textObject = textObjectFactory.forText(document.text());
-        Optional<LdLocale> lang = languageDetector.detect(textObject);
-        return lang.get().getLanguage();
     }
 /*
     public String detectLanguage(Document document) throws IOException {
@@ -63,9 +80,9 @@ class LangDetector {
     }
 
     public static void main(String args[]) throws IOException {
-       /* Fetcher fetcher = new Fetcher();
-        Document document = fetcher.fetch("http://moz.com/top500");
-        System.out.println(detectLang(document));*/
+        Fetcher fetcher = new Fetcher();
+        Document document = fetcher.fetch("http://wikipedia.org");
+        System.out.println(detectLang(document));
     }
 
 }
