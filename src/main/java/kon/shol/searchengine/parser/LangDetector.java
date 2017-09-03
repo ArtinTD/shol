@@ -12,7 +12,6 @@ import com.optimaize.langdetect.text.TextObject;
 import com.optimaize.langdetect.text.TextObjectFactory;
 import kon.shol.searchengine.crawler.Fetcher;
 import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
-import org.apache.tika.language.LanguageIdentifier;
 
 import org.jsoup.nodes.Document;
 
@@ -38,13 +37,13 @@ class LangDetector {
         Optional<LdLocale> lang = languageDetector.detect(textObject);
         return lang.get().getLanguage();
     }
-
+/*
     public String detectLanguage(Document document) throws IOException {
         System.out.println(document.text());
         LanguageIdentifier identifier = new LanguageIdentifier(document.text());
         return identifier.getLanguage();
 //        TODO: THIS IS NOT WORKING :|
-    }
+    }*/
 
     private boolean checkMetaLanguage(Document document, String language) {
         if (!document.select("html").attr("lang").contains(language) && !document.select("html").attr("lang").isEmpty()) {
