@@ -63,7 +63,9 @@ public class Consumer implements Runnable{
             }
             synchronized (LOCK) {
                 try {
-                    LOCK.wait();
+                    if (consumingQueue.size() < 2000) {
+                        LOCK.wait();
+                    }
                 } catch (InterruptedException interruptedException) {
                     logger.error("Error while waiting to fill the consuming queue");
                 }
@@ -76,9 +78,6 @@ public class Consumer implements Runnable{
             synchronized (LOCK) {
                 LOCK.notify();
             }
-        }
-        if (consumingQueue.size() == 0) {
-            logger.error("consumingQueue EMPTY!");
         }
         return consumingQueue.take();
     }
