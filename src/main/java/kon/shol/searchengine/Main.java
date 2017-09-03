@@ -39,7 +39,7 @@ public class Main {
         lruCache = new LruCache();
         for (int i = 0; i < 500; i++) {
             try {
-                hBase = new HbaseDriver("artinBulk2");
+                hBase = new HbaseDriver("webpages");
             } catch (IOException e) {
                 logger.error("are dige...");
             }

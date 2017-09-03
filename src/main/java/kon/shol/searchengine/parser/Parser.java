@@ -15,7 +15,7 @@ import java.util.*;
 
 public class Parser {
     private PageData pageData;
-    private LangDetector langDetector = new LangDetector();
+    private LangDetector languageDetector = new LangDetector();
 
     public void parse(Document doc) throws IOException {
         if (isValid(doc)) {
@@ -60,7 +60,7 @@ public class Parser {
     private boolean isValid(Document document) throws IOException {
         if (!document.hasText())
             throw new EmptyDocumentException("Empty Document: " + document.location());
-        else if (langDetector.isEnglish(document)) {
+        else if (languageDetector.isEnglish(document)) {
             return true;
         }
         return false;
@@ -92,22 +92,21 @@ public class Parser {
 
     public String reverseDomain(String url) {
         try {
-            if (url == null) {
-                System.out.println("NULL URL");
-            }
-            if (url.equals("")) {
-                System.out.println("empty url");
-            }
             if (url.charAt(url.length() - 1) != '/') {
                 url += "/";
             }
             List<String> domainArray = Arrays.asList(InternetDomainName.from(
                     new URL(url).getHost()).toString().split("\\."));
+            if (domainArray.get(0).equals("www")) {
+                domainArray.remove(0);
+            }
             Collections.reverse(domainArray);
             return (String.join(".", domainArray)) + url.substring(
                     StringUtils.ordinalIndexOf(url, "/", 3));
         } catch (MalformedURLException | IllegalArgumentException e) {
-//            e.printStackTrace();
+            if (e instanceof IllegalArgumentException) {
+                return url;
+            }
         }
         return null;
     }

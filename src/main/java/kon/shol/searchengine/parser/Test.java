@@ -1,6 +1,5 @@
 package kon.shol.searchengine.parser;
 
-import com.google.common.net.InternetDomainName;
 import kon.shol.searchengine.crawler.Fetcher;
 import kon.shol.searchengine.hbase.Connector;
 import org.apache.hadoop.hbase.TableName;
@@ -10,14 +9,13 @@ import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.net.URL;
 
 public class Test {
+    private final static Logger logger = Logger.getLogger(kon.shol.searchengine.parser.Test.class);
 
     public static void main(String[] args) throws IOException {
-        URL url = new URL("http://google.com/;jadjass;lkljdfgo/ausdh/aidsia?kir=khar");
-        System.out.println(InternetDomainName.from(url.getHost()).topPrivateDomain());
-        //
-//  System.out.println(parser.getPageData().getLinks());
+        Parser parser = new Parser();
+        Fetcher fetcher = new Fetcher();
+        System.out.println(parser.reverseDomain("https://www.wikipedia.org"));
     }
 }
