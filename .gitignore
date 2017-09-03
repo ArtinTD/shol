@@ -3,5 +3,7 @@
 src/test/
 target/
 .DS_STORE
-src/main/java/Test.java
+src/main/java/kon/shol/searchengine/elasticsearch/Test.java
 kibana
+src/main/java/Test.java
+untitled\ folder

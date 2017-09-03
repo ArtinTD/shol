@@ -4,19 +4,24 @@ import com.google.gson.Gson;
 import org.apache.http.HttpHost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 
-public class SingleThreadSyncEsIndexer implements EsIndexer {
+public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
    private final static Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
    
+   private String indexActionLine;
    private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();
    private String[] hosts;
    private String index;
@@ -24,18 +29,20 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
    private Sender indexer;
    private int port;
    
-   public SingleThreadSyncEsIndexer(String[] hosts, String index, String type) {
+   public SingleThreadSyncEsBulkIndexer(String[] hosts, String index, String type) {
       this(hosts, 9200, index, type);
    }
    
-   public SingleThreadSyncEsIndexer(String[] hosts, int port, String index, String type) {
+   public SingleThreadSyncEsBulkIndexer(String[] hosts, int port, String index, String type) {
       this.hosts = hosts;
       this.port = port;
       this.index = index;
       this.type = type;
+      indexActionLine =
+            "{ \"index\": {}}\n";
       
       indexer = new Sender();
-      indexer.setName("SingleThreadSyncEsIndexer-indexerThread");
+      indexer.setName("SingleThreadSyncEsBulkIndexer-indexerThread");
       indexer.start();
    }
    
@@ -55,13 +62,16 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
       }
    }
    
+   
    private class Sender extends Thread {
       
+      private final Semaphore lock = new Semaphore(1);
       private final int hostCount = hosts.length;
-      private final String endpoint = "/" + index + "/" + type + "/";
+      private final String endpoint = "/" + index + "/" + type + "/_bulk";
       private final Gson jsonMaker = new Gson();
       private RestClient restClient;
       private long count = 0;
+      private StringBuilder body = new StringBuilder();
       
       private Sender() {
          
@@ -77,34 +87,25 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
          while (true) {
             try {
                WebPage newWebPage = indexQueue.take();
-               Response response = performRequest(newWebPage); // throws IOException
-               log(response);
-            } catch (IOException ex) {
-               logger.error("index error: " + ex.toString());
+               lock.acquire();
+               body.append(indexActionLine);
+               body.append(jsonMaker.toJson(newWebPage));
+               body.append("\n");
+               count++;
+               if (count > 128) {
+                  flush();
+               }
+               lock.release();
             } catch (InterruptedException ex) {
+               lock.release(); // CHECK: is necessary?
+               flush();
                logger.info("indexing done!");
+            } catch (Exception ex) {
+               logger.error(ex.toString());
             } finally {
-               logger.info("index operation over @" + endpoint);
                closeClient();
             }
          }
-      }
-      
-      private Response performRequest(WebPage newWebPage) throws IOException {
-         return restClient.performRequest(
-               "POST",
-               endpoint,
-               Collections.emptyMap(),
-               new StringEntity(jsonMaker.toJson(newWebPage), ContentType.APPLICATION_JSON)
-         );
-      }
-      
-      private void log(Response response) {
-         logger.info(
-               "index result: " + response.getStatusLine().getReasonPhrase()
-                     + " : " + ++count
-                     + " @" + endpoint
-         );
       }
       
       private void closeClient() {
@@ -113,6 +114,41 @@ public class SingleThreadSyncEsIndexer implements EsIndexer {
          } catch (IOException ex) {
             logger.error(ex.toString());
          }
+      }
+      
+      
+      public void flush() {
+         
+         try {
+            lock.acquire();
+         } catch (InterruptedException ex) {
+            logger.error(ex.toString());
+            lock.release();
+            return;
+         }
+         
+         try {
+            bulkSend(new StringEntity(body.toString(), ContentType.APPLICATION_JSON));
+         } catch (IOException e) {
+            logger.error(e.toString());
+         }
+         
+         body = new StringBuilder();
+         count = 0;
+         lock.release();
+         
+      }
+      
+      // TODO: read response and check for errors.
+      // TODO: Ideally use Java API instead of REST API.
+      private void bulkSend(StringEntity body) throws IOException {
+         
+         Response response = restClient.performRequest("POST",
+               endpoint, Collections.emptyMap(), body);
+         String resultString = EntityUtils.toString(response.getEntity()).trim();
+         System.out.println("[info] " + new Date().toString() + " : errors: "
+               + new JSONObject(resultString)
+               .getString("errors"));
       }
       
    }

@@ -1,17 +1,21 @@
 package kon.shol.searchengine.elasticsearch;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class EsQueryConfig {
    
    public static final EsQueryConfig DEFAULT_CONFIG;
    
+   private static final String[] DEFAULT_TO_STRING =
+         new String[]{"title"};
+   
    static {
       DEFAULT_CONFIG = new EsQueryConfig()
             .addField("title", 2F)
             .addField("description", 1.7F)
-            .addField("txt", 1F)
+            .addField("text", 1F)
             .addField("h1h3", 1.7F)
             .addField("h4h6", 1.4F)
             .addField("imagesAlt", 1.7F)
@@ -19,7 +23,7 @@ public class EsQueryConfig {
    }
    
    private HashMap<String, Float> fields;
-   private String toString;
+   private String[] toStringArray;
    private boolean toStringChanged = true;
    
    public EsQueryConfig(Map<String, Float> fields) {
@@ -41,38 +45,28 @@ public class EsQueryConfig {
       return this;
    }
    
-   @Override
-   public String toString() {
+   public String[] toStringArray() {
       
       if (!toStringChanged) {
-         return toString;
+         return toStringArray;
       }
       
       if (fields.isEmpty()) {
-         return "[\"text\"]";
+         return DEFAULT_TO_STRING;
       }
       
-      StringBuilder result = new StringBuilder("[");
-      boolean newResult = true;
+      String[] result = new String[fields.size()];
+      Iterator<String> fieldNames = fields.keySet().iterator();
       
-      for (String field : fields.keySet()) {
-         if (!newResult) {
-            result.append(", ");
-         }
-         result.append("\"");
-         result.append(field);
+      for (int i = 0; i < fields.size(); i++) {
+         String field = fieldNames.next();
          Float weight = fields.get(field);
-         if (!weight.equals(1F)) {
-            result.append("^");
-            result.append(weight.toString());
-         }
-         result.append("\"");
-         newResult = false;
+         result[i] = field +
+               (!weight.equals(1F) ? ("^" + weight.toString()) : "");
       }
-      result.append("]");
       
-      toString = result.toString();
+      toStringArray = result;
       toStringChanged = false;
-      return toString;
+      return toStringArray;
    }
 }

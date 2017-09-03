@@ -97,6 +97,12 @@
             <artifactId>rest</artifactId>
             <version>5.5.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>5.5.1</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
