@@ -63,7 +63,7 @@ public class Consumer implements Runnable{
             }
             synchronized (LOCK) {
                 try {
-                    if (consumingQueue.size() < 2000) {
+                    if (consumingQueue.size() > 2000) {
                         LOCK.wait();
                     }
                 } catch (InterruptedException interruptedException) {
