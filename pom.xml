@@ -22,11 +22,11 @@
             <artifactId>jsoup</artifactId>
             <version>1.10.3</version>
         </dependency>
-        <dependency><!-- used for the Optional and other things -->
+       <!-- <dependency>&lt;!&ndash; used for the Optional and other things &ndash;&gt;
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>19.0</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
