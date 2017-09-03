@@ -25,7 +25,7 @@ class LangDetector {
     private final String ENGLISH_LANGUAGE = "en";
 
 
-    private static String detectLang(Document document) throws IOException {
+    private String detectLang(Document document) throws IOException {
         List<LanguageProfile> languageProfiles = new LanguageProfileReader().readAllBuiltIn();
 
         LanguageDetector languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
@@ -80,9 +80,9 @@ class LangDetector {
     }
 
     public static void main(String args[]) throws IOException {
-        Fetcher fetcher = new Fetcher();
+        /*Fetcher fetcher = new Fetcher();
         Document document = fetcher.fetch("http://wikipedia.org");
-        System.out.println(detectLang(document));
+        System.out.println(detectLang(document));*/
     }
 
 }
