@@ -21,6 +21,7 @@ public class Main {
     private final static Logger logger = Logger.getLogger("custom");
 
     public static void main(String[] args) {
+
         Queue crawlerQueue;
         Cache lruCache;
         Fetcher fetcher;
@@ -33,7 +34,6 @@ public class Main {
             logger.fatal("Couldn't Connect to Hbase, Fatal Error");
             System.exit(0);
         }
-
         ExecutorService executor = Executors.newFixedThreadPool(510);
         crawlerQueue = new CrawlerQueue();
         lruCache = new LruCache();
