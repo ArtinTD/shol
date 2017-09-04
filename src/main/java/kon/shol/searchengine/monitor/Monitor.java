@@ -1,5 +1,6 @@
 package kon.shol.searchengine.monitor;
 
+import kon.shol.searchengine.crawler.Cache;
 import kon.shol.searchengine.crawler.Crawler;
 import org.apache.log4j.Logger;
 
@@ -12,6 +13,7 @@ public class Monitor implements Runnable {
     private int cycles = 0;
     private ArrayList<Crawler> crawlers = new ArrayList<>();
     private final static Logger logger = Logger.getLogger("custom");
+    private Cache cache;
 
     static int numberOfFetchedLinksFromQueueToCrawl;
     static int numberOfPoliteDomains;
@@ -19,6 +21,11 @@ public class Monitor implements Runnable {
     static int numberOfCrawledLinks;
     static int numberOfActiveThreads;
     static int allLinkeCrawled;
+
+    public Monitor(Cache cache) {
+
+        this.cache = cache;
+    }
 
     public void addCrawler(Crawler crawler) {
         crawlers.add(crawler);
@@ -47,6 +54,7 @@ public class Monitor implements Runnable {
             logger.info("Crawled: " + speed);
             logger.info("Average: " + sum/cycles);
             logger.info("Sum: " + sum);
+            logger.info("Cache Size: " + cache.size());
             System.out.println("");
             speed = 0;
         }
