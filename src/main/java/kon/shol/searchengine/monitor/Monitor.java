@@ -16,19 +16,6 @@ public class Monitor implements Runnable {
     private int invalidUrls = 0;
     private ArrayList<Crawler> crawlers = new ArrayList<>();
     private final static Logger logger = Logger.getLogger("custom");
-    private Cache cache;
-
-    static int numberOfFetchedLinksFromQueueToCrawl;
-    static int numberOfPoliteDomains;
-    static int numberOfenglishLinks;
-    static int numberOfCrawledLinks;
-    static int numberOfActiveThreads;
-    static int allLinkeCrawled;
-
-    public Monitor(Cache cache) {
-
-        this.cache = cache;
-    }
 
     public void addCrawler(Crawler crawler) {
         crawlers.add(crawler);
@@ -60,7 +47,6 @@ public class Monitor implements Runnable {
             logger.info("Crawl Speed: " + speed);
             logger.info("Average Crawl Speed: " + sum/cycles);
             logger.info("Total Crawls: " + sum);
-            logger.info("Cache Size: " + cache.size());
             logger.info("Total Fetch Errors: " + fetchErrors);
             logger.info("Total Parse Errors: " + parseErrors);
             logger.info("Total Invalid Urls: " + invalidUrls);
