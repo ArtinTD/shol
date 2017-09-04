@@ -66,7 +66,7 @@ public class Crawler implements Runnable {
                 }
             } catch (IOException e) {
                 logger.fatal("Can't check existence from storage: " + url);
-                e.printStackTrace();
+                continue;
             }
             if (cache.exists(domain)) {
                 queue.send(url);
@@ -76,6 +76,7 @@ public class Crawler implements Runnable {
                 cache.insert(domain);
             } catch (ExecutionException e) {
                 logger.fatal("Can't insert to cache: " + domain);
+                continue;
             }
             Document document;
             try {
@@ -86,8 +87,13 @@ public class Crawler implements Runnable {
             }
             try {
                 parser.parse(document);
+                if (parser.getPageData() == null) {
+                    logger.debug("Null page data: " + url);
+                    continue;
+                }
             } catch (IOException | EmptyDocumentException exception) {
                     logger.debug("Error parsing " + url + ": " + exception.getMessage());
+                    continue;
             }
             storage.sendToStorage(parser.getPageData());
             queue.send(parser.getPageData().getAnchors());

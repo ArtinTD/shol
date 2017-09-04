@@ -38,7 +38,6 @@ class LangDetector {
     boolean isEnglish(Document document) throws IOException {
         String lang ;
         if(!checkMetaLanguage(document, ENGLISH_LANGUAGE)){
-            System.out.println("hi");
             return false;
         }
         else{
