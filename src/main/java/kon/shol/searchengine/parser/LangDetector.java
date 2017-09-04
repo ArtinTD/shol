@@ -38,6 +38,7 @@ class LangDetector {
     boolean isEnglish(Document document) throws IOException {
         String lang ;
         if(!checkMetaLanguage(document, ENGLISH_LANGUAGE)){
+            System.out.println("hi");
             return false;
         }
         else{
@@ -64,7 +65,6 @@ class LangDetector {
     public static void main(String args[]) throws IOException {
 
         LangDetector langDetector = new LangDetector();
-        System.out.println(langDetector.isEnglish(Jsoup.connect("http://varzesh3.com").get()));
 
     }
 
