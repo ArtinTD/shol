@@ -40,7 +40,7 @@ public class Main {
         Monitor monitor = new Monitor(lruCache);
         for (int i = 0; i < 500; i++) {
             try {
-                hBase = new HbaseDriver("webpages");
+                hBase = new HbaseDriver("webpages2");
             } catch (IOException e) {
                 logger.fatal("Can't create HbaseDriver");
             }
