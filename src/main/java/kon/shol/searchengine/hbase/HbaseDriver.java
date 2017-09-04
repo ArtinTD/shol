@@ -21,9 +21,9 @@ public class HbaseDriver implements Storage {
         reader = new Reader(tableName);
         hBaseQueue = new HbaseQueue();
     }
+
     @Override
     public void sendToStorage(Object element) {
-//        hBaseQueue.send(element);
         writer.batchPut((PageData) element);
     }
 

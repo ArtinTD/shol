@@ -20,6 +20,9 @@ public class Crawler implements Runnable {
     private Parser parser;
     private Storage storage;
     private int numCycle = 0;
+    private int invalidUrl = 0;
+
+
 
     private final static Logger logger = Logger.getLogger("custom");
 
@@ -42,7 +45,7 @@ public class Crawler implements Runnable {
             try {
                 url = queue.get();
             } catch (InterruptedException interruptedException) {
-                logger.fatal("Interruption while getting from queue");
+                logger.fatal("Interruption while  getting from queue");
                 continue;
             }
             String domain = null;
@@ -50,12 +53,11 @@ public class Crawler implements Runnable {
                 domain = parser.getDomain(url);
             } catch (MalformedURLException e) {
                 logger.debug("Malformed: " + url);
+                invalidUrl++;
+                continue;
             } catch (IllegalArgumentException | IllegalStateException e) {
                 logger.debug("Domain name not valid: " + url);
-                continue;
-            }
-            if (cache.exists(domain)) {
-                queue.send(url);
+                invalidUrl++;
                 continue;
             }
             try {
@@ -65,6 +67,10 @@ public class Crawler implements Runnable {
             } catch (IOException e) {
                 logger.fatal("Can't check existence from storage: " + url);
                 e.printStackTrace();
+            }
+            if (cache.exists(domain)) {
+                queue.send(url);
+                continue;
             }
             try {
                 cache.insert(domain);
