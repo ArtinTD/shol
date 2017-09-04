@@ -1,15 +1,11 @@
 package kon.shol.searchengine.crawler;
 
-import kon.shol.searchengine.crawler.exceptions.InvalidStatusCodeException;
 import kon.shol.searchengine.parser.Parser;
-import kon.shol.searchengine.parser.exceptions.EmptyDocumentException;
-import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 public class Crawler implements Runnable {
@@ -20,7 +16,9 @@ public class Crawler implements Runnable {
     private Parser parser;
     private Storage storage;
     private int numCycle = 0;
-    private int invalidUrl = 0;
+    private int invalidUrls = 0;
+    private int fetchErrors = 0;
+    private int parseErrors = 0;
 
 
 
@@ -34,6 +32,26 @@ public class Crawler implements Runnable {
         this.parser = parser;
         this.storage = storage;
 
+    }
+
+    public synchronized int getFetchErrors() {
+        return fetchErrors;
+    }
+
+    public synchronized int getParseErrors() {
+        return parseErrors;
+    }
+
+    public synchronized int getInvalidUrls() {
+        return invalidUrls;
+    }
+
+    public synchronized int getNumCycle(){
+        return numCycle;
+    }
+
+    public synchronized void resetNumCycle(){
+        numCycle = 0;
     }
 
     @Override
@@ -53,11 +71,11 @@ public class Crawler implements Runnable {
                 domain = parser.getDomain(url);
             } catch (MalformedURLException e) {
                 logger.debug("Malformed: " + url);
-                invalidUrl++;
+                invalidUrls++;
                 continue;
             } catch (IllegalArgumentException | IllegalStateException e) {
                 logger.debug("Domain name not valid: " + url);
-                invalidUrl++;
+                invalidUrls++;
                 continue;
             }
             try {
@@ -83,30 +101,21 @@ public class Crawler implements Runnable {
                 document = fetcher.fetch(url);
             } catch (IOException exception) {
                 logger.debug("Error fetching: " + url);
+                fetchErrors++;
                 continue;
             }
             try {
                 parser.parse(document);
-                if (parser.getPageData() == null) {
-                    logger.debug("Null page data: " + url);
-                    continue;
-                }
-            } catch (IOException | EmptyDocumentException exception) {
-                    logger.debug("Error parsing " + url + ": " + exception.getMessage());
-                    continue;
+            } catch (IOException exception) {
+                logger.debug("Error parsing: " + url);
+                parseErrors++;
+                continue;
             }
+
             storage.sendToStorage(parser.getPageData());
             queue.send(parser.getPageData().getAnchors());
             numCycle++;
         }
-    }
-
-    public synchronized int getNumCycle(){
-        return numCycle;
-    }
-
-    public synchronized void resetNumCycle(){
-        numCycle = 0;
     }
 }
 

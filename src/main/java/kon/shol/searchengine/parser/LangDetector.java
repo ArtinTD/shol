@@ -1,17 +1,11 @@
 package kon.shol.searchengine.parser;
 
 
-import kon.shol.searchengine.parser.exceptions.InvalidLanguageException;
 import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.language.LanguageProfile;
-import org.apache.tika.language.ProfilingHandler;
-import org.apache.tika.language.ProfilingWriter;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-
 import java.io.IOException;
-import java.util.List;
 
 class LangDetector {
 
@@ -26,13 +20,10 @@ class LangDetector {
 
     private boolean checkMetaLanguage(Document document, String language) {
 
-        if (!(document.select("html").attr("lang").contains(ENGLISH_LANGUAGE) ||
-                document.select("html").attr("lang").contains("mul")) &&
-                !document.select("html")
-                .attr("lang").isEmpty()) {
-            return false;
-        }
-        return true;
+        return document.select("html").attr("lang").contains(ENGLISH_LANGUAGE) ||
+                document.select("html").attr("lang").contains("mul") ||
+                document.select("html")
+                        .attr("lang").isEmpty();
     }
 
     boolean isEnglish(Document document) throws IOException {
@@ -52,19 +43,9 @@ class LangDetector {
                 }
                 else {
                     lang = detectLang(document.text());
-                    if(lang.equals(ENGLISH_LANGUAGE))
-                        return true;
-                    else
-                        return false;
+                    return lang.equals(ENGLISH_LANGUAGE);
                 }
             }
         }
     }
-
-    public static void main(String args[]) throws IOException {
-
-        LangDetector langDetector = new LangDetector();
-
-    }
-
 }

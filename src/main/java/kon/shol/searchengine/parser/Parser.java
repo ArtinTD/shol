@@ -2,7 +2,6 @@ package kon.shol.searchengine.parser;
 
 import com.google.common.net.InternetDomainName;
 import com.google.gson.Gson;
-import kon.shol.searchengine.parser.exceptions.EmptyDocumentException;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,10 +13,11 @@ import java.net.URL;
 import java.util.*;
 
 public class Parser {
+
     private PageData pageData;
     private LangDetector languageDetector = new LangDetector();
 
-    public void parse(Document doc) throws IOException, EmptyDocumentException {
+    public void parse(Document doc) throws IOException {
         if (isValid(doc)) {
             pageData = new PageData();
             pageData.setAnchors(extractAnchors(doc));
@@ -31,6 +31,8 @@ public class Parser {
                     .eachAttr("alt")));
             pageData.setH1h3(doc.select("h1,h2,h3").text());
             pageData.setH4h6(doc.select("h4,h5,h6").text());
+        } else {
+            throw new IOException();
         }
     }
 
@@ -43,7 +45,7 @@ public class Parser {
             }
             if (absHref.contains("http"))
                 return absHref;
-            else{
+            else {
                 return null;
             }
 
@@ -58,9 +60,9 @@ public class Parser {
     }
 
     private boolean isValid(Document document) throws IOException {
-        if (!document.hasText())
-            throw new EmptyDocumentException("Empty Document: " + document.location());
-        else if (languageDetector.isEnglish(document)) {
+        if (!document.hasText()) {
+            return false;
+        } else if (languageDetector.isEnglish(document)) {
             return true;
         }
         return false;
