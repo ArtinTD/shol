@@ -218,7 +218,7 @@
                     <archive>
                         <manifest>
 
-                            <mainClass>kon.shol.searchengine.Main</mainClass>
+                            <mainClass>kon.shol.searchengine.elasticsearch.MultiThreadEsFeederFromHbase</mainClass>
                         </manifest>
                     </archive>
 
