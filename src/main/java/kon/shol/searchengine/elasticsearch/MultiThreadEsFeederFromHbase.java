@@ -67,7 +67,7 @@ public class MultiThreadEsFeederFromHbase {
       
       long max = 1503730220000L;
       do {
-         long min = max - 10000;
+         long min = max - 1200000;
          
          PartialFeeder partialFeeder;
          try {
