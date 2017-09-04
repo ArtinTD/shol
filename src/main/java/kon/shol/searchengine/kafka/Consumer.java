@@ -48,7 +48,7 @@ public class Consumer implements Runnable{
                 String.valueOf(Thread.currentThread().getId()));
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(topic));
-        consumingQueue = new ArrayBlockingQueue<>(40*1000);
+        consumingQueue = new ArrayBlockingQueue<>(20*1000);
     }
 
     public void run() {
@@ -63,7 +63,7 @@ public class Consumer implements Runnable{
             }
             synchronized (LOCK) {
                 try {
-                    if (consumingQueue.size() > 500) {
+                    if (consumingQueue.size() > 2000) {
                         LOCK.wait();
                     }
                 } catch (InterruptedException interruptedException) {
@@ -74,7 +74,7 @@ public class Consumer implements Runnable{
     }
 
     public String get() throws InterruptedException {
-        if (consumingQueue.size() <= 500) {
+        if (consumingQueue.size() <= 2000) {
             synchronized (LOCK) {
                 LOCK.notify();
             }

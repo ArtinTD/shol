@@ -80,8 +80,8 @@ public class Writer implements Runnable {
             String url = parser.reverseDomain(pageData.getUrl());
             Put put = returnPutPageData(url, pageData);
             putList.add(put);
-            logger.debug("Thread: " + Thread.currentThread().getName() + " | Stored: " + pageData.getUrl());
-            System.out.println("Putlist size " + putList.size());
+//            logger.debug("Thread: " + Thread.currentThread().getName() + " | Stored: " + pageData.getUrl());
+//            System.out.println("Putlist size " + putList.size());
             if (putList.size() > MAX_BATCH_PUT_SIZE) {
                 if (connection.isClosed()) {
                     try {
