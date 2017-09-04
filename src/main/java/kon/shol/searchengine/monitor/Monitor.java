@@ -61,8 +61,8 @@ public class Monitor implements Runnable {
             logger.info("Average Crawl Speed: " + sum/cycles);
             logger.info("Total Crawls: " + sum);
             logger.info("Cache Size: " + cache.size());
-            logger.info("Total Fetch Errors: " + parseErrors);
-            logger.info("Total Parse Errors: " + fetchErrors);
+            logger.info("Total Fetch Errors: " + fetchErrors);
+            logger.info("Total Parse Errors: " + parseErrors);
             logger.info("Total Invalid Urls: " + invalidUrls);
             System.out.println("");
             speed = 0;
