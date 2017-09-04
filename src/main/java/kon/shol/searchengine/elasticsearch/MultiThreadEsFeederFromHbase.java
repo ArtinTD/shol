@@ -46,7 +46,7 @@ public class MultiThreadEsFeederFromHbase {
    private void init() throws IOException {
       
       init(new String[]{"188.165.230.122", "188.165.235.136"}, "shol",
-            "webpagestest4", "188.165.230.122:2181", "demodb");
+            "webpagestest5", "188.165.230.122:2181", "demodb");
    }
    
    private void init(String[] hosts, String index, String type,
@@ -65,9 +65,9 @@ public class MultiThreadEsFeederFromHbase {
    
    private void index() {
       
-      long max = 1503732600000L;
+      long max = 1503730220000L;
       do {
-         long min = max - 20000;
+         long min = max - 10000;
          
          PartialFeeder partialFeeder;
          try {
@@ -135,7 +135,6 @@ public class MultiThreadEsFeederFromHbase {
          if (foundAnythingYet) {
             if (foundAnythingNow) {
                System.out.println("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
-               indexer.flush();
             } else {
                System.out.println("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
                emptyCyclesCount++;

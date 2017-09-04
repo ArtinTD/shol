@@ -1,18 +1,22 @@
 package kon.shol.searchengine.elasticsearch;
 
 import com.google.gson.Gson;
-import org.apache.http.HttpHost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
-import org.json.JSONObject;
+import org.elasticsearch.action.bulk.BulkProcessor;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.unit.ByteSizeUnit;
+import org.elasticsearch.common.unit.ByteSizeValue;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
@@ -21,7 +25,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    private final static Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
    
-   private String indexActionLine;
+   private Semaphore lock = new Semaphore(1);
    private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();
    private String[] hosts;
    private String index;
@@ -30,7 +34,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    private int port;
    
    public SingleThreadSyncEsBulkIndexer(String[] hosts, String index, String type) {
-      this(hosts, 9200, index, type);
+      this(hosts, 9300, index, type);
    }
    
    public SingleThreadSyncEsBulkIndexer(String[] hosts, int port, String index, String type) {
@@ -38,8 +42,6 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
       this.port = port;
       this.index = index;
       this.type = type;
-      indexActionLine =
-            "{ \"index\": {}}\n";
       
       indexer = new Sender();
       indexer.setName("SingleThreadSyncEsBulkIndexer-indexerThread");
@@ -69,21 +71,64 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
    private class Sender extends Thread {
       
-      private final Semaphore lock = new Semaphore(1);
       private final int hostCount = hosts.length;
-      private final String endpoint = "/" + index + "/" + type + "/_bulk";
       private final Gson jsonMaker = new Gson();
-      private RestClient restClient;
-      private long count = 0;
-      private StringBuilder body = new StringBuilder();
+      private TransportClient transportClient;
+      private BulkProcessor bulkProcessor;
       
       private Sender() {
          
-         HttpHost[] httpHosts = new HttpHost[hostCount];
+         InetSocketTransportAddress[] addresses = new InetSocketTransportAddress[hostCount];
          for (int i = 0; i < hostCount; i++) {
-            httpHosts[i] = new HttpHost(hosts[i], port, "http");
+            addresses[i] = makeTransportAddress(hosts[i]);
          }
-         restClient = RestClient.builder(httpHosts).build();
+         
+         Settings settings = Settings.builder().put("cluster.name", "sholastic").build();
+         transportClient = new PreBuiltTransportClient(settings)
+               .addTransportAddresses(addresses);
+         
+         
+         initBulkProcessor();
+         
+         
+      }
+      
+      private void initBulkProcessor() {
+         bulkProcessor = BulkProcessor.builder(transportClient,
+               new BulkProcessor.Listener() {
+                  @Override
+                  public void beforeBulk(long executionId, BulkRequest request) {
+                     System.out.println("[info] gonna bulk!");
+                  }
+                  
+                  @Override
+                  public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
+                     System.out.println("[info] bulked!");
+                  }
+                  
+                  @Override
+                  public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
+                     logger.error(failure.toString());
+                     System.out.println("[fuck!]");
+                     failure.printStackTrace();
+                  }
+               })
+               .setBulkActions(-1)
+               .setBulkSize(new ByteSizeValue(-1, ByteSizeUnit.MB))
+               .setFlushInterval(TimeValue.timeValueSeconds(30))
+               .build();
+      }
+      
+      private InetSocketTransportAddress makeTransportAddress(String host) {
+         
+         try {
+            return new InetSocketTransportAddress(
+                  new InetSocketAddress(InetAddress.getByName(host), port));
+         } catch (UnknownHostException ex) {
+            logger.error(ex.toString());
+         }
+         
+         return null;
       }
       
       @Override
@@ -92,67 +137,30 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
             try {
                WebPage newWebPage = indexQueue.take();
                lock.acquire();
-               body.append(indexActionLine);
-               body.append(jsonMaker.toJson(newWebPage));
-               body.append("\n");
-               count++;
-               if (count > 128) {
-                  flush();
-               }
-               lock.release();
+               bulkProcessor.add(
+                     new IndexRequest(index, type, newWebPage.getUrl())
+                           .source(jsonMaker.toJson(newWebPage)));
             } catch (InterruptedException ex) {
-               lock.release(); // CHECK: is necessary?
                flush();
                logger.info("indexing done!");
+               transportClient.close();
             } catch (Exception ex) {
                logger.error(ex.toString());
             } finally {
-               closeClient();
+               lock.release();
             }
          }
       }
       
-      private void closeClient() {
-         try {
-            restClient.close();
-         } catch (IOException ex) {
-            logger.error(ex.toString());
-         }
-      }
-      
-      
       public void flush() {
-         
          try {
             lock.acquire();
+            bulkProcessor.flush();
          } catch (InterruptedException ex) {
-            logger.error(ex.toString());
+            ex.printStackTrace();
+         } finally {
             lock.release();
-            return;
          }
-         
-         try {
-            bulkSend(new StringEntity(body.toString(), ContentType.APPLICATION_JSON));
-         } catch (IOException e) {
-            logger.error(e.toString());
-         }
-         
-         body = new StringBuilder();
-         count = 0;
-         lock.release();
-         
-      }
-      
-      // TODO: read response and check for errors.
-      // TODO: Ideally use Java API instead of REST API.
-      private void bulkSend(StringEntity body) throws IOException {
-         
-         Response response = restClient.performRequest("POST",
-               endpoint, Collections.emptyMap(), body);
-         String resultString = EntityUtils.toString(response.getEntity()).trim();
-         System.out.println("[info] " + new Date().toString() + " : errors: "
-               + new JSONObject(resultString)
-               .getString("errors"));
       }
       
    }
