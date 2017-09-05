@@ -11,13 +11,13 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class CrawlerQueue implements Queue {
+public class PreAnalysisQueue implements Queue {
 
     private Consumer consumer;
     private Producer producer = new Producer();
     private final String TOPIC = "artinChii";
 
-    public CrawlerQueue() {
+    public PreAnalysisQueue() {
         Properties properties = new Properties();
         properties.put(FETCH_MAX_BYTES_CONFIG, "10000");
         consumer = new Consumer("8", TOPIC, properties);

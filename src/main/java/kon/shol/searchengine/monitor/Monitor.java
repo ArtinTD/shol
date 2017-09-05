@@ -1,10 +1,7 @@
 package kon.shol.searchengine.monitor;
 
 import kon.shol.searchengine.crawler.Analysis;
-import kon.shol.searchengine.crawler.Cache;
-import kon.shol.searchengine.crawler.Crawler;
-import kon.shol.searchengine.crawler.Queue;
-import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
+import kon.shol.searchengine.crawler.PreAnalysis;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -18,13 +15,13 @@ public class Monitor implements Runnable {
     private int parseErrors = 0;
     private int invalidUrls = 0;
 
-    private ArrayList<Crawler> crawlers = new ArrayList<>();
+    private ArrayList<PreAnalysis> preAnalyses = new ArrayList<>();
     private ArrayList<Analysis> analyses =new ArrayList<>();
     private final static Logger logger = Logger.getLogger("custom");
 
 
-    public void addCrawler(Crawler crawler) {
-        crawlers.add(crawler);
+    public void addPreAnalysis(PreAnalysis preAnalysis) {
+        preAnalyses.add(preAnalysis);
     }
     public void addAnalysis(Analysis analysis){ analyses.add(analysis);}
 
@@ -38,8 +35,13 @@ public class Monitor implements Runnable {
                 logger.fatal("Monitor thread interrupted while sleeping");
             }
             for (Analysis analysis : analyses) {
+                parseErrors += analysis.getParseErrors();
                 speed += analysis.getNumCycle();
                 analysis.resetNumCycle();
+            }
+            for(PreAnalysis preAnalysis : preAnalyses){
+                fetchErrors += preAnalysis.getFetchErrors();
+                invalidUrls += preAnalysis.getInvalidUrls();
             }
             sum += speed;
             cycles += 1;
@@ -47,18 +49,12 @@ public class Monitor implements Runnable {
             logger.info("Crawl Speed: " + speed);
             logger.info("Average Crawl Speed: " + sum/cycles);
             logger.info("Total Crawls: " + sum);
-            speed = 0;
-        /*    logger.info("Total Fetch Errors: " + fetchErrors);
-            logger.info("Total Parse Errors: " + parseErrors);
+            logger.info("Total Fetch Errors: " + fetchErrors);
+            logger.info("Total Parse Errors(none english pages and empty document: " + parseErrors);
             logger.info("Total Invalid Urls: " + invalidUrls);
             System.out.println("");
 
             speed = 0;
-            parseErrors = 0;
-            invalidUrls = 0;
-            fetchErrors = 0;*/
-
-
         }
     }
 }

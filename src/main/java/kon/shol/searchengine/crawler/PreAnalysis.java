@@ -9,7 +9,7 @@ import java.net.MalformedURLException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 
-public class Crawler implements Runnable {
+public class PreAnalysis implements Runnable {
 
     private ArrayBlockingQueue documentsQueue;
     private Queue kafkaQueue;
@@ -23,7 +23,7 @@ public class Crawler implements Runnable {
 
     private final static Logger logger = Logger.getLogger("custom");
 
-    public Crawler(Queue kafkaQueue, ArrayBlockingQueue documentsQueue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
+    public PreAnalysis(Queue kafkaQueue, ArrayBlockingQueue documentsQueue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
 
         this.kafkaQueue = kafkaQueue;
         this.documentsQueue = documentsQueue;
