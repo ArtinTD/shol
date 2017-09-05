@@ -30,9 +30,4 @@ public class LruCache implements Cache {
     public void insert(Object element) throws ExecutionException {
         lruCache.get((String) element);
     }
-
-    @Override
-    public long size(){
-        return lruCache.size();
-    }
 }
