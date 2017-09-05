@@ -22,6 +22,12 @@ public class Monitor implements Runnable {
     private ArrayList<Analysis> analyses =new ArrayList<>();
     private final static Logger logger = Logger.getLogger("custom");
 
+    static int numberOfFetchedLinksFromQueueToCrawl;
+    static int numberOfPoliteDomains;
+    static int numberOfenglishLinks;
+    static int numberOfCrawledLinks;
+    static int numberOfActiveThreads;
+    static int allLinkeCrawled;
 
     public void addCrawler(Crawler crawler) {
         crawlers.add(crawler);
