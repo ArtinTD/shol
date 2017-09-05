@@ -56,8 +56,8 @@ public class MultiThreadEsFeederFromHbase {
    
    private void init() throws IOException {
       init(new String[]{"188.165.230.122", "188.165.235.136"}, "shol",
-            "webpagestest5", "188.165.230.122:2181",
-            "demodb", "data");
+            "webpagestest6", "188.165.230.122:2181",
+            "amghezi", "data");
    }
    
    private void init(String[] hosts, String index, String type,
