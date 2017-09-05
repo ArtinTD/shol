@@ -19,7 +19,7 @@ import java.util.List;
 public class Anchor {
 
     public static void main(String[] args) {
-        SparkConf con = new SparkConf().setAppName("Anchor").setMaster("spark://ns313900.ip-188-165-230.eu:7077");
+        SparkConf con = new SparkConf().setAppName("Anchor").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
         JavaSparkContext sc = new JavaSparkContext(con);
 
         Configuration conf = HBaseConfiguration.create();

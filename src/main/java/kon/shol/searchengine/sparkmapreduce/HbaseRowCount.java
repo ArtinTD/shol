@@ -12,7 +12,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 public class HbaseRowCount {
     public static void main(String[] args) {
-        SparkConf con = new SparkConf().setAppName("Count").setMaster("spark://ns313900.ip-188-165-230.eu:7077");
+        SparkConf con = new SparkConf().setAppName("Count").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
         JavaSparkContext sc = new JavaSparkContext(con);
 
 
@@ -21,7 +21,6 @@ public class HbaseRowCount {
         conf.set(TableInputFormat.INPUT_TABLE, "artinBulk2");   //Enter Table name
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
 
-        // Initialize hBase table if necessary
         JavaPairRDD<ImmutableBytesWritable, Result> hBaseRDD = sc.newAPIHadoopRDD(
                 conf,
                 TableInputFormat.class,

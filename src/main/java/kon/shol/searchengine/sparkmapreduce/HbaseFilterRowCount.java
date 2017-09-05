@@ -29,7 +29,7 @@ public class HbaseFilterRowCount {
 
 
     public static void main(String[] args) {
-        SparkConf con = new SparkConf().setAppName("Count").setMaster("spark://ns313900.ip-188-165-230.eu:7077");
+        SparkConf con = new SparkConf().setAppName("Count").setMaster("spark://ns326728.ip-188-165-235.eu:7077");
         JavaSparkContext sc = new JavaSparkContext(con);
 
         Configuration conf = HBaseConfiguration.create();
@@ -37,6 +37,7 @@ public class HbaseFilterRowCount {
         Scan scan = new Scan();
         scan.setCaching(100);
         scan.addFamily(Bytes.toBytes("data"));
+
         conf.set(TableInputFormat.INPUT_TABLE, "artinBulk2");   //Enter Table name
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
         conf.set(TableInputFormat.SCAN, convertScanToString(scan));
