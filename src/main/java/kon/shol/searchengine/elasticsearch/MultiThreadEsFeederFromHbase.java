@@ -39,18 +39,20 @@ public class MultiThreadEsFeederFromHbase {
                + "details: " + ex.toString());
          System.exit(1);
       }
+      
+      Runtime.getRuntime().addShutdownHook(new Thread(feeder::close));
+      
       feeder.index();
       feeder.close();
    }
    
    private void init() throws IOException {
-      
       init(new String[]{"188.165.230.122", "188.165.235.136"}, "shol",
-            "webpagestest5", "188.165.230.122:2181", "demodb");
+            "webpagestest5", "188.165.230.122:2181", "demodb", "data");
    }
    
    private void init(String[] hosts, String index, String type,
-                     String zookeeperAddress, String tablename) throws IOException {
+                     String zookeeperAddress, String tablename, String colFam) throws IOException {
       
       Configuration conf = HBaseConfiguration.create();
       conf.set("hbase.zookeeper.quorum", zookeeperAddress);
@@ -134,14 +136,14 @@ public class MultiThreadEsFeederFromHbase {
          
          if (foundAnythingYet) {
             if (foundAnythingNow) {
-               System.out.println("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
+               logger.info("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
             } else {
-               System.out.println("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
+               logger.info("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
                emptyCyclesCount++;
             }
          } else {
             if (!foundAnythingNow) {
-               System.out.println("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
+               logger.info("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
             }
          }
          

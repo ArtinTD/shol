@@ -26,7 +26,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
    
    private Semaphore lock = new Semaphore(1);
-   private LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();
+   private static LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();
    private String[] hosts;
    private String index;
    private String type;
@@ -98,18 +98,18 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                new BulkProcessor.Listener() {
                   @Override
                   public void beforeBulk(long executionId, BulkRequest request) {
-                     System.out.println("[info] gonna bulk!");
+                     logger.info("[info] gonna bulk!");
                   }
                   
                   @Override
                   public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
-                     System.out.println("[info] bulked!");
+                     logger.info("[info] bulked!");
                   }
                   
                   @Override
                   public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
-                     logger.error(failure.toString());
-                     System.out.println("[fuck!]");
+                     logger.debug(failure.toString());
+                     logger.error("[info] bulk failed!");
                      failure.printStackTrace();
                   }
                })
@@ -137,8 +137,10 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
             try {
                WebPage newWebPage = indexQueue.take();
                lock.acquire();
+               String url = newWebPage.getUrl();
                bulkProcessor.add(
-                     new IndexRequest(index, type, newWebPage.getUrl())
+                     new IndexRequest(index, type,
+                           url.length() < 512 ? url : String.valueOf(url.hashCode()))
                            .source(jsonMaker.toJson(newWebPage)));
             } catch (InterruptedException ex) {
                flush();
