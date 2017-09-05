@@ -25,10 +25,10 @@ public class Monitor implements Runnable {
     static int numberOfActiveThreads;
     static int allLinkeCrawled;
 
-    public Monitor(Cache cache) {
+    /*public Monitor(Cache cache) {
 
         this.cache = cache;
-    }
+    }*/
 
     public void addCrawler(Crawler crawler) {
         crawlers.add(crawler);
