@@ -31,11 +31,11 @@ public class PageRank {
         Configuration conf = HBaseConfiguration.create();
 
         Scan scan = new Scan();
-        scan.addFamily(Bytes.toBytes("data"));
+        scan.addFamily(Bytes.toBytes("anchors"));
 
         conf.set(TableInputFormat.SCAN, convertScanToString(scan));
-        conf.set(TableInputFormat.INPUT_TABLE, "artinBulk2");
-        conf.set(TableOutputFormat.OUTPUT_TABLE, "artinBulk2");
+        conf.set(TableInputFormat.INPUT_TABLE, "chii");
+        conf.set(TableOutputFormat.OUTPUT_TABLE, "chii");
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
         conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
         conf.set("mapreduce.output.fileoutputformat.outputdir", "/hbase");
