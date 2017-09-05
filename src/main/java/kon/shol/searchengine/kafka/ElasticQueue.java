@@ -1,6 +1,9 @@
 package kon.shol.searchengine.kafka;
 
 import kon.shol.searchengine.crawler.Queue;
+import org.jsoup.nodes.Document;
+
+import javax.print.Doc;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.FETCH_MAX_BYTES_CONFIG;
 
@@ -25,9 +28,10 @@ public class ElasticQueue implements Queue {
     }
 
     @Override
-    public String get() throws InterruptedException {
-
-        return consumer.get();
+    public Document get() throws InterruptedException {
+        if (consumer.get() instanceof Document)
+            return (Document) consumer.get();
+        return null;
     }
 
     @Override

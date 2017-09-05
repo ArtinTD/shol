@@ -6,28 +6,29 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 
 public class Crawler implements Runnable {
 
-    private Queue queue;
+    private ArrayBlockingQueue documentsQueue;
+    private Queue kafkaQueue;
     private Cache cache;
     private Fetcher fetcher;
     private Parser parser;
     private Storage storage;
 
-    private int numCycle = 0;
     private int invalidUrls = 0;
     private int fetchErrors = 0;
-    private int parseErrors = 0;
 
     private final static Logger logger = Logger.getLogger("custom");
 
-    public Crawler(Queue queue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
+    public Crawler(Queue kafkaQueue, ArrayBlockingQueue documentsQueue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
 
-        this.queue = queue;
-        this.cache = cache;
+        this.kafkaQueue = kafkaQueue;
+        this.documentsQueue = documentsQueue;
         this.fetcher = fetcher;
+        this.cache = cache;
         this.parser = parser;
         this.storage = storage;
 
@@ -40,7 +41,7 @@ public class Crawler implements Runnable {
 
             String url;
             try {
-                url = queue.get();
+                url = (String) kafkaQueue.get();
             } catch (InterruptedException interruptedException) {
                 logger.fatal("Interruption while  getting from queue");
                 continue;
@@ -69,7 +70,7 @@ public class Crawler implements Runnable {
             }
 
             if (cache.exists(domain)) {
-                queue.send(url);
+                kafkaQueue.send(url);
                 continue;
             }
 
@@ -80,48 +81,34 @@ public class Crawler implements Runnable {
                 continue;
             }
 
-            Document document;
+            Document document = null;
             try {
+                if (url != null)
                 document = fetcher.fetch(url);
             } catch (IOException exception) {
                 logger.debug("Error fetching: " + url);
                 fetchErrors++;
                 continue;
             }
+            if (document != null)
+                try {
+                    documentsQueue.put(document);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-            try {
-                parser.parse(document);
-            } catch (IOException exception) {
-                logger.debug("Error parsing: " + url);
-                parseErrors++;
-                continue;
-            }
 
-            storage.sendToStorage(parser.getPageData());
-            queue.send(parser.getPageData().getAnchors());
-
-            numCycle++;
         }
     }
 
-    public synchronized int getFetchErrors() {
+    public int getFetchErrors() {
         return fetchErrors;
     }
 
-    public synchronized int getParseErrors() {
-        return parseErrors;
-    }
 
-    public synchronized int getInvalidUrls() {
+    public int getInvalidUrls() {
         return invalidUrls;
     }
 
-    public synchronized int getNumCycle(){
-        return numCycle;
-    }
-
-    public synchronized void resetNumCycle(){
-        numCycle = 0;
-    }
 
 }
