@@ -1,9 +1,6 @@
 package kon.shol.searchengine.parser;
 
-import kon.shol.searchengine.crawler.Fetcher;
-import kon.shol.searchengine.hbase.Connector;
-import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -27,5 +24,6 @@ public class Test {
         endTime = System.currentTimeMillis();
 
         System.out.println("Parse time : " + (endTime - startTime));
+
     }
 }

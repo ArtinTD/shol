@@ -50,16 +50,12 @@ public class Monitor implements Runnable {
             sum += speed;
             cycles += 1;
             System.out.println("");
-            try {
-                logger.info("Crawl Speed: " + speed);
-                logger.info("Average Crawl Speed: " + sum / cycles);
-                logger.info("Total Crawls: " + sum);
-                logger.info("Cache Size: " + cache.size());
-                logger.info("Total Fetch Errors: " + parseErrors);
-                logger.info("Total Parse Errors: " + fetchErrors);
-                logger.info("Total Invalid Urls: " + invalidUrls);
-            } catch (ArithmeticException ignored) {
-            }
+            logger.info("Crawl Speed: " + speed);
+            logger.info("Average Crawl Speed: " + sum/cycles);
+            logger.info("Total Crawls: " + sum);
+            logger.info("Total Fetch Errors: " + fetchErrors);
+            logger.info("Total Parse Errors: " + parseErrors);
+            logger.info("Total Invalid Urls: " + invalidUrls);
             System.out.println("");
 
             speed = 0;

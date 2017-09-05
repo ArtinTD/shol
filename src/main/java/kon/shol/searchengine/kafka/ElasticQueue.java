@@ -8,20 +8,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
-public class CrawlerQueue implements Queue {
+public class ElasticQueue implements Queue {
 
     private Producer producer;
     private Consumer consumer;
 
-    private final String TOPIC = "CrawlerQueue";
+    private final String TOPIC = "ElasticQueue";
 
-    public CrawlerQueue() {
+    public ElasticQueue() {
         producer = new Producer();
         Properties properties = new Properties();
         properties.put(FETCH_MAX_BYTES_CONFIG, "10000");
-        consumer = new Consumer("8", TOPIC, properties);
-        Thread crawlerKafkaConsumingThread = new Thread(consumer);
-        crawlerKafkaConsumingThread.start();
+        consumer = new Consumer("0", TOPIC, properties);
+        Thread elasticKafkaConsumingThread = new Thread(consumer);
+        elasticKafkaConsumingThread.start();
     }
 
     @Override

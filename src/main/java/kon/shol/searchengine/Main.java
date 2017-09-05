@@ -37,10 +37,10 @@ public class Main {
         ExecutorService executor = Executors.newFixedThreadPool(510);
         crawlerQueue = new CrawlerQueue();
         lruCache = new LruCache();
-        Monitor monitor = new Monitor(lruCache);
+        Monitor monitor = new Monitor();
         for (int i = 0; i < 500; i++) {
             try {
-                hBase = new HbaseDriver("webpages");
+                hBase = new HbaseDriver("shol");
             } catch (IOException e) {
                 logger.fatal("Can't create HbaseDriver");
             }
