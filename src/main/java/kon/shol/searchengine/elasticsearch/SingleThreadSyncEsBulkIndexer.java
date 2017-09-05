@@ -24,9 +24,9 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
    private final static Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
-   
-   private Semaphore lock = new Semaphore(1);
    private static LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();
+   private static long count = 0;
+   private Semaphore lock = new Semaphore(1);
    private String[] hosts;
    private String index;
    private String type;
@@ -97,13 +97,11 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
          bulkProcessor = BulkProcessor.builder(transportClient,
                new BulkProcessor.Listener() {
                   @Override
-                  public void beforeBulk(long executionId, BulkRequest request) {
-                     logger.info("[info] gonna bulk!");
-                  }
+                  public void beforeBulk(long executionId, BulkRequest request) {}
                   
                   @Override
                   public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
-                     logger.info("[info] bulked!");
+                     count += request.requests().size();
                   }
                   
                   @Override
@@ -138,6 +136,9 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                WebPage newWebPage = indexQueue.take();
                lock.acquire();
                String url = newWebPage.getUrl();
+               if (url == null || url.length() == 0) {
+                  continue;
+               }
                bulkProcessor.add(
                      new IndexRequest(index, type,
                            url.length() < 512 ? url : String.valueOf(url.hashCode()))
@@ -164,7 +165,15 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
             lock.release();
          }
       }
-      
+   }
+   
+   private class Counter implements Runnable {
+      @Override
+      public void run() {
+         logger.info("index count: " + count);
+         count = 0L;
+      }
    }
    
 }
+   

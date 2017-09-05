@@ -40,7 +40,7 @@ public class Crawler implements Runnable {
 
             String url;
             try {
-                url = queue.get();
+                url = (String) queue.get();
             } catch (InterruptedException interruptedException) {
                 logger.error("Interruption while getting from CrawlerQueue:\n " +
                         interruptedException.getMessage());
