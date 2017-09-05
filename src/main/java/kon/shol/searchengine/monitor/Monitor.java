@@ -21,10 +21,18 @@ public class Monitor implements Runnable {
     private final static Logger logger = Logger.getLogger("custom");
     private Cache cache;
 
+    static int numberOfFetchedLinksFromQueueToCrawl;
+    static int numberOfPoliteDomains;
+    static int numberOfenglishLinks;
+    static int numberOfCrawledLinks;
+    static int numberOfActiveThreads;
+    static int allLinkeCrawled;
+
+    /*public Monitor(Cache cache) {
 
     public Monitor(Cache cache ) {
         this.cache = cache;
-    }
+    }*/
 
     public void addCrawler(Crawler crawler) {
         crawlers.add(crawler);

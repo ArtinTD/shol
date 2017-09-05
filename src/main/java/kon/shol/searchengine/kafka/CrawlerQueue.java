@@ -13,7 +13,7 @@ public class CrawlerQueue implements Queue {
     private Producer producer;
     private Consumer consumer;
 
-    private final String TOPIC = "CrawlerQueue";
+    private final String TOPIC = "artinChii";
 
     public CrawlerQueue() {
         producer = new Producer();
