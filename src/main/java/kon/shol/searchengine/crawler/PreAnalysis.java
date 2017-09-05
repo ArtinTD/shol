@@ -64,7 +64,7 @@ public class PreAnalysis implements Runnable {
             }
 
             try {
-                if (storage.exists(parser.reverseDomain(url))) {
+                if (storage.exists(url)) {
                     continue;
                 }
             } catch (IOException e) {
