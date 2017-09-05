@@ -86,6 +86,7 @@ public class MultiThreadEsFeederFromHbase {
          PartialFeeder partialFeeder = null;
          try {
             long max = Long.parseLong(timestampsQueue.get());
+            System.out.println(max);
             partialFeeder = new PartialFeeder(max - 600000, max,
                   (indexerNumber = (indexerNumber + 1) % THREAD_COUNT));
          } catch (IOException ex) {

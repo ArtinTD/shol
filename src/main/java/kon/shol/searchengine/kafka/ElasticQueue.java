@@ -19,7 +19,7 @@ public class ElasticQueue implements Queue {
       producer = new Producer();
       Properties properties = new Properties();
       properties.put(FETCH_MAX_BYTES_CONFIG, "10000");
-      consumer = new Consumer("7", TOPIC, properties);
+      consumer = new Consumer("7r2", TOPIC, properties);
       Thread elasticKafkaConsumingThread = new Thread(consumer);
       elasticKafkaConsumingThread.start();
    }
