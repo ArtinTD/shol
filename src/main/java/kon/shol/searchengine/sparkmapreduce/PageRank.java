@@ -45,7 +45,7 @@ public class PageRank {
                 conf,
                 TableInputFormat.class,
                 ImmutableBytesWritable.class,
-                Result.class);
+                Result.class).persist(StorageLevel.MEMORY_AND_DISK());
 
         JavaPairRDD<String, ArrayList<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
@@ -57,11 +57,9 @@ public class PageRank {
             return new Tuple2<>(row , adj);
         });
 
-        links.persist(StorageLevel.MEMORY_AND_DISK());
-
         JavaPairRDD<String, Double> ranks = links.mapValues(rs -> 1.0);
 
-        for (int current = 0; current < 50; current++) {
+        for (int current = 0; current < 10; current++) {
             JavaPairRDD<String, Double> contribs = links.join(ranks).values()
                     .flatMapToPair(s -> {
                         int urlCount = Iterables.size(s._1());
