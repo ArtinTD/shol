@@ -22,12 +22,6 @@ public class Monitor implements Runnable {
     private ArrayList<Analysis> analyses =new ArrayList<>();
     private final static Logger logger = Logger.getLogger("custom");
 
-    static int numberOfFetchedLinksFromQueueToCrawl;
-    static int numberOfPoliteDomains;
-    static int numberOfenglishLinks;
-    static int numberOfCrawledLinks;
-    static int numberOfActiveThreads;
-    static int allLinkeCrawled;
 
     public void addCrawler(Crawler crawler) {
         crawlers.add(crawler);
@@ -36,11 +30,7 @@ public class Monitor implements Runnable {
 
     @Override
     public void run() {
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            logger.fatal("Monitor thread interrupted while sleeping");
-        }
+
         while (true) {
             try {
                 Thread.sleep(1000);
@@ -57,6 +47,7 @@ public class Monitor implements Runnable {
             logger.info("Crawl Speed: " + speed);
             logger.info("Average Crawl Speed: " + sum/cycles);
             logger.info("Total Crawls: " + sum);
+            speed = 0;
         /*    logger.info("Total Fetch Errors: " + fetchErrors);
             logger.info("Total Parse Errors: " + parseErrors);
             logger.info("Total Invalid Urls: " + invalidUrls);

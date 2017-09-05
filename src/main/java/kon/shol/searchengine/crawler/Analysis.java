@@ -40,7 +40,7 @@ public class Analysis implements Runnable {
             try {
                 parser.parse(document);
             } catch (IOException exception) {
-                logger.debug("Error parsing: " + url);
+                logger.debug("Error parsing: " + document.location());
                 parseErrors++;
                 continue;
             }
