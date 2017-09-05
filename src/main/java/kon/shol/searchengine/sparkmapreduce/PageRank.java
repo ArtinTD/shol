@@ -35,8 +35,8 @@ public class PageRank {
         scan.addFamily(Bytes.toBytes("anchors"));
 
         conf.set(TableInputFormat.SCAN, convertScanToString(scan));
-        conf.set(TableInputFormat.INPUT_TABLE, "chii");
-        conf.set(TableOutputFormat.OUTPUT_TABLE, "chii");
+        conf.set(TableInputFormat.INPUT_TABLE, "amghezi");
+        conf.set(TableOutputFormat.OUTPUT_TABLE, "amghezi");
         conf.set("hbase.zookeeper.quorum", "188.165.230.122:2181");
         conf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
         conf.set("mapreduce.output.fileoutputformat.outputdir", "/hbase");
@@ -66,7 +66,7 @@ public class PageRank {
 
         JavaPairRDD<Integer, Double> ranks = links.mapValues(rs -> 1.0);
 
-        for (int current = 0; current < 10; current++) {
+        for (int i = 0; i < 25; i++) {
             JavaPairRDD<Integer, Double> contribs = links.join(ranks).values()
                     .flatMapToPair(s -> {
                         int urlCount = Iterables.size(s._1());
