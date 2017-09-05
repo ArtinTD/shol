@@ -15,7 +15,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class Consumer implements Runnable{
 
     private final static Logger logger = Logger.getLogger("custom");
-    private ArrayBlockingQueue<String> consumingQueue;
+    private ArrayBlockingQueue<Object> consumingQueue;
     private KafkaConsumer<String, String> consumer;
     private static final Object LOCK = new Object();
     private static final String BOOTSTRAP_SERVERS = "188.165.235.136:9092,188.165.230.122:9092";
@@ -73,7 +73,7 @@ public class Consumer implements Runnable{
         }
     }
 
-    public String get() throws InterruptedException {
+    public Object get() throws InterruptedException {
         if (consumingQueue.size() <= 2000) {
             synchronized (LOCK) {
                 LOCK.notify();

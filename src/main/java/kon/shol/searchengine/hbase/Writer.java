@@ -16,7 +16,7 @@ import java.util.List;
 
 import static kon.shol.searchengine.hbase.Connector.connection;
 
-public class Writer implements Runnable {
+public class Writer {
 
     private Table table;
     private List<Put> putList;
@@ -105,16 +105,4 @@ public class Writer implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            PageData pendingPageData;
-            try {
-                pendingPageData = parser.deserialize(hbaseQueue.get(), PageData.class);
-            } catch (InterruptedException e) {
-                continue;
-            }
-            this.batchPut(pendingPageData);
-        }
-    }
 }

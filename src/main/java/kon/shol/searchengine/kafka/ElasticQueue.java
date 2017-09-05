@@ -25,7 +25,7 @@ public class ElasticQueue implements Queue {
     }
 
     @Override
-    public String get() throws InterruptedException {
+    public Object get() throws InterruptedException {
 
         return consumer.get();
     }

@@ -1,22 +1,23 @@
 package kon.shol.searchengine.kafka;
 
 import kon.shol.searchengine.crawler.Queue;
+import org.jsoup.nodes.Document;
+
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.FETCH_MAX_BYTES_CONFIG;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
 
-public class CrawlerQueue implements Queue {
+public class PreAnalysisQueue implements Queue {
 
-    private Producer producer;
     private Consumer consumer;
+    private Producer producer = new Producer();
+    private final String TOPIC = "CrawlerQueue";
 
-    private final String TOPIC = "artinChii";
-
-    public CrawlerQueue() {
-        producer = new Producer();
+    public PreAnalysisQueue() {
         Properties properties = new Properties();
         properties.put(FETCH_MAX_BYTES_CONFIG, "10000");
         consumer = new Consumer("8", TOPIC, properties);
@@ -27,10 +28,9 @@ public class CrawlerQueue implements Queue {
     @Override
     public String get() throws InterruptedException {
 
-        return consumer.get();
+        return (String) consumer.get();
     }
 
-    @Override
     public void send(Object element) {
         if (element instanceof String) {
             String toSend = (String) element;
@@ -46,4 +46,6 @@ public class CrawlerQueue implements Queue {
             }
         }
     }
+
+
 }
