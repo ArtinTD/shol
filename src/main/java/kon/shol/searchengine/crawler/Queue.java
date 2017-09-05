@@ -1,7 +1,9 @@
 package kon.shol.searchengine.crawler;
 
+import org.jsoup.nodes.Document;
+
 public interface Queue {
 
-    String get() throws InterruptedException;
+    Object get() throws InterruptedException;
     void send(Object messages);
 }

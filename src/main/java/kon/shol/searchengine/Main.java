@@ -9,9 +9,11 @@ import kon.shol.searchengine.monitor.Monitor;
 import kon.shol.searchengine.parser.Parser;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.log4j.Logger;
+import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,10 +21,12 @@ import java.util.concurrent.Executors;
 public class Main {
 
     private final static Logger logger = Logger.getLogger("custom");
+    public static ArrayBlockingQueue<Document> documentsQueue = new ArrayBlockingQueue<Document>(10000);
 
     public static void main(String[] args) {
 
         Queue crawlerQueue;
+        Queue analysisQueue;
         Cache lruCache;
         Fetcher fetcher;
         Parser parser;
@@ -37,19 +41,28 @@ public class Main {
         ExecutorService executor = Executors.newFixedThreadPool(510);
         crawlerQueue = new CrawlerQueue();
         lruCache = new LruCache();
+
         Monitor monitor = new Monitor();
         for (int i = 0; i < 500; i++) {
             try {
-                hBase = new HbaseDriver("chii");
-
+                hBase = new HbaseDriver("amghezi");
             } catch (IOException e) {
                 logger.fatal("Can't create HbaseDriver");
             }
-            fetcher = new Fetcher();
-            parser = new Parser();
-            Crawler temp = new Crawler(crawlerQueue, lruCache, fetcher, parser, hBase);
-            monitor.addCrawler(temp);
-            executor.execute(temp);
+
+            if (i % 3 != 0) {
+                parser = new Parser();
+                fetcher = new Fetcher();
+                Crawler temp = new Crawler(crawlerQueue, documentsQueue, lruCache, fetcher, parser, hBase);
+                monitor.addCrawler(temp);
+                executor.execute(temp);
+            }
+            else{
+                parser = new Parser();
+                Analysis analysis =  new Analysis(crawlerQueue,documentsQueue, hBase, parser);
+                monitor.addAnalysis(analysis);
+                executor.execute(analysis);
+            }
         }
         Thread t = new Thread(monitor);
         t.start();
@@ -58,14 +71,5 @@ public class Main {
         } catch (InterruptedException e) {
             logger.fatal("Couldn't join thread");
         }
-       /* //TODO: Check Hbase Threads Behaviors
-        for (int i = 0; i < 50; i++) {
-            try {
-                hBaseWriter = new Writer("testdb");
-            } catch (IOException e) {
-                logger.error("chera aziat mikoni...");
-            }
-            executor.execute(hBaseWriter);
-        }*/
     }
 }

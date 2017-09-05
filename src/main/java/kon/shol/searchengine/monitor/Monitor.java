@@ -1,5 +1,6 @@
 package kon.shol.searchengine.monitor;
 
+import kon.shol.searchengine.crawler.Analysis;
 import kon.shol.searchengine.crawler.Cache;
 import kon.shol.searchengine.crawler.Crawler;
 import kon.shol.searchengine.crawler.Queue;
@@ -18,42 +19,27 @@ public class Monitor implements Runnable {
     private int invalidUrls = 0;
 
     private ArrayList<Crawler> crawlers = new ArrayList<>();
+    private ArrayList<Analysis> analyses =new ArrayList<>();
     private final static Logger logger = Logger.getLogger("custom");
-    private Cache cache;
 
-    static int numberOfFetchedLinksFromQueueToCrawl;
-    static int numberOfPoliteDomains;
-    static int numberOfenglishLinks;
-    static int numberOfCrawledLinks;
-    static int numberOfActiveThreads;
-    static int allLinkeCrawled;
-
-    /*public Monitor(Cache cache) {
-
-    public Monitor(Cache cache ) {
-        this.cache = cache;
-    }*/
 
     public void addCrawler(Crawler crawler) {
         crawlers.add(crawler);
     }
+    public void addAnalysis(Analysis analysis){ analyses.add(analysis);}
 
     @Override
     public void run() {
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            logger.fatal("Monitor thread interrupted while sleeping");
-        }
+
         while (true) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 logger.fatal("Monitor thread interrupted while sleeping");
             }
-            for (Crawler crawler : crawlers) {
-                speed += crawler.getNumCycle();
-                crawler.resetNumCycle();
+            for (Analysis analysis : analyses) {
+                speed += analysis.getNumCycle();
+                analysis.resetNumCycle();
             }
             sum += speed;
             cycles += 1;
@@ -61,7 +47,8 @@ public class Monitor implements Runnable {
             logger.info("Crawl Speed: " + speed);
             logger.info("Average Crawl Speed: " + sum/cycles);
             logger.info("Total Crawls: " + sum);
-            logger.info("Total Fetch Errors: " + fetchErrors);
+            speed = 0;
+        /*    logger.info("Total Fetch Errors: " + fetchErrors);
             logger.info("Total Parse Errors: " + parseErrors);
             logger.info("Total Invalid Urls: " + invalidUrls);
             System.out.println("");
@@ -69,7 +56,7 @@ public class Monitor implements Runnable {
             speed = 0;
             parseErrors = 0;
             invalidUrls = 0;
-            fetchErrors = 0;
+            fetchErrors = 0;*/
 
 
         }
