@@ -58,17 +58,17 @@ public class PreAnalysis implements Runnable {
                 continue;
             }
 
+            if (cache.exists(domain)) {
+                kafkaQueue.send(url);
+                continue;
+            }
+
             try {
-                if (storage.exists(url)) {
+                if (storage.exists(parser.reverseDomain(url))) {
                     continue;
                 }
             } catch (IOException e) {
                 logger.fatal("Can't check existence from storage: " + url);
-                continue;
-            }
-
-            if (cache.exists(domain)) {
-                kafkaQueue.send(url);
                 continue;
             }
 

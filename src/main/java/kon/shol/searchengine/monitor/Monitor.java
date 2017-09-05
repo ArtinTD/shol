@@ -28,6 +28,11 @@ public class Monitor implements Runnable {
     @Override
     public void run() {
 
+        try {
+            Thread.sleep(12000);
+        } catch (InterruptedException e) {
+            logger.fatal("Monitor thread interrupted while sleeping");
+        }
         while (true) {
             try {
                 Thread.sleep(1000);
