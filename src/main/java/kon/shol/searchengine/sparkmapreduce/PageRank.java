@@ -45,8 +45,9 @@ public class PageRank {
                 conf,
                 TableInputFormat.class,
                 ImmutableBytesWritable.class,
-                Result.class).persist(StorageLevel.MEMORY_AND_DISK());
+                Result.class);
 
+        hBaseRDD.persist(StorageLevel.MEMORY_AND_DISK());
         JavaPairRDD<String, ArrayList<String>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
             String row = Bytes.toString(r.getRow());
