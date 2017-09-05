@@ -35,9 +35,7 @@ public class Crawler implements Runnable {
 
     @Override
     public void run() {
-        //TODO: Logger error
         while (!Thread.currentThread().isInterrupted()) {
-
             String url;
             try {
                 url = queue.get();

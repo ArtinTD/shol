@@ -58,14 +58,6 @@ public class Main {
         } catch (InterruptedException e) {
             logger.fatal("Couldn't join thread");
         }
-       /* //TODO: Check Hbase Threads Behaviors
-        for (int i = 0; i < 50; i++) {
-            try {
-                hBaseWriter = new Writer("testdb");
-            } catch (IOException e) {
-                logger.error("chera aziat mikoni...");
-            }
-            executor.execute(hBaseWriter);
-        }*/
+
     }
 }

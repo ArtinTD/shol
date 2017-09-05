@@ -88,9 +88,6 @@ public class Writer implements Runnable {
                         new Connector();
                     } catch (IOException ioe) {
                         logger.fatal("Cannot Establish Connection to Hbase");
-                    } finally {
-                        //TODO: fix this shit
-                        batchPut(pageData);
                     }
                 } else {
                     try {

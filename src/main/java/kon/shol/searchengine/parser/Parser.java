@@ -38,7 +38,6 @@ public class Parser {
 
     private String trimLink(Element link) {
         try {
-            // TODO: Some Links do not Response whit / at the end! Think about it
             String absHref = link.attr("abs:href");
             if (absHref.charAt(absHref.length() - 1) != '/') {
                 absHref += "/";
