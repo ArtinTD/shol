@@ -55,6 +55,10 @@ public class Monitor implements Runnable {
             System.out.println("");
 
             speed = 0;
+            fetchErrors = 0;
+            invalidUrls = 0;
+            parseErrors = 0;
+
         }
     }
 }
