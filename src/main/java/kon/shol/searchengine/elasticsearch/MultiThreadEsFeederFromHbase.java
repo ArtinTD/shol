@@ -98,9 +98,6 @@ public class MultiThreadEsFeederFromHbase {
          }
       }).start();
       
-      System.out.println(Arrays.toString(elasticHosts));
-      
-      
       for (int i = 0; i < threadCount; i++) {
          indexers[i] = new SingleThreadSyncEsBulkIndexer(elasticHosts, index, type);
       }
@@ -228,7 +225,7 @@ public class MultiThreadEsFeederFromHbase {
       @Override
       public void run() {
          
-         System.out.println("new partial feeder started with seed: " + maxStamp);
+         logger.info("new partial feeder started with seed: " + maxStamp);
          
          boolean foundAnythingNow = false;
          for (Result result : results) {
@@ -236,9 +233,7 @@ public class MultiThreadEsFeederFromHbase {
             foundAnythingNow = true;
             emptyCyclesCount = 0;
             try {
-               System.out.println("Gonna add.");
                indexer.add(makeWebpage(result));
-               System.out.println("Added.");
             } catch (Exception ex) {
                logger.error(ex.toString());
             }
@@ -247,15 +242,15 @@ public class MultiThreadEsFeederFromHbase {
          
          if (foundAnythingYet) {
             if (foundAnythingNow) {
-               System.out.println("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
+               logger.info("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
                indexer.flush();
             } else {
-               System.out.println("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
+               logger.info("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
                emptyCyclesCount++;
             }
          } else {
             if (!foundAnythingNow) {
-               System.out.println("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
+               logger.info("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
             }
          }
          

@@ -68,7 +68,6 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    @Override
    public void add(WebPage newWebPage) {
       try {
-         System.out.println("adding: " + newWebPage.getUrl());
          indexQueue.put(newWebPage);
       } catch (InterruptedException ignored) {
       }
