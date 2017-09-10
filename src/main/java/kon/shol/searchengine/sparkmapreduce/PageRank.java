@@ -52,7 +52,7 @@ public class PageRank {
             Result r = s._2;
             String row = Bytes.toString(r.getRow());
             return new Tuple2<>(row.hashCode(), row);
-        });
+        }).repartition(100);
 
         JavaPairRDD<Integer, ArrayList<Integer>> links = hBaseRDD.mapToPair(s -> {
             Result r = s._2;
@@ -62,7 +62,7 @@ public class PageRank {
                 adj.add(Bytes.toString(k).hashCode());
             });
             return new Tuple2<>(row.hashCode() , adj);
-        });
+        }).repartition(100);
 
         JavaPairRDD<Integer, Double> ranks = links.mapValues(rs -> 1.0);
 
@@ -76,7 +76,7 @@ public class PageRank {
                         }
                         return results.iterator();
                     });
-            ranks = contribs.reduceByKey((k, v) -> k + v).mapValues(sum -> 0.15 + sum * 0.85);
+            ranks = contribs.reduceByKey((k, v) -> k + v, (int) (contribs.getNumPartitions() * 1.5)).mapValues(sum -> 0.15 + sum * 0.85);
         }
 
         JavaPairRDD<ImmutableBytesWritable, Put> hbasePuts = ranks.join(revertedHash).mapToPair(s -> {
