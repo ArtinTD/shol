@@ -33,6 +33,10 @@ PUT shol/_mapping/webpagestest1
             "type": "text",
             "analyzer": "standard"
           },
+          "anchorTexts": {
+            "type": "text",
+            "analyzer": "standard"
+          },
           "url": {
             "type": "keyword"
           },

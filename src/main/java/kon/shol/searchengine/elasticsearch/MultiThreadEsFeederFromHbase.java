@@ -175,14 +175,14 @@ public class MultiThreadEsFeederFromHbase {
          propertiesO = new FileOutputStream("elasticIndexer.properties");
          properties = new Properties();
          properties.put("threadCount", "8");
-         properties.put("seed", "1503730220000");
+         properties.put("seed", "1504323000000");
          properties.put("periodLength", "60000");
-         properties.put("tableName", "amghezi");
+         properties.put("tableName", "webpages2");
          properties.put("columnFamily", "data");
-         properties.put("index", "shol");
-         properties.put("type", "webpagestest");
+         properties.put("index", "sholastic");
+         properties.put("type", "webpagestest1");
          properties.put("zookeeper", "188.165.230.122:2181");
-         properties.put("elasticHosts", "localhost");
+         properties.put("elasticHosts", "188.165.230.122^188.165.235.136");
          
          properties.store(propertiesO, "configurations");
       } catch (Exception ex) {
