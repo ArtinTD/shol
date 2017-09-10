@@ -5,7 +5,8 @@ import kon.shol.searchengine.kafka.ElasticQueue;
 public class KafkaQueueDataChecker {
    
    public static void main(String[] args) throws InterruptedException {
-      ElasticQueue queue = new ElasticQueue();
+      
+      ElasticQueue queue = new ElasticQueue("tone");
       String s = (String) queue.get();
       System.out.println(s);
       int i = 0;
@@ -14,4 +15,5 @@ public class KafkaQueueDataChecker {
          s = (String) queue.get();
       }
    }
+   
 }

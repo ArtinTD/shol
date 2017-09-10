@@ -17,16 +17,18 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+//import java.util.concurrent.Semaphore;
 
 public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
    private final static Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
-   private static LinkedBlockingQueue<WebPage> indexQueue = new LinkedBlockingQueue<>();
+   private static ArrayBlockingQueue<WebPage> indexQueue = new ArrayBlockingQueue<WebPage>(8192);
    private static long count = 0;
-   private Semaphore lock = new Semaphore(1);
+   //   private Semaphore lock = new Semaphore(1);
    private String[] hosts;
    private String index;
    private String type;
@@ -46,6 +48,9 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
       indexer = new Sender();
       indexer.setName("SingleThreadSyncEsBulkIndexer-indexerThread");
       indexer.start();
+      
+      
+      new Timer().schedule(new Counter(), 15000, 1000);
    }
    
    public boolean isDone() {
@@ -63,6 +68,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    @Override
    public void add(WebPage newWebPage) {
       try {
+         System.out.println("adding: " + newWebPage.getUrl());
          indexQueue.put(newWebPage);
       } catch (InterruptedException ignored) {
       }
@@ -83,7 +89,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
             addresses[i] = makeTransportAddress(hosts[i]);
          }
          
-         Settings settings = Settings.builder().put("cluster.name", "sholastic").build();
+         Settings settings = Settings.builder().put("cluster.name", "elasticsearch").build();
          transportClient = new PreBuiltTransportClient(settings)
                .addTransportAddresses(addresses);
          
@@ -97,7 +103,8 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
          bulkProcessor = BulkProcessor.builder(transportClient,
                new BulkProcessor.Listener() {
                   @Override
-                  public void beforeBulk(long executionId, BulkRequest request) {}
+                  public void beforeBulk(long executionId, BulkRequest request) {
+                  }
                   
                   @Override
                   public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
@@ -113,7 +120,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                })
                .setBulkActions(-1)
                .setBulkSize(new ByteSizeValue(-1, ByteSizeUnit.MB))
-               .setFlushInterval(TimeValue.timeValueSeconds(60))
+               .setFlushInterval(TimeValue.timeValueSeconds(30))
                .build();
       }
       
@@ -134,7 +141,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
          while (true) {
             try {
                WebPage newWebPage = indexQueue.take();
-               lock.acquire();
+//               lock.acquire();
                String url = newWebPage.getUrl();
                if (url == null || url.length() == 0) {
                   continue;
@@ -149,25 +156,25 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                transportClient.close();
             } catch (Exception ex) {
                logger.error(ex.toString());
-            } finally {
-               lock.release();
-            }
+            }// finally {
+//               lock.release();
+//            }
          }
       }
       
       public void flush() {
-         try {
-            lock.acquire();
-            bulkProcessor.flush();
-         } catch (InterruptedException ex) {
-            ex.printStackTrace();
-         } finally {
-            lock.release();
-         }
+//         try {
+//            lock.acquire();
+         bulkProcessor.flush();
+//         } catch (InterruptedException ex) {
+//            ex.printStackTrace();
+//         } finally {
+//            lock.release();
+//         }
       }
    }
    
-   private class Counter implements Runnable {
+   private class Counter extends TimerTask {
       @Override
       public void run() {
          logger.info("index count: " + count);

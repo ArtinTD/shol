@@ -1,6 +1,6 @@
 package kon.shol.searchengine.elasticsearch;
 
-import kon.shol.searchengine.kafka.Consumer;
+import kon.shol.searchengine.kafka.ElasticQueue;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
@@ -8,8 +8,10 @@ import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,18 +24,28 @@ public class MultiThreadEsFeederFromHbase {
    
    private final static Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleScanEsFeederFromHbase.class);
-   private final static int THREAD_COUNT = 16;
-   private static final String TOPIIC_NAME = "elasticQueue";
-   private final SingleThreadSyncEsBulkIndexer[] indexers =
-         new SingleThreadSyncEsBulkIndexer[THREAD_COUNT];
-   private Consumer timestampsQueue;
+   private int threadCount;
+   private SingleThreadSyncEsBulkIndexer[] indexers;
+   private ElasticQueue timestampsQueue;
    private ExecutorService executor;
    private Table table;
    private Connection connection;
    private boolean foundAnythingYet = false;
-   private byte emptyCyclesCount = 0; // TODO rename.
+   private byte emptyCyclesCount = 0;
    private int indexerNumber = 0;
    private String columnFamily;
+   private ConcurrentHashMap<Long, Boolean> duplicateCheck = new ConcurrentHashMap<>();
+   private int periodLength;
+   private long seed;
+   private Properties properties;
+   private OutputStream propertiesO = null;
+   private InputStream propertiesI = null;
+   private String tableName;
+   private String index;
+   private String type;
+   private String zookeeperAddress;
+   private String[] elasticHosts;
+   
    
    public static void main(String[] args) {
       
@@ -55,28 +67,42 @@ public class MultiThreadEsFeederFromHbase {
    }
    
    private void init() throws IOException {
-      init(new String[]{"188.165.230.122", "188.165.235.136"}, "shol",
-            "webpagestest6", "188.165.230.122:2181",
-            "amghezi", "data");
-   }
-   
-   private void init(String[] hosts, String index, String type,
-                     String zookeeperAddress, String tablename,
-                     String columnFamily) throws IOException {
+      propLoad();
+      if (zookeeperAddress == null) {
+         propInit();
+         propLoad();
+      }
       
-      this.columnFamily = columnFamily;
+      indexers = new SingleThreadSyncEsBulkIndexer[threadCount];
       Configuration conf = HBaseConfiguration.create();
       conf.set("hbase.zookeeper.quorum", zookeeperAddress);
       connection = ConnectionFactory.createConnection(conf);
-      table = connection.getTable(TableName.valueOf(tablename));
-      executor = Executors.newFixedThreadPool(THREAD_COUNT);
+      table = connection.getTable(TableName.valueOf(tableName));
+      executor = Executors.newFixedThreadPool(threadCount);
       
       Properties properties = new Properties();
       properties.put(FETCH_MAX_BYTES_CONFIG, DEFAULT_FETCH_MAX_BYTES);
-      timestampsQueue = new Consumer("feeder", TOPIIC_NAME, properties);
+      timestampsQueue = new ElasticQueue("tone");
       
-      for (int i = 0; i < THREAD_COUNT; i++) {
-         indexers[i] = new SingleThreadSyncEsBulkIndexer(hosts, index, type);
+      new Thread(() -> {
+         while (true) {
+            if (seed + periodLength < System.currentTimeMillis()) {
+               timestampsQueue.send(String.valueOf(seed));
+               seed += periodLength;
+            } else {
+               try {
+                  Thread.sleep(15000);
+               } catch (InterruptedException ignored) {
+               }
+            }
+         }
+      }).start();
+      
+      System.out.println(Arrays.toString(elasticHosts));
+      
+      
+      for (int i = 0; i < threadCount; i++) {
+         indexers[i] = new SingleThreadSyncEsBulkIndexer(elasticHosts, index, type);
       }
    }
    
@@ -85,10 +111,14 @@ public class MultiThreadEsFeederFromHbase {
       do {
          PartialFeeder partialFeeder = null;
          try {
-            long max = Long.parseLong(timestampsQueue.get());
-            System.out.println(max);
-            partialFeeder = new PartialFeeder(max - 600000, max,
-                  (indexerNumber = (indexerNumber + 1) % THREAD_COUNT));
+            long min = Long.parseLong((String) timestampsQueue.get());
+            if (duplicateCheck.containsKey(min)) {
+               continue;
+            } else {
+               duplicateCheck.put(min, true);
+            }
+            partialFeeder = new PartialFeeder(min, min + 600000,
+                  (indexerNumber = (indexerNumber + 1) % threadCount));
          } catch (IOException ex) {
             logger.debug(ex.toString());
             continue;
@@ -116,18 +146,77 @@ public class MultiThreadEsFeederFromHbase {
       }
    }
    
+   private void propLoad() {
+      try {
+         propertiesI = new FileInputStream("elasticIndexer.properties");
+         properties = new Properties();
+         properties.load(propertiesI);
+         threadCount = Integer.parseInt(properties.getProperty("threadCount", "8"));
+         seed = Long.parseLong(properties.getProperty("seed"));
+         periodLength = Integer.parseInt(properties.getProperty("periodLength", "60000"));
+         tableName = properties.getProperty("tableName");
+         columnFamily = properties.getProperty("columnFamily");
+         index = properties.getProperty("index");
+         type = properties.getProperty("type");
+         zookeeperAddress = properties.getProperty("zookeeper");
+         elasticHosts = properties.getProperty("elasticHosts").split("^");
+      } catch (Exception ex) {
+         logger.debug(ex.toString());
+      } finally {
+         try {
+            propertiesI.close();
+         } catch (Exception ignored) {
+         }
+      }
+   }
+   
+   private void propInit() {
+      try {
+         propertiesO = new FileOutputStream("elasticIndexer.properties");
+         properties = new Properties();
+         properties.put("threadCount", "8");
+         properties.put("seed", "1503730220000");
+         properties.put("periodLength", "60000");
+         properties.put("tableName", "amghezi");
+         properties.put("columnFamily", "data");
+         properties.put("index", "shol");
+         properties.put("type", "webpagestest");
+         properties.put("zookeeper", "188.165.230.122:2181");
+         properties.put("elasticHosts", "localhost");
+         
+         properties.store(propertiesO, "configurations");
+      } catch (Exception ex) {
+         logger.debug(ex.toString());
+      } finally {
+         try {
+            propertiesO.close();
+         } catch (Exception ignored) {
+         }
+      }
+   }
+   
+   private void closePO() {
+      try {
+         propertiesI.close();
+      } catch (Exception ignored) {
+      }
+   }
+   
    
    private class PartialFeeder implements Runnable {
+      
       private ResultScanner results;
       private SingleThreadSyncEsBulkIndexer indexer;
       private long minStamp;
       private long maxStamp;
       
-      public PartialFeeder(long minStamp, long maxStamp, int indexerNumber) throws IOException {
+      public PartialFeeder(long minStamp, long maxStamp,
+                           int indexerNumber) throws IOException {
+         
          this.minStamp = minStamp;
          this.maxStamp = maxStamp;
-         
-         Runtime.getRuntime().addShutdownHook(new Thread(results::close));
+
+//         Runtime.getRuntime().addShutdownHook(new Thread(results::close));
          Scan scan = new Scan();
          scan.addFamily(Bytes.toBytes(columnFamily));
          scan.setTimeRange(minStamp, maxStamp);
@@ -139,13 +228,17 @@ public class MultiThreadEsFeederFromHbase {
       @Override
       public void run() {
          
+         System.out.println("new partial feeder started with seed: " + maxStamp);
+         
          boolean foundAnythingNow = false;
          for (Result result : results) {
             foundAnythingYet = true;
             foundAnythingNow = true;
             emptyCyclesCount = 0;
             try {
+               System.out.println("Gonna add.");
                indexer.add(makeWebpage(result));
+               System.out.println("Added.");
             } catch (Exception ex) {
                logger.error(ex.toString());
             }
@@ -154,14 +247,15 @@ public class MultiThreadEsFeederFromHbase {
          
          if (foundAnythingYet) {
             if (foundAnythingNow) {
-               logger.info("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
+               System.out.println("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
+               indexer.flush();
             } else {
-               logger.info("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
+               System.out.println("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
                emptyCyclesCount++;
             }
          } else {
             if (!foundAnythingNow) {
-               logger.info("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
+               System.out.println("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
             }
          }
          
