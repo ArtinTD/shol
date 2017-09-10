@@ -9,7 +9,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -45,6 +44,8 @@ public class MultiThreadEsFeederFromHbase {
    private String type;
    private String zookeeperAddress;
    private String[] elasticHosts;
+   private String topic;
+   private String groupId;
    
    
    public static void main(String[] args) {
@@ -68,7 +69,7 @@ public class MultiThreadEsFeederFromHbase {
    
    private void init() throws IOException {
       propLoad();
-      if (zookeeperAddress == null) {
+      if (zookeeperAddress == null || topic == null) {
          propInit();
          propLoad();
       }
@@ -82,7 +83,7 @@ public class MultiThreadEsFeederFromHbase {
       
       Properties properties = new Properties();
       properties.put(FETCH_MAX_BYTES_CONFIG, DEFAULT_FETCH_MAX_BYTES);
-      timestampsQueue = new ElasticQueue("tone");
+      timestampsQueue = new ElasticQueue(topic, groupId);
       
       new Thread(() -> {
          while (true) {
@@ -157,6 +158,8 @@ public class MultiThreadEsFeederFromHbase {
          type = properties.getProperty("type");
          zookeeperAddress = properties.getProperty("zookeeper");
          elasticHosts = properties.getProperty("elasticHosts").split("^");
+         topic = properties.getProperty("topic");
+         groupId = properties.getProperty("groupId");
       } catch (Exception ex) {
          logger.debug(ex.toString());
       } finally {
@@ -178,6 +181,8 @@ public class MultiThreadEsFeederFromHbase {
          properties.put("columnFamily", "data");
          properties.put("index", "sholastic");
          properties.put("type", "webpagestest1");
+         properties.put("topic", "ElasticQueueue");
+         properties.put("groupId", "shol");
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122^188.165.235.136");
          
@@ -191,14 +196,6 @@ public class MultiThreadEsFeederFromHbase {
          }
       }
    }
-   
-   private void closePO() {
-      try {
-         propertiesI.close();
-      } catch (Exception ignored) {
-      }
-   }
-   
    
    private class PartialFeeder implements Runnable {
       

@@ -8,17 +8,19 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.FETCH_MAX_BYTES_C
 
 public class ElasticQueue implements Queue {
    
-   private final String TOPIC = "ElasticQueue";
+   private String topic;
    private Producer producer;
    private Consumer consumer;
    
-   public ElasticQueue(String groupId) {
+   public ElasticQueue(String topic, String groupId) {
+      this.topic = topic;
+      
       
       producer = new Producer();
       
       Properties properties = new Properties();
       properties.put(FETCH_MAX_BYTES_CONFIG, "10000");
-      consumer = new Consumer(groupId, TOPIC, properties);
+      consumer = new Consumer(groupId, topic, properties);
       Thread elasticKafkaConsumingThread = new Thread(consumer);
       elasticKafkaConsumingThread.start();
    }
@@ -34,6 +36,6 @@ public class ElasticQueue implements Queue {
    public void send(Object element) {
       
       String toSend = (String) element;
-      producer.send(toSend, TOPIC);
+      producer.send(toSend, topic);
    }
 }
