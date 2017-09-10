@@ -70,6 +70,7 @@ public class MultiThreadEsFeederFromHbase {
    private void init() throws IOException {
       propLoad();
       if (zookeeperAddress == null || topic == null) {
+         System.out.println("[info] Remaking properties.");
          propInit();
          propLoad();
       }
