@@ -76,7 +76,7 @@ public class PageRank {
                         }
                         return results.iterator();
                     });
-            ranks = contribs.reduceByKey((k, v) -> k + v, (int) (contribs.getNumPartitions() * 1.5)).mapValues(sum -> 0.15 + sum * 0.85);
+            ranks = contribs.reduceByKey((k, v) -> k + v).mapValues(sum -> 0.15 + sum * 0.85);
         }
 
         JavaPairRDD<ImmutableBytesWritable, Put> hbasePuts = ranks.join(revertedHash).mapToPair(s -> {
