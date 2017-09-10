@@ -20,22 +20,24 @@ import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
-//import java.util.concurrent.Semaphore;
+import java.util.concurrent.Semaphore;
 
 public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
    private final static Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
-   private static final Counter counter = new Counter();
-   private static final Timer timer = new Timer();
+   private static Counter counter;
+   private static Timer timer;
    private static ArrayBlockingQueue<WebPage> indexQueue = new ArrayBlockingQueue<WebPage>(8192);
    private static long count = 0;
    
    static {
+      counter = new Counter();
+      timer = new Timer();
       timer.schedule(counter, 15000, 10000);
    }
    
-   //   private Semaphore lock = new Semaphore(1);
+   private Semaphore lock = new Semaphore(1);
    private String[] hosts;
    private String index;
    private String type;
@@ -154,7 +156,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
          while (true) {
             try {
                WebPage newWebPage = indexQueue.take();
-//               lock.acquire();
+               lock.acquire();
                String url = newWebPage.getUrl();
                if (url == null || url.length() == 0) {
                   continue;
@@ -169,21 +171,21 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                transportClient.close();
             } catch (Exception ex) {
                logger.error(ex.toString());
-            }// finally {
-//               lock.release();
-//            }
+            } finally {
+               lock.release();
+            }
          }
       }
       
       public void flush() {
-//         try {
-//            lock.acquire();
-         bulkProcessor.flush();
-//         } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-//         } finally {
-//            lock.release();
-//         }
+         try {
+            lock.acquire();
+            bulkProcessor.flush();
+         } catch (InterruptedException ex) {
+            ex.printStackTrace();
+         } finally {
+            lock.release();
+         }
       }
    }
    

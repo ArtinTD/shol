@@ -48,8 +48,6 @@ public class MultiThreadEsFeederFromHbase {
    private String topic;
    private String groupId;
    
-//   private ArrayBlockingQueue<Long> times = new ArrayBlockingQueue<Long>(256);
-   
    public static void main(String[] args) {
       
       MultiThreadEsFeederFromHbase feeder =
@@ -91,10 +89,6 @@ public class MultiThreadEsFeederFromHbase {
          while (true) {
             if (seed + periodLength < System.currentTimeMillis()) {
                timestampsQueue.send(String.valueOf(seed));
-//               try {
-//                  times.put(seed);
-//               } catch (InterruptedException ignored) {
-//               }
                seed += periodLength;
             } else {
                try {
@@ -115,9 +109,8 @@ public class MultiThreadEsFeederFromHbase {
       do {
          PartialFeeder partialFeeder = null;
          try {
-            long min = Long.parseLong((String) timestampsQueue.get()); // times.take();
+            long min = Long.parseLong((String) timestampsQueue.get());
             if (duplicateCheck.containsKey(min)) {
-               System.out.println("duplicate: " + min);
                continue;
             } else {
                duplicateCheck.put(min, true);
@@ -229,7 +222,7 @@ public class MultiThreadEsFeederFromHbase {
       @Override
       public void run() {
          
-         System.out.println("new partial feeder started with seed: " + maxStamp);
+//         System.out.println("new partial feeder started with seed: " + maxStamp);
          
          boolean foundAnythingNow = false;
          for (Result result : results) {
