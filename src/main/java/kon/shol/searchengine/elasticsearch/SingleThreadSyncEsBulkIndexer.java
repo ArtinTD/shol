@@ -26,8 +26,15 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
    private final static Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
+   private static final Counter counter = new Counter();
+   private static final Timer timer = new Timer();
    private static ArrayBlockingQueue<WebPage> indexQueue = new ArrayBlockingQueue<WebPage>(8192);
    private static long count = 0;
+   
+   static {
+      timer.schedule(counter, 15000, 10000);
+   }
+   
    //   private Semaphore lock = new Semaphore(1);
    private String[] hosts;
    private String index;
@@ -50,7 +57,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
       indexer.start();
       
       
-      new Timer().schedule(new Counter(), 15000, 1000);
+      new Timer().schedule(new Counter(), 15000, 10000);
    }
    
    public boolean isDone() {
@@ -73,6 +80,13 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
       }
    }
    
+   private static class Counter extends TimerTask {
+      @Override
+      public void run() {
+         System.out.println("index count in prev 10s: " + count);
+         count = 0L;
+      }
+   }
    
    private class Sender extends Thread {
       
@@ -88,7 +102,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
             addresses[i] = makeTransportAddress(hosts[i]);
          }
          
-         Settings settings = Settings.builder().put("cluster.name", "elasticsearch").build();
+         Settings settings = Settings.builder().put("cluster.name", "sholastic").build();
          transportClient = new PreBuiltTransportClient(settings)
                .addTransportAddresses(addresses);
          
@@ -151,7 +165,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                            .source(jsonMaker.toJson(newWebPage)));
             } catch (InterruptedException ex) {
                flush();
-               logger.info("indexing done!");
+               System.out.println("indexing done!");
                transportClient.close();
             } catch (Exception ex) {
                logger.error(ex.toString());
@@ -170,14 +184,6 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
 //         } finally {
 //            lock.release();
 //         }
-      }
-   }
-   
-   private class Counter extends TimerTask {
-      @Override
-      public void run() {
-         logger.info("index count: " + count);
-         count = 0L;
       }
    }
    

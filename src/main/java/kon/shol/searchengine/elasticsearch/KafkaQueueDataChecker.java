@@ -6,7 +6,7 @@ public class KafkaQueueDataChecker {
    
    public static void main(String[] args) throws InterruptedException {
       
-      ElasticQueue queue = new ElasticQueue("tone");
+      ElasticQueue queue = new ElasticQueue("ElasticQueueQ","tone");
       String s = (String) queue.get();
       System.out.println(s);
       int i = 0;

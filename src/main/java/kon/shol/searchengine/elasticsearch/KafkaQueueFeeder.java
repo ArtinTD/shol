@@ -5,7 +5,7 @@ import kon.shol.searchengine.kafka.ElasticQueue;
 public class KafkaQueueFeeder {
    static final int periodLength = 60000;
    static long seed = 1503730220000L;
-   static ElasticQueue queue = new ElasticQueue("std");
+   static ElasticQueue queue = new ElasticQueue("ElasticQueueue","std");
    
    public static void main(String[] args) {
       while (true) {

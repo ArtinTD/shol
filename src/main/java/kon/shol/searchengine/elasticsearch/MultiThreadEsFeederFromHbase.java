@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,6 +48,7 @@ public class MultiThreadEsFeederFromHbase {
    private String topic;
    private String groupId;
    
+//   private ArrayBlockingQueue<Long> times = new ArrayBlockingQueue<Long>(256);
    
    public static void main(String[] args) {
       
@@ -89,6 +91,10 @@ public class MultiThreadEsFeederFromHbase {
          while (true) {
             if (seed + periodLength < System.currentTimeMillis()) {
                timestampsQueue.send(String.valueOf(seed));
+//               try {
+//                  times.put(seed);
+//               } catch (InterruptedException ignored) {
+//               }
                seed += periodLength;
             } else {
                try {
@@ -105,12 +111,13 @@ public class MultiThreadEsFeederFromHbase {
    }
    
    private void index() {
-      
+      System.out.println("indexing started");
       do {
          PartialFeeder partialFeeder = null;
          try {
-            long min = Long.parseLong((String) timestampsQueue.get());
+            long min = Long.parseLong((String) timestampsQueue.get()); // times.take();
             if (duplicateCheck.containsKey(min)) {
+               System.out.println("duplicate: " + min);
                continue;
             } else {
                duplicateCheck.put(min, true);
@@ -118,10 +125,10 @@ public class MultiThreadEsFeederFromHbase {
             partialFeeder = new PartialFeeder(min, min + 600000,
                   (indexerNumber = (indexerNumber + 1) % threadCount));
          } catch (IOException ex) {
-            logger.debug(ex.toString());
+            System.out.println(ex.toString());
             continue;
          } catch (InterruptedException ex) {
-            logger.debug(ex.toString());
+            System.out.println(ex.toString());
          } catch (NumberFormatException ignored) {
             continue;
          }
@@ -157,11 +164,11 @@ public class MultiThreadEsFeederFromHbase {
          index = properties.getProperty("index");
          type = properties.getProperty("type");
          zookeeperAddress = properties.getProperty("zookeeper");
-         elasticHosts = properties.getProperty("elasticHosts").split("^");
+         elasticHosts = properties.getProperty("elasticHosts").split("=");
          topic = properties.getProperty("topic");
          groupId = properties.getProperty("groupId");
       } catch (Exception ex) {
-         logger.debug(ex.toString());
+         System.out.println(ex.toString());
       } finally {
          try {
             propertiesI.close();
@@ -184,11 +191,11 @@ public class MultiThreadEsFeederFromHbase {
          properties.put("topic", "ElasticQueueue");
          properties.put("groupId", "shol");
          properties.put("zookeeper", "188.165.230.122:2181");
-         properties.put("elasticHosts", "188.165.230.122^188.165.235.136");
+         properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
          
          properties.store(propertiesO, "configurations");
       } catch (Exception ex) {
-         logger.debug(ex.toString());
+         System.out.println(ex.toString());
       } finally {
          try {
             propertiesO.close();
@@ -222,7 +229,7 @@ public class MultiThreadEsFeederFromHbase {
       @Override
       public void run() {
          
-         logger.info("new partial feeder started with seed: " + maxStamp);
+         System.out.println("new partial feeder started with seed: " + maxStamp);
          
          boolean foundAnythingNow = false;
          for (Result result : results) {
@@ -239,15 +246,15 @@ public class MultiThreadEsFeederFromHbase {
          
          if (foundAnythingYet) {
             if (foundAnythingNow) {
-               logger.info("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
+               System.out.println("[info] Cycle: +YET +NOW: " + minStamp + " : " + maxStamp);
                indexer.flush();
             } else {
-               logger.info("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
+               System.out.println("[info] Cycle: +YET -NOW: " + minStamp + " : " + maxStamp);
                emptyCyclesCount++;
             }
          } else {
             if (!foundAnythingNow) {
-               logger.info("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
+               System.out.println("[info] Cycle: -YET -NOW: " + minStamp + " : " + maxStamp);
             }
          }
          
