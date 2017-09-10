@@ -9,7 +9,7 @@ import java.io.IOException;
 
 class LangDetector {
 
-    private final String ENGLISH_LANGUAGE = "en";
+    private final String DESIRE_LANGUAGE = "en";
 
     private String detectLang(String text) throws IOException {
 
@@ -20,7 +20,7 @@ class LangDetector {
 
     private boolean checkMetaLanguage(Document document, String language) {
 
-        return document.select("html").attr("lang").contains(ENGLISH_LANGUAGE) ||
+        return document.select("html").attr("lang").contains(DESIRE_LANGUAGE) ||
                 document.select("html").attr("lang").contains("mul") ||
                 document.select("html")
                         .attr("lang").isEmpty();
@@ -28,22 +28,22 @@ class LangDetector {
 
     boolean isEnglish(Document document) throws IOException {
         String lang ;
-        if(!checkMetaLanguage(document, ENGLISH_LANGUAGE)){
+        if(!checkMetaLanguage(document, DESIRE_LANGUAGE)){
             return false;
         }
         else{
             lang = detectLang(document.select("meta[name=description]").attr("content"));
-            if(lang.equals(ENGLISH_LANGUAGE)){
+            if(lang.equals(DESIRE_LANGUAGE)){
                 return true;
             }
             else{
                 lang = detectLang(document.title());
-                if(lang.equals(ENGLISH_LANGUAGE)){
+                if(lang.equals(DESIRE_LANGUAGE)){
                     return true;
                 }
                 else {
                     lang = detectLang(document.text());
-                    return lang.equals(ENGLISH_LANGUAGE);
+                    return lang.equals(DESIRE_LANGUAGE);
                 }
             }
         }
