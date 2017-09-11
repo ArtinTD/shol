@@ -39,14 +39,7 @@ public class Producer {
         producer = new KafkaProducer<>(properties);
     }
 
-    public void batchSend(ArrayList<String> messages, String topic) {
-
-        for (String message : messages) {
-            send(message, topic);
-        }
-    }
-
-    public void send(String message, String topic) {
+    void send(String message, String topic) {
 
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, message);
         producer.send(producerRecord, (metadata, exception) -> {

@@ -1,9 +1,6 @@
 package kon.shol.searchengine.parser;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 

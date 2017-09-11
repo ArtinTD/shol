@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 public class PreAnalysis implements Runnable {
 
     private ArrayBlockingQueue documentsQueue;
-    private Queue kafkaQueue;
+    private Queue queue;
     private Cache cache;
     private Fetcher fetcher;
     private Parser parser;
@@ -23,9 +23,14 @@ public class PreAnalysis implements Runnable {
 
     private final static Logger logger = Logger.getLogger("custom");
 
-    public PreAnalysis(Queue kafkaQueue, ArrayBlockingQueue documentsQueue, Cache cache, Fetcher fetcher, Parser parser, Storage storage) {
+    public PreAnalysis(Queue queue,
+                       ArrayBlockingQueue documentsQueue,
+                       Cache cache,
+                       Fetcher fetcher,
+                       Parser parser,
+                       Storage storage) {
 
-        this.kafkaQueue = kafkaQueue;
+        this.queue = queue;
         this.documentsQueue = documentsQueue;
         this.fetcher = fetcher;
         this.cache = cache;
@@ -39,13 +44,13 @@ public class PreAnalysis implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             String url;
             try {
-                url = (String) kafkaQueue.get();
+                url = (String) queue.get();
             } catch (InterruptedException interruptedException) {
                 logger.fatal("Interruption while  getting from queue");
                 continue;
             }
 
-            String domain = null;
+            String domain;
             try {
                 domain = parser.getDomain(url);
             } catch (MalformedURLException e) {
@@ -59,18 +64,18 @@ public class PreAnalysis implements Runnable {
             }
 
             if (cache.exists(domain)) {
-                kafkaQueue.send(url);
+                queue.send(url);
                 continue;
             }
 
-            try {
-                if (storage.exists(url)) {
-                    continue;
-                }
-            } catch (IOException e) {
-                logger.fatal("Can't check existence from storage: " + url);
-                continue;
-            }
+//            try {
+//                if (storage.exists(url)) {
+//                    continue;
+//                }
+//            } catch (IOException e) {
+//                logger.fatal("Can't check existence from storage: " + url);
+//                continue;
+//            }
 
             try {
                 cache.insert(domain);
@@ -92,10 +97,8 @@ public class PreAnalysis implements Runnable {
                 try {
                     documentsQueue.put(document);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.debug("Thread interrupted");
                 }
-
-
         }
     }
 
@@ -107,6 +110,5 @@ public class PreAnalysis implements Runnable {
     public int getInvalidUrls() {
         return invalidUrls;
     }
-
 
 }

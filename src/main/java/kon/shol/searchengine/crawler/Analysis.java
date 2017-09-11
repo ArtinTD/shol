@@ -10,7 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class Analysis implements Runnable {
     ArrayBlockingQueue documentsQueue;
-    Queue kafkaQueue;
+    Queue queue;
     Storage storage;
     Parser parser;
 
@@ -19,9 +19,9 @@ public class Analysis implements Runnable {
     private final static Logger logger = Logger.getLogger("custom");
     private int numCycle;
 
-    public Analysis(Queue kafkaQueue, ArrayBlockingQueue documentsQueue, Storage storage, Parser parser) {
+    public Analysis(Queue queue, ArrayBlockingQueue documentsQueue, Storage storage, Parser parser) {
 
-        this.kafkaQueue = kafkaQueue;
+        this.queue = queue;
         this.documentsQueue = documentsQueue;
         this.storage = storage;
         this.parser = parser;
@@ -31,7 +31,7 @@ public class Analysis implements Runnable {
     public void run() {
         while (true) {
 
-            Document document = null;
+            Document document;
             try {
                     document = (Document) documentsQueue.take();
             } catch (InterruptedException e) {
@@ -46,7 +46,11 @@ public class Analysis implements Runnable {
             }
 
             storage.sendToStorage(parser.getPageData());
-            kafkaQueue.send(parser.getPageData().getAnchors());
+            try {
+                queue.send(parser.getPageData().getAnchors().keySet().toArray());
+            } catch (IOException e) {
+                logger.fatal("Can't send to Queue");
+            }
             numCycle++;
         }
     }

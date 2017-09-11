@@ -24,9 +24,9 @@ public class Fetcher {
             throw new InvalidStatusCodeException(statusCode, url);
         }*/
         return Jsoup.connect(url)
-                .timeout(60*1000)
+                .timeout(10 * 1000)
                 .followRedirects(true)
                 .userAgent("Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3")
-                .get();
+                .execute().parse();
     }
 }

@@ -1,13 +1,16 @@
 package kon.shol.searchengine.kafka;
 
 import kon.shol.searchengine.crawler.Queue;
+import kon.shol.searchengine.crawler.Storage;
 import org.jsoup.nodes.Document;
 
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.FETCH_MAX_BYTES_CONFIG;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -15,14 +18,17 @@ public class PreAnalysisQueue implements Queue {
 
     private Consumer consumer;
     private Producer producer = new Producer();
-    private final String TOPIC = "CrawlerQueue";
+    private String TOPIC = "CrawlerQueue";
+    private Storage storage;
 
-    public PreAnalysisQueue() {
+    public PreAnalysisQueue(String topic, Storage storage) {
+        TOPIC = topic;
         Properties properties = new Properties();
         properties.put(FETCH_MAX_BYTES_CONFIG, "10000");
-        consumer = new Consumer("8", TOPIC, properties);
+        consumer = new Consumer("8", TOPIC, properties, storage);
         Thread crawlerKafkaConsumingThread = new Thread(consumer);
         crawlerKafkaConsumingThread.start();
+        this.storage = storage;
     }
 
     @Override
@@ -31,21 +37,17 @@ public class PreAnalysisQueue implements Queue {
         return (String) consumer.get();
     }
 
-    public void send(Object element) {
-        if (element instanceof String) {
-            String toSend = (String) element;
-            producer.send(toSend, TOPIC);
-        } else if (element instanceof HashMap) {
+    @Override
+    public void send(String message) {
 
-            ((HashMap) element).forEach((k, v) -> producer.send(k.toString(), TOPIC));
-
-        } else if (element instanceof ArrayList) {
-
-            for (String s : (ArrayList<String>) element) {
-                producer.send(s, TOPIC);
-            }
-        }
+        producer.send(message, TOPIC);
     }
 
+    @Override
+    public void send(Object[] messages) throws IOException {
 
+        for (String message: storage.removeExisting(messages)){
+            producer.send(message, TOPIC);
+        }
+    }
 }

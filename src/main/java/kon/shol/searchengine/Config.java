@@ -16,10 +16,11 @@ public class Config {
     private int hBaseBatchPutSize;
     private int timeLimit;
     private int sizeLimit;
+    private int threadNumber;
 
     public Config() throws IOException {
         prop = new Properties();
-        input = new FileInputStream("src/main/resources/config.properties");
+        input = new FileInputStream("/work/application_config/config.properties");
         prop.load(input);
         setLanguage(prop.getProperty("language"));
         setZkIP(prop.getProperty("zkIP"));
@@ -29,9 +30,10 @@ public class Config {
         setThreadRatios(Integer.parseInt(prop.getProperty("threadRatios")));
         setLruCacheTime(Integer.parseInt(prop.getProperty("LruCacheTime")));
         setFetcherTimeOutError(Integer.parseInt(prop.getProperty("fetcherTimeOutError")));
-        sethBaseBatchPutSize(Integer.parseInt(prop.getProperty("hbaseBatchPutSize")));
+        sethBaseBatchPutSize(Integer.parseInt(prop.getProperty("hBaseBatchPutSize")));
         setTimeLimit(Integer.parseInt(prop.getProperty("timeLimit")));
         setSizeLimit(Integer.parseInt(prop.getProperty("sizeLimit")));
+        setThreadNumber(Integer.parseInt(prop.getProperty("threadNumber")));
     }
 
     public Properties getProp() {
@@ -144,11 +146,17 @@ public class Config {
             System.out.println(config.getLanguage());
             System.out.println(config.getTopic());
             System.out.println(config.getBrokersIP());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getThreadNumber() {
+        return threadNumber;
+    }
+
+    public void setThreadNumber(int threadNumber) {
+        this.threadNumber = threadNumber;
     }
 }
 

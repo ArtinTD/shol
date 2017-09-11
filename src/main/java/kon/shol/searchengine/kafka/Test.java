@@ -7,16 +7,6 @@ public class Test implements Runnable {
 
     private static PreAnalysisQueue preAnalysisQueue;
 
-    public static void main(String[] args) {
-
-        ExecutorService executor = Executors.newFixedThreadPool(100);
-        preAnalysisQueue = new PreAnalysisQueue();
-        for (int i = 0; i < 10; i++) {
-            Test test = new Test();
-            executor.execute(test);
-        }
-    }
-
     @Override
     public void run() {
 

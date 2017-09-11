@@ -8,6 +8,8 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static kon.shol.searchengine.hbase.Connector.connection;
 
@@ -25,8 +27,23 @@ public class Reader {
         parser = new Parser();
     }
 
-    public boolean exists(String rowKey) throws IOException {
+    boolean exists(String rowKey) throws IOException {
         return table.exists(new Get(Bytes.toBytes(parser.reverseDomain(rowKey))));
     }
 
+    ArrayList<String> removeExisting(Object[] rowKeys) throws IOException {
+
+        ArrayList<Get> getsList = new ArrayList<>();
+        for (Object rowKey : rowKeys) {
+            getsList.add(new Get(Bytes.toBytes(parser.reverseDomain((String) rowKey))));
+        }
+        boolean[] existenceList = table.existsAll(getsList);
+        ArrayList<String> result = new ArrayList<>();
+        for (int i = 0; i < existenceList.length; i++) {
+            if (!existenceList[i]) {
+                result.add((String) rowKeys[i]);
+            }
+        }
+        return result;
+    }
 }

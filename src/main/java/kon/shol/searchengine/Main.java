@@ -19,11 +19,14 @@ public class Main {
     private final static Logger logger = Logger.getLogger("custom");
     public static ArrayBlockingQueue<Document> documentsQueue = new ArrayBlockingQueue<Document>(10000);
 
-    private static final int priority = 3;
-    private static final int numThreads = 500;
+    public static Config config = null;
 
     public static void main(String[] args) {
-
+        try {
+            config = new Config();
+        } catch (IOException e) {
+            logger.fatal("Config file could not be reached!");
+        }
         Queue preAnalysisQueue;
         Cache lruCache;
         Fetcher fetcher;
@@ -35,18 +38,24 @@ public class Main {
             logger.fatal("Couldn't Connect to Hbase, Fatal Error");
             System.exit(0);
         }
-        ExecutorService executor = Executors.newFixedThreadPool(510);
-        preAnalysisQueue = new PreAnalysisQueue();
-        lruCache = new LruCache();
-
+        ExecutorService executor = Executors.newFixedThreadPool(1000);
+        try {
+            hBase = new HbaseDriver(config.getTableName(), config.gethBaseBatchPutSize());
+        } catch (IOException e) {
+            logger.fatal("Can't create HbaseDriver");
+        }
+        preAnalysisQueue = new PreAnalysisQueue(config.getTopic(), hBase);
+        lruCache = new LruCache(config.getLruCacheTime());
         Monitor monitor = new Monitor();
+        int numThreads = config.getThreadNumber();
         for (int i = 0; i < numThreads; i++) {
             try {
-                hBase = new HbaseDriver("demo2");
+                hBase = new HbaseDriver(config.getTableName(), config.gethBaseBatchPutSize());
             } catch (IOException e) {
                 logger.fatal("Can't create HbaseDriver");
             }
 
+            int priority = config.getThreadRatios() + 1;
             if (i % priority != 0) {
                 parser = new Parser();
                 fetcher = new Fetcher();

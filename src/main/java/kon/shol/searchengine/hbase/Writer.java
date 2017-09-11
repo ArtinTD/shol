@@ -1,6 +1,5 @@
 package kon.shol.searchengine.hbase;
 
-import kon.shol.searchengine.kafka.HbaseQueue;
 import kon.shol.searchengine.parser.PageData;
 import kon.shol.searchengine.parser.Parser;
 import org.apache.hadoop.hbase.TableName;
@@ -20,19 +19,19 @@ public class Writer {
 
     private Table table;
     private List<Put> putList;
-    private static HbaseQueue hbaseQueue = new HbaseQueue();
     private Parser parser;
 
-    private final int MAX_BATCH_PUT_SIZE = 20;
+    private int MAX_BATCH_PUT_SIZE = 20;
     private final static Logger logger = Logger.getLogger("custom");
     private final byte[] DATA_CF = Bytes.toBytes("data");
     private final byte[] LINKS_CF = Bytes.toBytes("links");
     private final byte[] ANCHORS_CF = Bytes.toBytes("anchors");
 
-    public Writer(String tableNameStr) throws IOException {
+    public Writer(String tableNameStr, int batchPutSize) throws IOException {
         if (connection.isClosed()) {
             new Connector();
         }
+        MAX_BATCH_PUT_SIZE = batchPutSize;
         TableName tableName = TableName.valueOf(tableNameStr);
         putList = new ArrayList<>();
         parser = new Parser();
@@ -75,13 +74,11 @@ public class Writer {
         }
     }
 
-    public void batchPut(PageData pageData) {
+    void batchPut(PageData pageData) {
         try {
             String url = parser.reverseDomain(pageData.getUrl());
             Put put = returnPutPageData(url, pageData);
             putList.add(put);
-//            logger.debug("Thread: " + Thread.currentThread().getName() + " | Stored: " + pageData.getUrl());
-//            System.out.println("Putlist size " + putList.size());
             if (putList.size() > MAX_BATCH_PUT_SIZE) {
                 if (connection.isClosed()) {
                     try {
@@ -100,8 +97,8 @@ public class Writer {
                     }
                 }
             }
-        }catch(NullPointerException e){
-
+        }catch(NullPointerException exception){
+            logger.fatal("NullPointerException in batch writing to HBase");
         }
     }
 

@@ -8,15 +8,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class LruCache implements Cache {
-    private LoadingCache<String, Boolean> lruCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(20, TimeUnit.SECONDS)
-            .build(
-                    new CacheLoader<String, Boolean>() {
-                        @Override
-                        public Boolean load(String key) {
-                            return Boolean.FALSE;
-                        }
-                    });
+
+    private LoadingCache<String, Boolean> lruCache = null;
+
+    public LruCache(int cacheTime) {
+        lruCache = CacheBuilder.newBuilder()
+                .expireAfterWrite(cacheTime, TimeUnit.SECONDS)
+                .build(
+                        new CacheLoader<String, Boolean>() {
+                            @Override
+                            public Boolean load(String key) {
+                                return Boolean.FALSE;
+                            }
+                        });
+    }
 
     @Override
     public boolean exists(Object element) {
