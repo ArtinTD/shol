@@ -38,17 +38,21 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    }
    
    private Semaphore lock = new Semaphore(1);
+   private String elasticClusterName;
    private String[] hosts;
    private String index;
    private String type;
    private Sender indexer;
    private int port;
    
-   public SingleThreadSyncEsBulkIndexer(String[] hosts, String index, String type) {
-      this(hosts, 9300, index, type);
+   public SingleThreadSyncEsBulkIndexer(String elasticClusterName,
+                                        String[] hosts, String index, String type) {
+      
+      this(elasticClusterName, hosts, 9300, index, type);
    }
    
-   public SingleThreadSyncEsBulkIndexer(String[] hosts, int port, String index, String type) {
+   public SingleThreadSyncEsBulkIndexer(String elasticClusterName, String[] hosts, int port, String index, String type) {
+      this.elasticClusterName = elasticClusterName;
       this.hosts = hosts;
       this.port = port;
       this.index = index;
@@ -104,7 +108,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
             addresses[i] = makeTransportAddress(hosts[i]);
          }
          
-         Settings settings = Settings.builder().put("cluster.name", "sholastic").build();
+         Settings settings = Settings.builder().put("cluster.name", elasticClusterName).build();
          transportClient = new PreBuiltTransportClient(settings)
                .addTransportAddresses(addresses);
          
