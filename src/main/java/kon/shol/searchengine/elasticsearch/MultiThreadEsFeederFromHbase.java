@@ -93,7 +93,7 @@ public class MultiThreadEsFeederFromHbase {
       kafkaFeederThread = new Thread(() -> {
          while (true) {
             try {
-               if (seed + periodLength < System.currentTimeMillis()) {
+               if (seed + periodLength < System.currentTimeMillis() - 30000L) {
                   timestampsQueue.send(String.valueOf(seed));
                   seed += periodLength;
                } else {
@@ -213,7 +213,7 @@ public class MultiThreadEsFeederFromHbase {
          properties.put("seed", "1505125826000");
          properties.put("elasticClusterName", "sholastic");
          properties.put("periodLength", "60000");
-         properties.put("tableName", "webpages");
+         properties.put("tableName", "Ftable");
          properties.put("columnFamily", "data");
          properties.put("index", "sholastic");
          properties.put("type", "webpagestest2");
