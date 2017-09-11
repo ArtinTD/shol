@@ -29,7 +29,7 @@ public class Config {
         setThreadRatios(Integer.parseInt(prop.getProperty("threadRatios")));
         setLruCacheTime(Integer.parseInt(prop.getProperty("LruCacheTime")));
         setFetcherTimeOutError(Integer.parseInt(prop.getProperty("fetcherTimeOutError")));
-        sethBaseBatchPutSize(Integer.parseInt(prop.getProperty("hbaseBatchPutSize")));
+        sethBaseBatchPutSize(Integer.parseInt(prop.getProperty("hBaseBatchPutSize")));
         setTimeLimit(Integer.parseInt(prop.getProperty("timeLimit")));
         setSizeLimit(Integer.parseInt(prop.getProperty("sizeLimit")));
     }
