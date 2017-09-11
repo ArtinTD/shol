@@ -109,7 +109,7 @@ public class MultiThreadEsFeederFromHbase {
          while (true) {
             try {
                Thread.sleep(5000);
-               properties.replace("seed", String.valueOf(seed));
+               properties.replace("seed", seed + "");
                propertiesO = new FileOutputStream("elasticIndexer.properties");
                properties.store(propertiesO, "elasticIndexer configurations");
             } catch (IOException ignored) {
