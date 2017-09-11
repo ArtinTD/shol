@@ -28,7 +28,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
    private static Counter counter;
    private static Timer timer;
-   private static ArrayBlockingQueue<WebPage> indexQueue = new ArrayBlockingQueue<WebPage>(8192);
+   private static ArrayBlockingQueue<WebPage> indexQueue = new ArrayBlockingQueue<WebPage>(2048);
    private static long count = 0;
    
    static {
@@ -137,7 +137,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                      failure.printStackTrace();
                   }
                })
-               .setBulkActions(-1)
+               .setBulkActions(512)
                .setBulkSize(new ByteSizeValue(-1, ByteSizeUnit.MB))
                .setFlushInterval(TimeValue.timeValueSeconds(30))
                .build();
