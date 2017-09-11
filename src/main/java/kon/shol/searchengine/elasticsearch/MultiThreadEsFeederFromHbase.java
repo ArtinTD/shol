@@ -75,7 +75,7 @@ public class MultiThreadEsFeederFromHbase {
       if (zookeeperAddress == null || topic == null || elasticClusterName == null) {
          System.out.println("[info] Remaking properties.");
          propInit();
-//         propLoad();
+         propLoad();
       }
       
       indexers = new SingleThreadSyncEsBulkIndexer[threadCount];
