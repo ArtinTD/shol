@@ -167,7 +167,9 @@ public class MultiThreadEsFeederFromHbase {
          for (SingleThreadSyncEsBulkIndexer indexer : indexers) {
             indexer.end();
          }
-      } catch (IOException ignored) {
+         Thread.sleep(5000);
+         System.exit(0);
+      } catch (IOException | InterruptedException ignored) {
       }
    }
    
