@@ -204,7 +204,7 @@ public class MultiThreadEsFeederFromHbase {
       try {
          propertiesO = new FileOutputStream("elasticIndexer.properties");
          properties = new Properties();
-         properties.put("threadCount", "16");
+         properties.put("threadCount", "4");
          properties.put("seed", "1504323000000");
          properties.put("elasticClusterName", "sholastic");
          properties.put("periodLength", "60000");
