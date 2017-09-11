@@ -63,9 +63,6 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
       indexer = new Sender();
       indexer.setName("SingleThreadSyncEsBulkIndexer-indexerThread");
       indexer.start();
-      
-      
-      new Timer().schedule(new Counter(), 15000, 10000);
    }
    
    public boolean isDone() {
