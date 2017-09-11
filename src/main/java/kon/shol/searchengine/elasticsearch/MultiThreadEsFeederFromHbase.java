@@ -218,7 +218,7 @@ public class MultiThreadEsFeederFromHbase {
          properties.put("index", "sholastic");
          properties.put("type", "webpagesfinal1");
          properties.put("topic", "ElasticQueueF1");
-         properties.put("groupId", "sholz");
+         properties.put("groupId", "sholza");
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
          

@@ -139,7 +139,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                   }
                })
                .setBulkActions(-1)
-               .setBulkSize(new ByteSizeValue(128, ByteSizeUnit.MB))
+               .setBulkSize(new ByteSizeValue(32, ByteSizeUnit.MB))
 //               .setFlushInterval(TimeValue.timeValueSeconds(30))
                .build();
       }
