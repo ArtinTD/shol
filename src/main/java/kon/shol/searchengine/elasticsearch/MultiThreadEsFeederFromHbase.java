@@ -110,7 +110,7 @@ public class MultiThreadEsFeederFromHbase {
          while (true) {
             try {
                Thread.sleep(5000);
-               this.properties.put("seed", seed + "  ");
+               this.properties.put("seed", seed);
                propertiesO = new FileOutputStream("elasticIndexer.properties");
                this.properties.store(propertiesO, "elasticIndexer configurations");
             } catch (IOException ignored) {
@@ -144,6 +144,7 @@ public class MultiThreadEsFeederFromHbase {
             } else {
                duplicateCheck.put(min, true);
             }
+            System.out.println("[info] new partialFeeder: " + min);
             partialFeeder = new PartialFeeder(min, min + 600000,
                   (indexerNumber = (indexerNumber + 1) % threadCount));
          } catch (IOException ex) {
@@ -218,7 +219,7 @@ public class MultiThreadEsFeederFromHbase {
          properties.put("index", "sholastic");
          properties.put("type", "webpagesfinal1");
          properties.put("topic", "ElasticQueueF1");
-         properties.put("groupId", "sholexer");
+         properties.put("groupId", "shol");
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
          
