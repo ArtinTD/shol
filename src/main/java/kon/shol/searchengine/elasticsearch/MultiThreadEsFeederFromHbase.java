@@ -209,16 +209,16 @@ public class MultiThreadEsFeederFromHbase {
    private void propInit() {
       try {
          properties = new Properties();
-         properties.put("threadCount", "4");
+         properties.put("threadCount", "8");
          properties.put("seed", "1504607400000");
          properties.put("elasticClusterName", "sholastic");
-         properties.put("periodLength", "60000");
+         properties.put("periodLength", "20000");
          properties.put("tableName", "demo2");
          properties.put("columnFamily", "data");
          properties.put("index", "sholastic");
          properties.put("type", "webpagesfinal1");
          properties.put("topic", "ElasticQueueF1");
-         properties.put("groupId", "sholaz");
+         properties.put("groupId", "sholk");
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
          
