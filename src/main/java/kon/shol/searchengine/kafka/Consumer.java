@@ -14,7 +14,7 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
 public class Consumer implements Runnable {
    
-   private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
+//   private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
    private static final Object LOCK = new Object();
    private static final String BOOTSTRAP_SERVERS = "188.165.235.136:9092,188.165.230.122:9092";
    private ArrayBlockingQueue<String> consumingQueue;
@@ -67,7 +67,8 @@ public class Consumer implements Runnable {
                   LOCK.wait();
                }
             } catch (InterruptedException interruptedException) {
-               logger.error("Error while waiting to fill the consuming queue");
+//               logger.error("Error while waiting to fill the consuming queue");
+               System.out.println("Error while waiting to fill the consuming queue");
             }
          }
       }

@@ -6,7 +6,6 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.Properties;
@@ -21,8 +20,8 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.FETCH_MAX_BYTES_C
 public class MultiThreadEsFeederFromHbase {
    
    
-   private final static Logger logger = Logger.getLogger(
-         kon.shol.searchengine.elasticsearch.SingleScanEsFeederFromHbase.class);
+   //   private final static Logger logger = Logger.getLogger(
+//         kon.shol.searchengine.elasticsearch.SingleScanEsFeederFromHbase.class);
    private int threadCount;
    private SingleThreadSyncEsBulkIndexer[] indexers;
    private ElasticQueue timestampsQueue;
@@ -59,7 +58,9 @@ public class MultiThreadEsFeederFromHbase {
       try {
          feeder.init();
       } catch (IOException ex) {
-         logger.error("Could not initialize MultiThreadEsFeederFromHbase;\n"
+//         logger.error("Could not initialize MultiThreadEsFeederFromHbase;\n"
+//               + "details: " + ex.toString());
+         System.out.println("Could not initialize MultiThreadEsFeederFromHbase;\n"
                + "details: " + ex.toString());
          System.exit(1);
       }
@@ -109,16 +110,19 @@ public class MultiThreadEsFeederFromHbase {
          while (true) {
             try {
                Thread.sleep(5000);
-               properties.put("seed", seed + "");
+               this.properties.put("seed", seed + "  ");
                propertiesO = new FileOutputStream("elasticIndexer.properties");
-               properties.store(propertiesO, "elasticIndexer configurations");
+               System.out.println(this.properties.toString());
+               this.properties.store(propertiesO, "elasticIndexer configurations");
             } catch (IOException ignored) {
             } catch (InterruptedException ex) {
                break;
             } finally {
-               try {
-                  propertiesO.close();
-               } catch (IOException ignored) {
+               if (propertiesO != null) {
+                  try {
+                     propertiesO.close();
+                  } catch (IOException ignored) {
+                  }
                }
             }
          }
@@ -192,10 +196,13 @@ public class MultiThreadEsFeederFromHbase {
          elasticClusterName = properties.getProperty("elasticClusterName");
       } catch (Exception ex) {
          System.out.println(ex.toString());
+//         ex.printStackTrace();
       } finally {
-         try {
-            propertiesI.close();
-         } catch (IOException ignored) {
+         if (propertiesI != null) {
+            try {
+               propertiesI.close();
+            } catch (IOException ignored) {
+            }
          }
       }
    }
@@ -211,7 +218,7 @@ public class MultiThreadEsFeederFromHbase {
          properties.put("columnFamily", "data");
          properties.put("index", "sholastic");
          properties.put("type", "webpagestest1");
-         properties.put("topic", "ElasticQueueT2");
+         properties.put("topic", "ElasticQueueT4");
          properties.put("groupId", "shol");
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
@@ -221,9 +228,11 @@ public class MultiThreadEsFeederFromHbase {
       } catch (Exception ex) {
          System.out.println(ex.toString());
       } finally {
-         try {
-            propertiesO.close();
-         } catch (Exception ignored) {
+         if (propertiesO != null) {
+            try {
+               propertiesO.close();
+            } catch (Exception ignored) {
+            }
          }
       }
    }
@@ -260,7 +269,8 @@ public class MultiThreadEsFeederFromHbase {
             try {
                indexer.add(makeWebpage(result));
             } catch (Exception ex) {
-               logger.error(ex.toString());
+//               logger.error(ex.toString());
+               System.out.println(ex.toString());
             }
          }
          

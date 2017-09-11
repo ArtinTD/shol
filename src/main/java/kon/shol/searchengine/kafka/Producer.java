@@ -13,7 +13,7 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 public class Producer {
    
    private static final String PRODUCER_TYPE = "producer.type";
-   private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
+//   private final static Logger logger = Logger.getLogger(kon.shol.searchengine.kafka.Producer.class);
    private KafkaProducer<String, String> producer;
    
    public Producer() {
@@ -66,10 +66,12 @@ public class Producer {
       producer.send(producerRecord, (metadata, exception) -> {
          if (exception != null) {
             //todo handle future
-            logger.error(exception.getMessage());
+//            logger.error(exception.getMessage());
+            System.out.println(exception.getMessage());
          }
          if (exception instanceof UnknownServerException) {
-            logger.error("Kafka UnknownServerException, application closed!");
+//            logger.error("Kafka UnknownServerException, application closed!");
+            System.out.println("Kafka UnknownServerException, application closed!");
             System.exit(0);
          }
       });

@@ -1,7 +1,6 @@
 package kon.shol.searchengine.elasticsearch;
 
 import com.google.gson.Gson;
-import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -11,7 +10,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
-import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
@@ -24,8 +22,8 @@ import java.util.concurrent.Semaphore;
 
 public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
-   private static final Logger logger = Logger.getLogger(
-         kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
+   //   private static final Logger logger = Logger.getLogger(
+//         kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
    private static final ArrayBlockingQueue<WebPage> indexQueue;
    private static Counter counter;
    private static Timer timer;
@@ -36,7 +34,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
       count = 0;
       counter = new Counter();
       timer = new Timer();
-      timer.schedule(counter, 15000, 10000);
+      timer.schedule(counter, 30000, 10000);
    }
    
    private Semaphore lock = new Semaphore(1);
@@ -131,14 +129,16 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                   
                   @Override
                   public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
-                     logger.debug(failure.toString());
-                     logger.error("[info] bulk failed!");
+//                     logger.debug(failure.toString());
+//                     logger.error("[info] bulk failed!");
+                     System.out.println(failure.toString());
+                     System.out.println("[info] bulk failed!");
                      failure.printStackTrace();
                   }
                })
                .setBulkActions(-1)
                .setBulkSize(new ByteSizeValue(256, ByteSizeUnit.MB))
-               .setFlushInterval(TimeValue.timeValueSeconds(-1))
+//               .setFlushInterval(TimeValue.timeValueSeconds(30))
                .build();
       }
       
@@ -148,7 +148,8 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
             return new InetSocketTransportAddress(
                   new InetSocketAddress(InetAddress.getByName(host), port));
          } catch (UnknownHostException ex) {
-            logger.error(ex.toString());
+//            logger.error(ex.toString());
+            System.out.println(ex.toString());
          }
          
          return null;
@@ -173,7 +174,8 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                System.out.println("indexing done!");
                transportClient.close();
             } catch (Exception ex) {
-               logger.error(ex.toString());
+//               logger.error(ex.toString());
+               System.out.println(ex.toString());
             } finally {
                lock.release();
             }
