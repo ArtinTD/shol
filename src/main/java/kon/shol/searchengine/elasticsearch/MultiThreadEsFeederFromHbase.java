@@ -202,15 +202,15 @@ public class MultiThreadEsFeederFromHbase {
       try {
          propertiesO = new FileOutputStream("elasticIndexer.properties");
          properties = new Properties();
-         properties.put("threadCount", "8");
+         properties.put("threadCount", "16");
          properties.put("seed", "1504323000000");
          properties.put("elasticClusterName", "sholastic");
          properties.put("periodLength", "60000");
-         properties.put("tableName", "webpages2");
+         properties.put("tableName", "webpages");
          properties.put("columnFamily", "data");
          properties.put("index", "sholastic");
          properties.put("type", "webpagestest1");
-         properties.put("topic", "ElasticQueueue");
+         properties.put("topic", "ElasticQueueT2");
          properties.put("groupId", "shol");
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
