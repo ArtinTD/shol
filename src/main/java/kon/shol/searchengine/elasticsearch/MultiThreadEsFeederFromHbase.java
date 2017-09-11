@@ -75,7 +75,7 @@ public class MultiThreadEsFeederFromHbase {
       if (zookeeperAddress == null || topic == null || elasticClusterName == null) {
          System.out.println("[info] Remaking properties.");
          propInit();
-         propLoad();
+//         propLoad();
       }
       
       indexers = new SingleThreadSyncEsBulkIndexer[threadCount];
@@ -109,7 +109,7 @@ public class MultiThreadEsFeederFromHbase {
          while (true) {
             try {
                Thread.sleep(5000);
-               properties.replace("seed", seed + "");
+               properties.put("seed", seed + "");
                propertiesO = new FileOutputStream("elasticIndexer.properties");
                properties.store(propertiesO, "elasticIndexer configurations");
             } catch (IOException ignored) {
@@ -195,14 +195,13 @@ public class MultiThreadEsFeederFromHbase {
       } finally {
          try {
             propertiesI.close();
-         } catch (Exception ignored) {
+         } catch (IOException ignored) {
          }
       }
    }
    
    private void propInit() {
       try {
-         propertiesO = new FileOutputStream("elasticIndexer.properties");
          properties = new Properties();
          properties.put("threadCount", "4");
          properties.put("seed", "1504323000000");
@@ -217,7 +216,8 @@ public class MultiThreadEsFeederFromHbase {
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
          
-         properties.store(propertiesO, "elasticIndexer configurations");
+         propertiesO = new FileOutputStream("elasticIndexer.properties");
+         properties.store(propertiesO, "ElasticIndexer configurations");
       } catch (Exception ex) {
          System.out.println(ex.toString());
       } finally {
