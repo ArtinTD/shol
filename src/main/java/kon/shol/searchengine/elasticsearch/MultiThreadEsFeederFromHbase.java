@@ -134,7 +134,7 @@ public class MultiThreadEsFeederFromHbase {
    }
    
    private void index() {
-      System.out.println("indexing started");
+      System.out.println("[info] indexing started");
       do {
          PartialFeeder partialFeeder = null;
          try {

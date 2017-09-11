@@ -86,7 +86,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    private static class Counter extends TimerTask {
       @Override
       public void run() {
-         System.out.println("index count in prev 10s: " + count);
+         System.out.println("[info] index count in prev 10s: " + count);
          count = 0L;
       }
    }
@@ -133,7 +133,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
 //                     logger.error("[info] bulk failed!");
                      System.out.println(failure.toString());
                      System.out.println("[info] bulk failed!");
-                     failure.printStackTrace();
+//                     failure.printStackTrace();
                   }
                })
                .setBulkActions(-1)
@@ -171,7 +171,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                            .source(jsonMaker.toJson(newWebPage)));
             } catch (InterruptedException ex) {
                flush();
-               System.out.println("indexing done!");
+               System.out.println("[info] indexing done!");
                transportClient.close();
             } catch (Exception ex) {
 //               logger.error(ex.toString());
