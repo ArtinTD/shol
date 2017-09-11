@@ -197,7 +197,7 @@
                     <archive>
                         <manifest>
 
-                            <mainClass>kon.shol.searchengine.Main</mainClass>
+                            <mainClass>kon.shol.searchengine.sparkmapreduce.PageRank</mainClass>
                         </manifest>
                     </archive>
 
