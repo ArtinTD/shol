@@ -111,7 +111,7 @@ public class MultiThreadEsFeederFromHbase {
          while (true) {
             try {
                Thread.sleep(5000);
-               this.properties.put("seed", seed);
+               this.properties.put("seed", seed + "  ");
                propertiesO = new FileOutputStream("elasticIndexer.properties");
                this.properties.store(propertiesO, "elasticIndexer configurations");
             } catch (IOException ignored) {
