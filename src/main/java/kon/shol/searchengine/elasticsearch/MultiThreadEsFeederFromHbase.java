@@ -209,7 +209,7 @@ public class MultiThreadEsFeederFromHbase {
    private void propInit() {
       try {
          properties = new Properties();
-         properties.put("threadCount", "4");
+         properties.put("threadCount", "8");
          properties.put("seed", "1504607400000");
          properties.put("elasticClusterName", "sholastic");
          properties.put("periodLength", "60000");

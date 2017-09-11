@@ -137,9 +137,9 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
 //                     failure.printStackTrace();
                   }
                })
-               .setBulkActions(2048)
+               .setBulkActions(512)
                .setBulkSize(new ByteSizeValue(128, ByteSizeUnit.MB))
-               .setFlushInterval(TimeValue.timeValueSeconds(30))
+//               .setFlushInterval(TimeValue.timeValueSeconds(30))
                .build();
       }
       
