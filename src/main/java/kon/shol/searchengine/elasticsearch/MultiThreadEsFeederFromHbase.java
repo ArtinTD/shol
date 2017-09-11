@@ -9,9 +9,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.*;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 import static kon.shol.searchengine.elasticsearch.WebpageMaker.makeWebpage;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.DEFAULT_FETCH_MAX_BYTES;
@@ -84,7 +82,10 @@ public class MultiThreadEsFeederFromHbase {
       conf.set("hbase.zookeeper.quorum", zookeeperAddress);
       connection = ConnectionFactory.createConnection(conf);
       table = connection.getTable(TableName.valueOf(tableName));
-      executor = Executors.newFixedThreadPool(threadCount);
+      executor = new ThreadPoolExecutor(threadCount, threadCount,
+            0L, TimeUnit.MILLISECONDS,
+            new ArrayBlockingQueue<Runnable>(2 * threadCount));
+      // Executors.newFixedThreadPool(threadCount);
       
       Properties properties = new Properties();
       properties.put(FETCH_MAX_BYTES_CONFIG, DEFAULT_FETCH_MAX_BYTES);
