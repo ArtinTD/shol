@@ -10,6 +10,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
@@ -34,7 +35,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
       count = 0;
       counter = new Counter();
       timer = new Timer();
-      timer.schedule(counter, 30000, 10000);
+      timer.schedule(counter, 30000, 30000);
    }
    
    private Semaphore lock = new Semaphore(1);
@@ -86,7 +87,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    private static class Counter extends TimerTask {
       @Override
       public void run() {
-         System.out.println("[info] index count in prev 10s: " + count);
+         System.out.println("[info] index count in prev 30s: " + count);
          count = 0L;
       }
    }
@@ -136,9 +137,9 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
 //                     failure.printStackTrace();
                   }
                })
-               .setBulkActions(-1)
+               .setBulkActions(2048)
                .setBulkSize(new ByteSizeValue(128, ByteSizeUnit.MB))
-//               .setFlushInterval(TimeValue.timeValueSeconds(30))
+               .setFlushInterval(TimeValue.timeValueSeconds(30))
                .build();
       }
       
