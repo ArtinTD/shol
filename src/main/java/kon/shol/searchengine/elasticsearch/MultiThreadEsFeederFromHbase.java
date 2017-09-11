@@ -9,7 +9,9 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.*;
 import java.util.Properties;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static kon.shol.searchengine.elasticsearch.WebpageMaker.makeWebpage;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.DEFAULT_FETCH_MAX_BYTES;
@@ -82,10 +84,7 @@ public class MultiThreadEsFeederFromHbase {
       conf.set("hbase.zookeeper.quorum", zookeeperAddress);
       connection = ConnectionFactory.createConnection(conf);
       table = connection.getTable(TableName.valueOf(tableName));
-      executor = new ThreadPoolExecutor(threadCount, threadCount,
-            0L, TimeUnit.MILLISECONDS,
-            new ArrayBlockingQueue<Runnable>(2 * threadCount));
-      // Executors.newFixedThreadPool(threadCount);
+      executor = Executors.newFixedThreadPool(threadCount);
       
       Properties properties = new Properties();
       properties.put(FETCH_MAX_BYTES_CONFIG, DEFAULT_FETCH_MAX_BYTES);
@@ -145,7 +144,6 @@ public class MultiThreadEsFeederFromHbase {
             } else {
                duplicateCheck.put(min, true);
             }
-            System.out.println("[info] new partialFeeder: " + min);
             partialFeeder = new PartialFeeder(min, min + 600000,
                   (indexerNumber = (indexerNumber + 1) % threadCount));
          } catch (IOException ex) {
@@ -211,7 +209,7 @@ public class MultiThreadEsFeederFromHbase {
    private void propInit() {
       try {
          properties = new Properties();
-         properties.put("threadCount", "8");
+         properties.put("threadCount", "16");
          properties.put("seed", "1504607400000");
          properties.put("elasticClusterName", "sholastic");
          properties.put("periodLength", "60000");
@@ -220,7 +218,7 @@ public class MultiThreadEsFeederFromHbase {
          properties.put("index", "sholastic");
          properties.put("type", "webpagesfinal1");
          properties.put("topic", "ElasticQueueF1");
-         properties.put("groupId", "shol");
+         properties.put("groupId", "sholz");
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
          
@@ -261,7 +259,8 @@ public class MultiThreadEsFeederFromHbase {
       
       @Override
       public void run() {
-         
+   
+         System.out.println("[info] new partialFeeder started.");
          boolean foundAnythingNow = false;
          for (Result result : results) {
             foundAnythingYet = true;
