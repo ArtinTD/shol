@@ -24,14 +24,16 @@ import java.util.concurrent.Semaphore;
 
 public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    
-   private final static Logger logger = Logger.getLogger(
+   private static final Logger logger = Logger.getLogger(
          kon.shol.searchengine.elasticsearch.SingleThreadSyncEsIndexer.class);
+   private static final ArrayBlockingQueue<WebPage> indexQueue;
    private static Counter counter;
    private static Timer timer;
-   private static ArrayBlockingQueue<WebPage> indexQueue = new ArrayBlockingQueue<WebPage>(2048);
-   private static long count = 0;
+   private static long count;
    
    static {
+      indexQueue = new ArrayBlockingQueue<WebPage>(16384);
+      count = 0;
       counter = new Counter();
       timer = new Timer();
       timer.schedule(counter, 15000, 10000);
