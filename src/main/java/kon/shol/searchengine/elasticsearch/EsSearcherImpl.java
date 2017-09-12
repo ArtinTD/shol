@@ -9,7 +9,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.json.JSONArray;
@@ -17,11 +16,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Scanner;
 
 public class EsSearcherImpl implements EsSearcher {
-   
-   private final static Logger logger = Logger.getLogger(
-         kon.shol.searchengine.elasticsearch.EsSearcherImpl.class);
+
+//   private final static Logger logger = Logger.getLogger(
+//         kon.shol.searchengine.elasticsearch.EsSearcherImpl.class);
    
    private final Gson jsonMaker = new Gson();
    private String endpoint;
@@ -35,6 +35,29 @@ public class EsSearcherImpl implements EsSearcher {
       
       setEndpoint(endpoint);
       buildRestClient(hosts, port);
+   }
+   
+   public static void main(String[] args) {
+      
+      EsSearcherImpl searcher = new EsSearcherImpl(
+            new String[]{"188.165.230.122", "188.165.235.136"},
+            "/sholastic/webpagesfinal1/");
+      
+      Scanner input = new Scanner(System.in);
+      while (true) {
+         String query = input.nextLine();
+         if (query.length() == 0) {
+            break;
+         }
+         EsSearchResult[] results = searcher.search(query);
+         for (EsSearchResult result : results) {
+            System.out.println(result.getTitle() + " : " + result.getUrl());
+         }
+      }
+      try {
+         searcher.restClient.close();
+      } catch (IOException ignored) {
+      }
    }
    
    private void setEndpoint(String endpoint) {
@@ -77,7 +100,10 @@ public class EsSearcherImpl implements EsSearcher {
          
          resultString = EntityUtils.toString(response.getEntity()).trim();
       } catch (IOException ex) {
-         logger.error("Could not perform search request;\n"
+//         logger.error("Could not perform search request;\n"
+//               + "Details: " + ex.toString());
+         
+         System.out.println("Could not perform search request;\n"
                + "Details: " + ex.toString());
          return null;
       }
