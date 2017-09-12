@@ -15,6 +15,10 @@ public class WebpageMaker {
       String h4h6 = Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("h4h6")));
       String imagesAlt = Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("alt")));
       
+      if (desc.length() == 0) {
+         desc = text.substring(0, 512);
+      }
+      
       String anchorTexts;
       try {
          anchorTexts = Bytes.toString(r.getValue(Bytes.toBytes("data"), Bytes.toBytes("anchors")));

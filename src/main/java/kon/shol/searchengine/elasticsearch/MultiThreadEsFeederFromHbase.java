@@ -210,14 +210,14 @@ public class MultiThreadEsFeederFromHbase {
       try {
          properties = new Properties();
          properties.put("threadCount", "8");
-         properties.put("seed", "1504607400000");
+         properties.put("seed", "1505194200000");
          properties.put("elasticClusterName", "sholastic");
          properties.put("periodLength", "20000");
          properties.put("tableName", "demo2");
          properties.put("columnFamily", "data");
          properties.put("index", "sholastic");
          properties.put("type", "webpagesfinal1");
-         properties.put("topic", "ElasticQueueF1");
+         properties.put("topic", "ElasticQueueF3");
          properties.put("groupId", "sholk");
          properties.put("zookeeper", "188.165.230.122:2181");
          properties.put("elasticHosts", "188.165.230.122=188.165.235.136");
@@ -251,6 +251,7 @@ public class MultiThreadEsFeederFromHbase {
          
          Scan scan = new Scan();
          scan.addFamily(Bytes.toBytes(columnFamily));
+         scan.setMaxVersions(2);
          scan.setTimeRange(minStamp, maxStamp);
          results = table.getScanner(scan);
          indexer = indexers[indexerNumber];

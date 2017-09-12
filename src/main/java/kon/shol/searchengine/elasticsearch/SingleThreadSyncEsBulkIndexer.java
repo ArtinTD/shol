@@ -10,6 +10,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
@@ -46,6 +47,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
    private String type;
    private Sender indexer;
    private int port;
+   
    
    public SingleThreadSyncEsBulkIndexer(String elasticClusterName,
                                         String[] hosts, String index, String type) {
@@ -140,7 +142,7 @@ public class SingleThreadSyncEsBulkIndexer implements EsIndexer {
                })
                .setBulkActions(1024)
                .setBulkSize(new ByteSizeValue(32, ByteSizeUnit.MB))
-//               .setFlushInterval(TimeValue.timeValueSeconds(30))
+               .setFlushInterval(TimeValue.timeValueSeconds(30))
                .build();
       }
       
