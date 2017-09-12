@@ -77,5 +77,6 @@ public class Main {
         } catch (InterruptedException e) {
             logger.fatal("Couldn't join thread");
         }
+
     }
 }

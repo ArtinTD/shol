@@ -22,7 +22,7 @@ public class HbaseDriver implements Storage {
 
     @Override
     public void sendToStorage(Object element) {
-        writer.batchPut((PageData) element);
+        writer.addToPutList((PageData) element);
     }
 
     @Override

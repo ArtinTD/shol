@@ -56,10 +56,19 @@ public class Writer {
                 Bytes.toBytes(pageData.getImagesAlt()));
         pageData.getAnchors().forEach((key, value) -> {
             String reversedUrl = parser.reverseDomain(key);
-            if (reversedUrl !=  null)
+            if (reversedUrl != null)
                 put.addColumn(ANCHORS_CF, Bytes.toBytes(reversedUrl), Bytes.toBytes(value));
         });
         return put;
+    }
+
+    void addToPutList(PageData pageData) {
+        String url = parser.reverseDomain(pageData.getUrl());
+        Put put = returnPutPageData(url, pageData);
+        putList.add(put);
+        if (putList.size() > MAX_BATCH_PUT_SIZE) {
+            batchPut();
+        }
     }
 
     public void putPageData(PageData pageData) {
@@ -74,32 +83,23 @@ public class Writer {
         }
     }
 
-    void batchPut(PageData pageData) {
-        try {
-            String url = parser.reverseDomain(pageData.getUrl());
-            Put put = returnPutPageData(url, pageData);
-            putList.add(put);
-            if (putList.size() > MAX_BATCH_PUT_SIZE) {
-                if (connection.isClosed()) {
-                    try {
-                        new Connector();
-                    } catch (IOException ioe) {
-                        logger.fatal("Cannot Establish Connection to Hbase");
-                    }
-                } else {
-                    try {
-                        logger.debug("Thread: " + Thread.currentThread().getName() + " | Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
-                        table.put(putList);
-                        putList = new ArrayList<>();
-                    } catch (IOException e) {
-                        logger.fatal("Couldn't Put in HBase");
-
-                    }
-                }
+    private void batchPut() {
+        if (connection.isClosed()) {
+            try {
+                new Connector();
+            } catch (IOException ioe) {
+                logger.fatal("Cannot Establish Connection to Hbase");
             }
-        }catch(NullPointerException exception){
-            logger.fatal("NullPointerException in batch writing to HBase");
+        } else {
+            try {
+                logger.debug("Thread: " + Thread.currentThread().getName() + " | Put " + MAX_BATCH_PUT_SIZE + " was Successful!");
+                table.put(putList);
+                putList = new ArrayList<>();
+            } catch (IOException e) {
+                logger.fatal("Couldn't Put in HBase");
+
+            }
         }
     }
-
 }
+
